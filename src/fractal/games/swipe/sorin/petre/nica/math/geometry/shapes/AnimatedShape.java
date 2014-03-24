@@ -4,11 +4,11 @@ import android.graphics.Canvas;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 
-public abstract class MovableShape {
+public abstract class AnimatedShape {
 
     protected Point2D center;
 
-    public MovableShape(Point2D center) {
+    public AnimatedShape(Point2D center) {
         this.center = center;
     }
 

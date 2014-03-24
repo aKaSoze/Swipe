@@ -17,7 +17,7 @@ public class GameWorldActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         LinearLayout layout = new LinearLayout(this);
-        layout.addView(new TimerView(this));
+        layout.setOrientation(LinearLayout.VERTICAL);
         layout.addView(new TimerView(this, 50));
         layout.addView(new GameView(this));
         setContentView(layout);

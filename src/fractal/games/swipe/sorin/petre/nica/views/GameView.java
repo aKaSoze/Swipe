@@ -6,56 +6,31 @@ import java.util.Set;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Paint.Style;
-import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Circle;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.MovableShape;
+import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
+import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.ValueCircle;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 
 public class GameView extends AutoUpdatableView {
 
-    private final Rect              backGround_rect  = new Rect();
-    private final Paint             backGround_paint = new Paint();
+    private final ColorDrawable         backGround_drwbl = new ColorDrawable(Color.BLACK);
 
-    private final Paint             blueCircle_paint;
-    private final Paint             greenCircle_paint;
-    private final Paint             redCircle_paint;
-    private final Paint             cyanCircle_paint;
+    private CenteredDrawable            selectedShape    = null;
 
-    private final Set<MovableShape> movableShapes    = new HashSet<MovableShape>();
-    private MovableShape            selectedShape    = null;
+    private Boolean                     isOkToRunGameLoop;
 
-    private Boolean                 isOkToRunGameLoop;
+    private final Set<CenteredDrawable> drawables        = new HashSet<CenteredDrawable>();
 
     public GameView(Context context) {
         super(context);
 
-        backGround_paint.setColor(Color.BLACK);
-        backGround_paint.setStyle(Style.FILL);
-
-        blueCircle_paint = new Paint();
-        blueCircle_paint.setColor(Color.BLUE);
-        blueCircle_paint.setStyle(Style.STROKE);
-        blueCircle_paint.setStrokeWidth(4);
-
-        greenCircle_paint = new Paint(blueCircle_paint);
-        greenCircle_paint.setColor(Color.GREEN);
-
-        redCircle_paint = new Paint(blueCircle_paint);
-        redCircle_paint.setColor(Color.RED);
-
-        cyanCircle_paint = new Paint(blueCircle_paint);
-        cyanCircle_paint.setColor(Color.CYAN);
-
-        movableShapes.add(new Circle(new Point2D(100f, 50f), 40f));
-        movableShapes.add(new Circle(new Point2D(100f, 150f), 40f, blueCircle_paint));
-        movableShapes.add(new Circle(new Point2D(100f, 250f), 40f, greenCircle_paint));
-        movableShapes.add(new Circle(new Point2D(100f, 350f), 40f, redCircle_paint));
-        movableShapes.add(new Circle(new Point2D(100f, 450f), 40f, cyanCircle_paint));
+        for (long i = 0; i < 100; i++) {
+            final ValueCircle valueCircle = new ValueCircle(new Point2D(100f, 50f), 40f, i);
+            drawables.add(valueCircle);
+        }
     }
 
     @Override
@@ -67,22 +42,19 @@ public class GameView extends AutoUpdatableView {
         case MotionEvent.ACTION_UP:
             selectedShape = null;
             break;
-        case MotionEvent.ACTION_MOVE:
-            if (selectedShape != null) {
-                selectedShape.react(event);
-            }
-            break;
         default:
             break;
         }
-
+        if (selectedShape != null) {
+            selectedShape.onMotionEvent(event);
+        }
         return true;
     }
 
-    private MovableShape evaluateTargetShape(Point2D touchPoint) {
-        MovableShape closestShape = null;
+    private CenteredDrawable evaluateTargetShape(Point2D touchPoint) {
+        CenteredDrawable closestShape = null;
         float smallestDistance = 60;
-        for (MovableShape movableShape : movableShapes) {
+        for (CenteredDrawable movableShape : drawables) {
             float distanceToTouchPoint = movableShape.distanceTo(touchPoint);
             if (distanceToTouchPoint < smallestDistance) {
                 smallestDistance = distanceToTouchPoint;
@@ -95,17 +67,24 @@ public class GameView extends AutoUpdatableView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        backGround_rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
-        canvas.drawRect(backGround_rect, backGround_paint);
-        for (MovableShape movableShape : movableShapes) {
-            movableShape.draw(canvas);
-        }
+        drawSurface(canvas);
     }
 
     public void updateWorld(Long elapsedTime) {
-        for (MovableShape movableShape : movableShapes) {
+        Set<CenteredDrawable> deadObjects = new HashSet<CenteredDrawable>();
+
+        for (CenteredDrawable movableShape : drawables) {
+            if (movableShape instanceof ValueCircle) {
+                ValueCircle valueCircle = (ValueCircle) movableShape;
+                if (valueCircle.isDestroyed) {
+                    deadObjects.add(valueCircle);
+                    continue;
+                }
+            }
             movableShape.updateState(elapsedTime);
         }
+
+        drawables.removeAll(deadObjects);
     }
 
     @Override
@@ -133,9 +112,9 @@ public class GameView extends AutoUpdatableView {
 
     @Override
     protected void drawSurface(Canvas canvas) {
-        backGround_rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
-        canvas.drawRect(backGround_rect, backGround_paint);
-        for (MovableShape movableShape : movableShapes) {
+        backGround_drwbl.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        backGround_drwbl.draw(canvas);
+        for (CenteredDrawable movableShape : drawables) {
             movableShape.draw(canvas);
         }
     }

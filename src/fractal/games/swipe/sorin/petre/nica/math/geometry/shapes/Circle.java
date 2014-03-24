@@ -8,7 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 
-public class Circle extends MovableShape {
+public class Circle extends AnimatedShape {
 
     private static final Paint DEFAULT_PAINT;
     static {
