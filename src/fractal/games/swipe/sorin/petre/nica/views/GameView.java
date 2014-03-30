@@ -1,18 +1,24 @@
 package fractal.games.swipe.sorin.petre.nica.views;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
+import fractal.games.swipe.R;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.ValueCircle;
+import fractal.games.swipe.sorin.petre.nica.math.objects.Displacement2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
+import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 
 public class GameView extends AutoUpdatableView {
 
@@ -24,12 +30,20 @@ public class GameView extends AutoUpdatableView {
 
     private final Set<CenteredDrawable> drawables        = new HashSet<CenteredDrawable>();
 
+    private final Bitmap                goldCoin_bmp;
+
+    private Integer                     coinSize;
+
     public GameView(Context context) {
         super(context);
+        goldCoin_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.gold_coin);
+    }
 
-        for (long i = 0; i < 100; i++) {
-            final ValueCircle valueCircle = new ValueCircle(new Point2D(100f, 50f), 40f, i);
-            drawables.add(valueCircle);
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (changed) {
+            coinSize = (right - left) / 15;
         }
     }
 
@@ -70,7 +84,18 @@ public class GameView extends AutoUpdatableView {
         drawSurface(canvas);
     }
 
+    private Long lastCoinAddTime = 0L;
+
     public void updateWorld(Long elapsedTime) {
+        if (elapsedTime - lastCoinAddTime > 999) {
+            Random rng = new Random();
+            Point2D topLeft = new Point2D(rng.nextInt(400), rng.nextInt(400));
+            Point2D bottomRight = topLeft.translate(new Displacement2D(coinSize, coinSize));
+            Segment2D diagonal = new Segment2D(topLeft, bottomRight);
+            drawables.add(new ValueCircle(diagonal, goldCoin_bmp, elapsedTime));
+            lastCoinAddTime = elapsedTime;
+        }
+
         Set<CenteredDrawable> deadObjects = new HashSet<CenteredDrawable>();
 
         for (CenteredDrawable movableShape : drawables) {

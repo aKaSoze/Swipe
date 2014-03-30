@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class TimerView extends AutoUpdatableView {
@@ -87,7 +86,6 @@ public class TimerView extends AutoUpdatableView {
 
     private String evaluateDispalyString() {
         String displayString = (minutes < 10 ? "0" : "") + minutes + " : " + (seconds < 10 ? "0" : "") + seconds;
-        Log.d(logTag, "Elapsed time: " + displayString);
         return displayString;
     }
 

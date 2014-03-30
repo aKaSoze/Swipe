@@ -13,6 +13,11 @@ public class Point2D implements IPoint2D {
         this.y = y;
     }
 
+    public Point2D(Integer x, Integer y) {
+        this.x = x.floatValue();
+        this.y = y.floatValue();
+    }
+
     @Override
     public Float distanceTo(IPoint2D point2d) {
         double dx = x - point2d.getX();
@@ -31,6 +36,14 @@ public class Point2D implements IPoint2D {
         return y;
     }
 
+    public Displacement2D delta(Point2D other) {
+        return new Displacement2D(other.x - x, other.y - y);
+    }
+
+    public Point2D translate(Displacement2D displacement) {
+        return new Point2D(x + displacement.dx, y + displacement.dy);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof Point2D) {
@@ -41,12 +54,16 @@ public class Point2D implements IPoint2D {
         }
     }
 
+    @Override
+    public String toString() {
+        return "(" + x + "," + y + ")";
+    }
+
     public static class Factory {
 
         public static Point2D fromMotionEvent(MotionEvent motionEvent) {
             return new Point2D(motionEvent.getX(), motionEvent.getY());
         }
-
     }
 
 }

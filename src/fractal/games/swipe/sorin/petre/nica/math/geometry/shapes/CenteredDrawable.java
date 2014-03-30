@@ -1,17 +1,23 @@
 package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
 import android.graphics.ColorFilter;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 
-public abstract class CenteredDrawable extends ShapeDrawable {
+public abstract class CenteredDrawable extends Drawable {
 
-    protected Point2D center;
+    protected Point2D     center;
+
+    protected final Paint paint;
 
     public CenteredDrawable(Point2D center) {
         this.center = center;
+        paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setDither(true);
     }
 
     public abstract void onMotionEvent(MotionEvent motionEvent);
@@ -33,6 +39,7 @@ public abstract class CenteredDrawable extends ShapeDrawable {
 
     @Override
     public void setAlpha(int alpha) {
+        paint.setAlpha(alpha % 256);
     }
 
     @Override
