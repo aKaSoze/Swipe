@@ -21,7 +21,7 @@ public class ValueCircle extends BitmapDrawable {
     public void onMotionEvent(MotionEvent motionEvent) {
         if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
             touchCount++;
-            if (touchCount > 0) {
+            if (touchCount > 1) {
                 isDestroyed = true;
             }
         } else {
