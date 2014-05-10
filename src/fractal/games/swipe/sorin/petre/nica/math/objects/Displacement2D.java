@@ -2,8 +2,8 @@ package fractal.games.swipe.sorin.petre.nica.math.objects;
 
 public final class Displacement2D {
 
-	public final Float dx;
-	public final Float dy;
+	public final Float	dx;
+	public final Float	dy;
 
 	public Displacement2D(Float dx, Float dy) {
 		this.dx = dx;
@@ -22,6 +22,10 @@ public final class Displacement2D {
 
 	public Displacement2D delta(Displacement2D other) {
 		return new Displacement2D(other.dx - dx, other.dy - dy);
+	}
+
+	public Boolean isZero() {
+		return dx == 0 && dy == 0;
 	}
 
 	@Override
