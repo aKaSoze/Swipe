@@ -15,6 +15,10 @@ public class Vector2D {
 		fiY = Math.acos(y / magnitude());
 	}
 
+	public Vector2D(Integer x, Integer y) {
+		this(x.doubleValue(), y.doubleValue());
+	}
+
 	public Double magnitude() {
 		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	}
