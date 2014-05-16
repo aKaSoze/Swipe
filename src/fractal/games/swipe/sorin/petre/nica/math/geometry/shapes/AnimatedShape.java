@@ -7,48 +7,44 @@ import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 
-public abstract class AnimatedShape {
+public abstract class AnimatedShape extends CenteredDrawable {
 
-	protected Point2D		center;
+    protected Acceleration acceleration;
 
-	protected Acceleration	acceleration;
+    protected Velocity     velocity;
 
-	protected Velocity		velocity;
+    protected Displacement displacement;
 
-	protected Displacement	displacement;
+    protected Long         lastElapsedTime;
+    
+    public AnimatedShape(Point2D center) {
+        super(center);
+        lastElapsedTime = 0L;
+        acceleration = new Acceleration(0.0, 0.0);
+        velocity = new Velocity(0, 0);
+        displacement = new Displacement(center.getX(), center.getY());
+    }
 
-	protected Long			lastElapsedTime;
+    @Override
+    public void onMotionEvent(MotionEvent motionEvent) {
+        // TODO Auto-generated method stub
 
-	public AnimatedShape(Point2D center) {
-		this.center = center;
-		acceleration = new Acceleration(0, 0);
-		velocity = new Velocity(0, 0);
-	}
+    }
 
-	public void react(MotionEvent motionEvent) {
-		switch (motionEvent.getActionMasked()) {
-		case MotionEvent.ACTION_MOVE:
-			setCenter(Point2D.Factory.fromMotionEvent(motionEvent));
-		}
-	}
+    public void updateState(Long elapsedTime) {
+        Long timeIncrement = elapsedTime - lastElapsedTime;
+        Displacement addedDisplacement = velocity.generatedDisplacement(timeIncrement);
+        displacement = displacement.add(addedDisplacement);
+        setCenter(new Point2D(displacement.x, displacement.y));
+        Velocity addedVelocity = acceleration.generatedVelocity(timeIncrement);
+        velocity = velocity.add(addedVelocity);
+        lastElapsedTime = elapsedTime;
+    }
 
-	public void setCenter(Point2D newCenter) {
-		center = newCenter;
-	}
+    @Override
+    public void draw(Canvas canvas) {
+        canvas.drawLine(center.getX(), center.getY(), center.getX() + acceleration.x.floatValue(), center.getY() + acceleration.y.floatValue(), paint);
+        canvas.drawLine(center.getX(), center.getY(), center.getX() + velocity.x.floatValue(), center.getY() + velocity.y.floatValue(), paint);
+    }
 
-	public Float distanceTo(Point2D point2d) {
-		return center.distanceTo(point2d);
-	}
-
-	public void updateState(Long elapsedTime) {
-		Long timeIncrement = elapsedTime - lastElapsedTime;
-		Displacement addedDisplacement = velocity.generatedDisplacement(timeIncrement);
-		displacement = displacement.add(addedDisplacement);
-		setCenter(new Point2D(displacement.x, displacement.y));
-		Velocity addedVelocity = acceleration.generatedVelocity(timeIncrement);
-		velocity = velocity.add(addedVelocity);
-		lastElapsedTime = elapsedTime;
-	}
-
-	public abstract void draw(Canvas canvas);
 }

@@ -50,4 +50,11 @@ public class Vector2D {
 	public Vector2D divideByScalar(Double divisor) {
 		return new Vector2D(x / divisor, y / divisor);
 	}
+
+    @Override
+    public String toString() {
+        return "Vector2D [x=" + x + ", y=" + y + "]";
+    }
+	
+	
 }

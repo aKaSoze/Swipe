@@ -9,9 +9,9 @@ import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 
 public abstract class CenteredDrawable extends Drawable {
 
-    protected Point2D     center;
+    protected Point2D center;
 
-    protected final Paint paint;
+    protected Paint   paint;
 
     public CenteredDrawable(Point2D center) {
         this.center = center;

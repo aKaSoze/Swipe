@@ -16,7 +16,11 @@ public class Velocity extends Vector2D {
 		super(vector.x, vector.y);
 	}
 
-	public Displacement generatedDisplacement(Long elapsedTime) {
+	public Velocity(Float vx, Float vy) {
+	    super(vx.doubleValue(), vy.doubleValue());
+    }
+
+    public Displacement generatedDisplacement(Long elapsedTime) {
 		return new Displacement(x * elapsedTime, y * elapsedTime);
 	}
 
