@@ -42,8 +42,7 @@ public abstract class AnimatedShape {
 
 	public void updateState(Long elapsedTime) {
 		Long timeIncrement = elapsedTime - lastElapsedTime;
-		Displacement addedDisplacement = velocity.generatedDisplacement(timeIncrement);
-		displacement = displacement.add(addedDisplacement);
+		displacement.add(velocity.generatedDisplacement(timeIncrement));
 		setCenter(new Point2D(displacement.x, displacement.y));
 		Velocity addedVelocity = acceleration.generatedVelocity(timeIncrement);
 		velocity = velocity.add(addedVelocity);
