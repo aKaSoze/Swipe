@@ -7,9 +7,7 @@ import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 
-public abstract class AnimatedShape {
-
-	protected Point2D		center;
+public abstract class AnimatedShape extends CenteredDrawable {
 
 	protected Acceleration	acceleration;
 
@@ -20,10 +18,26 @@ public abstract class AnimatedShape {
 	protected Long			lastElapsedTime;
 
 	public AnimatedShape(Point2D center) {
-		this.center = center;
-		acceleration = new Acceleration(0, 0);
+		super(center);
+		lastElapsedTime = 0L;
+		acceleration = new Acceleration(0.0, 0.0);
 		velocity = new Velocity(0, 0);
+		displacement = new Displacement(center.getX(), center.getY());
 	}
+
+	@Override
+	public void onMotionEvent(MotionEvent motionEvent) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void draw(Canvas canvas) {
+		canvas.drawLine(center.getX(), center.getY(), center.getX() + acceleration.x.floatValue(), center.getY() + acceleration.y.floatValue(), paint);
+		canvas.drawLine(center.getX(), center.getY(), center.getX() + velocity.x.floatValue(), center.getY() + velocity.y.floatValue(), paint);
+	}
+
+	protected Point2D	center;
 
 	public void react(MotionEvent motionEvent) {
 		switch (motionEvent.getActionMasked()) {
@@ -48,6 +62,4 @@ public abstract class AnimatedShape {
 		velocity = velocity.add(addedVelocity);
 		lastElapsedTime = elapsedTime;
 	}
-
-	public abstract void draw(Canvas canvas);
 }

@@ -1,7 +1,5 @@
 package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
-import java.util.Random;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -19,8 +17,6 @@ public class Circle extends AnimatedShape {
     }
 
     public Float               radius;
-    public Paint               paint;
-    private final Random       random = new Random();
 
     public Circle(Point2D center, Float radius, Paint paint) {
         super(center);
@@ -36,12 +32,13 @@ public class Circle extends AnimatedShape {
 
     @Override
     public void draw(Canvas canvas) {
+        super.draw(canvas);
         canvas.drawCircle(center.getX(), center.getY(), radius, paint);
     }
 
     @Override
     public void updateState(Long elapsedTime) {
-        paint.setStrokeWidth(paint.getStrokeWidth() + (random.nextInt(2) == 0 && paint.getStrokeWidth() < 25 ? 1 : -1));
+        super.updateState(elapsedTime);
     }
 
 }

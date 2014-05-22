@@ -50,4 +50,11 @@ public class Vector2D<V extends Vector2D<V>> {
 		x /= divisor;
 		y /= divisor;
 	}
+
+    @Override
+    public String toString() {
+        return "Vector2D [x=" + x + ", y=" + y + "]";
+    }
+	
+	
 }

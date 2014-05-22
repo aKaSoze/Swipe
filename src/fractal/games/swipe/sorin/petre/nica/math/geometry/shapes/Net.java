@@ -8,6 +8,9 @@ import fractal.games.swipe.sorin.petre.nica.math.objects.Displacement2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 
+import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
+import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
+
 public class Net extends CenteredDrawable {
 
 	private enum Status {
@@ -35,7 +38,7 @@ public class Net extends CenteredDrawable {
 		this.segment2d = segment2d;
 		strecthPoint = segment2d.middle;
 
-		elasticityCoeficient = 0.00005f;
+		elasticityCoeficient = 0.0009f;
 		status = Status.STANDING;
 		vx = 0f;
 		vy = 0f;
@@ -58,12 +61,17 @@ public class Net extends CenteredDrawable {
 		}
 	}
 
+	public Circle circle;
+	
 	@Override
 	public void updateState(Long elapsedTime) {
 		this.elapsedTime = elapsedTime;
 		if (status == Status.RELEASED) {
 			Float distance = strecthPoint.distanceTo(segment2d.middle);
 			if (distance < 1) {
+			    Velocity velocity = new Velocity(vx, vy);
+			    circle.velocity = velocity;
+			    circle.acceleration = new Acceleration(0.0, 0.0009);
 				vx = 0f;
 				vy = 0f;
 				status = Status.STANDING;

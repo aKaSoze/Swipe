@@ -8,4 +8,7 @@ public class Displacement extends Vector2D<Displacement> {
 		super(sx, sy);
 	}
 
+	public Displacement(Float sx, Float sy) {
+		super(sx.doubleValue(), sy.doubleValue());
+	}
 }
