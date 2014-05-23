@@ -7,7 +7,6 @@ import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Displacement2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
-
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 
@@ -29,9 +28,7 @@ public class Net extends CenteredDrawable {
 
 	private Long			elapsedTime;
 
-	private Float			vx;
-
-	private Float			vy;
+	private Velocity		springVelocity;
 
 	public Net(Segment2D segment2d) {
 		super(segment2d.middle);
@@ -40,8 +37,6 @@ public class Net extends CenteredDrawable {
 
 		elasticityCoeficient = 0.0009f;
 		status = Status.STANDING;
-		vx = 0f;
-		vy = 0f;
 
 		paint.setColor(Color.WHITE);
 		paint.setStyle(Style.STROKE);
@@ -61,17 +56,17 @@ public class Net extends CenteredDrawable {
 		}
 	}
 
-	public Circle circle;
-	
+	public Circle	circle;
+
 	@Override
 	public void updateState(Long elapsedTime) {
 		this.elapsedTime = elapsedTime;
 		if (status == Status.RELEASED) {
 			Float distance = strecthPoint.distanceTo(segment2d.middle);
 			if (distance < 1) {
-			    Velocity velocity = new Velocity(vx, vy);
-			    circle.velocity = velocity;
-			    circle.acceleration = new Acceleration(0.0, 0.0009);
+				Velocity velocity = new Velocity(vx, vy);
+				circle.velocity = velocity;
+				circle.acceleration = new Acceleration(0.0, 9.8);
 				vx = 0f;
 				vy = 0f;
 				status = Status.STANDING;

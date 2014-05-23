@@ -33,8 +33,8 @@ public abstract class AnimatedShape extends CenteredDrawable {
 
 	@Override
 	public void draw(Canvas canvas) {
-		canvas.drawLine(center.getX(), center.getY(), center.getX() + acceleration.x.floatValue(), center.getY() + acceleration.y.floatValue(), paint);
-		canvas.drawLine(center.getX(), center.getY(), center.getX() + velocity.x.floatValue(), center.getY() + velocity.y.floatValue(), paint);
+		canvas.drawLine(center.getX(), center.getY(), center.getX() + acceleration.getX().floatValue(), center.getY() + acceleration.getY().floatValue(), paint);
+		canvas.drawLine(center.getX(), center.getY(), center.getX() + velocity.getX().floatValue(), center.getY() + velocity.getY().floatValue(), paint);
 	}
 
 	protected Point2D	center;
@@ -57,9 +57,8 @@ public abstract class AnimatedShape extends CenteredDrawable {
 	public void updateState(Long elapsedTime) {
 		Long timeIncrement = elapsedTime - lastElapsedTime;
 		displacement.add(velocity.generatedDisplacement(timeIncrement));
-		setCenter(new Point2D(displacement.x, displacement.y));
-		Velocity addedVelocity = acceleration.generatedVelocity(timeIncrement);
-		velocity = velocity.add(addedVelocity);
+		velocity.add(acceleration.generatedVelocity(timeIncrement));
+		setCenter(displacement.getTip());
 		lastElapsedTime = elapsedTime;
 	}
 }

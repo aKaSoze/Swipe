@@ -1,13 +1,30 @@
 package fractal.games.swipe.sorin.petre.nica.math.objects;
 
+import fractal.games.swipe.sorin.petre.nica.physics.units.Unit;
+
 public class Vector2D<V extends Vector2D<V>> {
 
-	public Double	x;
-	public Double	y;
+	private Double	x;
+	private Double	y;
 
-	public Vector2D(Double x, Double y) {
+	public Unit<?>	measureUnit;
+
+	public Vector2D(Double x, Double y, Unit<?> measureUnit) {
 		this.x = x;
 		this.y = y;
+		this.measureUnit = measureUnit;
+	}
+
+	public Double getX() {
+		return x;
+	}
+
+	public Double getY() {
+		return y;
+	}
+
+	public Vector2D(Double x, Double y) {
+		this(x, y, Unit.ADIMENSIONAL);
 	}
 
 	public Vector2D(Integer x, Integer y) {
@@ -19,17 +36,24 @@ public class Vector2D<V extends Vector2D<V>> {
 	}
 
 	public void add(V augend) {
-		x += augend.x;
-		y += augend.y;
+		Double magnitudeOrderTransformation = evaluateMagnitudeOrderTransformation(augend);
+		x += augend.getX() * magnitudeOrderTransformation;
+		y += augend.getY() * magnitudeOrderTransformation;
 	}
 
 	public void subtract(V subtrahend) {
-		x -= subtrahend.x;
-		y -= subtrahend.y;
+		Double magnitudeOrderTransformation = evaluateMagnitudeOrderTransformation(subtrahend);
+		x -= subtrahend.getX() * magnitudeOrderTransformation;
+		y -= subtrahend.getY() * magnitudeOrderTransformation;
 	}
 
 	public Double scalarMultiply(V multiplicand) {
-		return (x * multiplicand.x) + (y * multiplicand.y);
+		Double magnitudeOrderTransformation = evaluateMagnitudeOrderTransformation(multiplicand);
+		return (x * multiplicand.getX() * magnitudeOrderTransformation) + (y * multiplicand.getY() * magnitudeOrderTransformation);
+	}
+
+	public Double evaluateMagnitudeOrderTransformation(V otherVector) {
+		return otherVector.measureUnit.magnitudeOrder / measureUnit.magnitudeOrder;
 	}
 
 	public void normalize() {
@@ -51,10 +75,13 @@ public class Vector2D<V extends Vector2D<V>> {
 		y /= divisor;
 	}
 
-    @Override
-    public String toString() {
-        return "Vector2D [x=" + x + ", y=" + y + "]";
-    }
-	
-	
+	public Point2D getTip() {
+		return new Point2D(x, y);
+	}
+
+	@Override
+	public String toString() {
+		return "Vector2D [" + x + "i + " + y + "j], " + magnitude() + " " + measureUnit.symbol;
+	}
+
 }

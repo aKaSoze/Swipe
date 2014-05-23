@@ -3,33 +3,25 @@ package fractal.games.swipe.sorin.petre.nica.physics.kinematics;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Vector2D;
 import fractal.games.swipe.sorin.petre.nica.physics.units.LengthUnit;
 import fractal.games.swipe.sorin.petre.nica.physics.units.TimeUnit;
+import fractal.games.swipe.sorin.petre.nica.physics.units.Unit.DerivedUnitBuilder;
 
-public class Acceleration extends Vector2D {
-
-	protected LengthUnit	lengthUnit	= LengthUnit.METER;
-	protected TimeUnit		timeUnit	= TimeUnit.SECOND;
+public class Acceleration extends Vector2D<Acceleration> {
 
 	public Acceleration(Double ax, Double ay, LengthUnit lengthUnit, TimeUnit timeUnit) {
-		this(ax, ay);
-		this.lengthUnit = lengthUnit;
-		this.timeUnit = timeUnit;
+		super(ax, ay);
+		measureUnit = DerivedUnitBuilder.newUnit().proportionalTo(lengthUnit).inversProportionalTo(timeUnit).inversProportionalTo(timeUnit).build();
 	}
 
 	public Acceleration(Double ax, Double ay) {
-		super(ax, ay);
+		this(ax, ay, LengthUnit.METER, TimeUnit.SECOND);
 	}
 
 	public Acceleration(Integer ax, Integer ay) {
-		super(ax, ay);
+		this(ax.doubleValue(), ay.doubleValue());
 	}
 
 	public Velocity generatedVelocity(Long elapsedTime) {
-		return new Velocity(x * elapsedTime, y * elapsedTime);
-	}
-
-	@Override
-	public String toString() {
-		return x + "i + " + y + "j (" + lengthUnit.symbol + "/" + timeUnit.symbol + "^2)";
+		return new Velocity(getX() * elapsedTime, getY() * elapsedTime);
 	}
 
 }
