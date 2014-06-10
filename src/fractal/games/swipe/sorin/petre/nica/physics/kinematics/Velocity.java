@@ -9,7 +9,7 @@ public class Velocity extends Vector2D<Velocity> {
 
 	public Velocity(Double vx, Double vy, LengthUnit lengthUnit, TimeUnit timeUnit) {
 		super(vx, vy);
-		measureUnit = DerivedUnitBuilder.newUnit().proportionalTo(lengthUnit).inversProportionalTo(timeUnit).build();
+		setMeasureUnit(DerivedUnitBuilder.newUnit().proportionalTo(lengthUnit).inversProportionalTo(timeUnit).build());
 	}
 
 	public Velocity(Double vx, Double vy) {

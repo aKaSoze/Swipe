@@ -7,9 +7,11 @@ import fractal.games.swipe.sorin.petre.nica.physics.units.Unit.DerivedUnitBuilde
 
 public class Acceleration extends Vector2D<Acceleration> {
 
+	public static final Acceleration	EARTH_SURFACE_GRAVITY	= new Acceleration(0.0, 9.8);
+
 	public Acceleration(Double ax, Double ay, LengthUnit lengthUnit, TimeUnit timeUnit) {
 		super(ax, ay);
-		measureUnit = DerivedUnitBuilder.newUnit().proportionalTo(lengthUnit).inversProportionalTo(timeUnit).inversProportionalTo(timeUnit).build();
+		setMeasureUnit(DerivedUnitBuilder.newUnit().proportionalTo(lengthUnit).inversProportionalTo(timeUnit).inversProportionalTo(timeUnit).build());
 	}
 
 	public Acceleration(Double ax, Double ay) {

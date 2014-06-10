@@ -1,6 +1,7 @@
 package fractal.games.swipe.sorin.petre.nica.math.objects;
 
 import android.graphics.Rect;
+import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class Segment2D {
 
@@ -34,7 +35,7 @@ public class Segment2D {
 		return new Rect(Math.round(firstPoint.getX()), Math.round(firstPoint.getY()), Math.round(secondPoint.getX()), Math.round(secondPoint.getY()));
 	}
 
-	public Segment2D translate(Displacement2D displacement) {
+	public Segment2D translate(Displacement displacement) {
 		return new Segment2D(firstPoint.translate(displacement), secondPoint.translate(displacement));
 	}
 

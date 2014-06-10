@@ -2,11 +2,12 @@ package fractal.games.swipe.sorin.petre.nica.math.objects;
 
 import android.view.MotionEvent;
 import fractal.games.swipe.math.objects.IPoint2D;
+import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class Point2D implements IPoint2D {
 
-	private final Float x;
-	private final Float y;
+	private final Float	x;
+	private final Float	y;
 
 	public Point2D(Float x, Float y) {
 		this.x = x;
@@ -42,12 +43,12 @@ public class Point2D implements IPoint2D {
 	}
 
 	@Override
-	public Displacement2D delta(IPoint2D other) {
-		return new Displacement2D(other.getX() - x, other.getY() - y);
+	public Displacement delta(IPoint2D other) {
+		return new Displacement(other.getX() - x, other.getY() - y);
 	}
 
-	public Point2D translate(Displacement2D displacement) {
-		return new Point2D(x + displacement.dx, y + displacement.dy);
+	public Point2D translate(Displacement displacement) {
+		return new Point2D(x + displacement.getX(), y + displacement.getY());
 	}
 
 	@Override
@@ -75,13 +76,13 @@ public class Point2D implements IPoint2D {
 	public IPoint2D rotateClockWise(IPoint2D reference, Float rotation) {
 		Float distance = distanceTo(reference);
 		Float angleToXAxis = clockWiseXAxisAngleTo(reference);
-		Displacement2D rotationDisplacement = new Displacement2D(distance * Math.cos(angleToXAxis + rotation), distance * Math.sin(angleToXAxis + rotation));
+		Displacement rotationDisplacement = new Displacement(distance * Math.cos(angleToXAxis + rotation), distance * Math.sin(angleToXAxis + rotation));
 		return translate(reference.delta(this).delta(rotationDisplacement));
 	}
 
 	public Float clockWiseXAxisAngleTo(IPoint2D other) {
-		Displacement2D delta = other.delta(this);
-		return Double.valueOf(Math.atan2(delta.dy, delta.dx)).floatValue();
+		Displacement delta = other.delta(this);
+		return Double.valueOf(Math.atan2(delta.getY(), delta.getX())).floatValue();
 	}
 
 	@Override

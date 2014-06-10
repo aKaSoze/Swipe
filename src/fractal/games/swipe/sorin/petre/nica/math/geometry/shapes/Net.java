@@ -4,10 +4,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint.Style;
 import android.view.MotionEvent;
-import fractal.games.swipe.sorin.petre.nica.math.objects.Displacement2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
+import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 
 public class Net extends CenteredDrawable {
@@ -20,11 +20,11 @@ public class Net extends CenteredDrawable {
 
 	private Point2D			strecthPoint;
 
-	private Float			elasticityCoeficient;
+	private Double			elasticityCoeficient;
 
 	private Status			status;
 
-	private Long			startStrecthingTime;
+	private Long			strecthingTime;
 
 	private Long			elapsedTime;
 
@@ -35,7 +35,7 @@ public class Net extends CenteredDrawable {
 		this.segment2d = segment2d;
 		strecthPoint = segment2d.middle;
 
-		elasticityCoeficient = 0.0009f;
+		elasticityCoeficient = 0.0009;
 		status = Status.STANDING;
 
 		paint.setColor(Color.WHITE);
@@ -47,11 +47,13 @@ public class Net extends CenteredDrawable {
 	public void onMotionEvent(MotionEvent motionEvent) {
 		switch (motionEvent.getActionMasked()) {
 		case MotionEvent.ACTION_MOVE:
-			status = Status.STRECTHING;
-			startStrecthingTime = elapsedTime;
+			strecthingTime = elapsedTime;
 			strecthPoint = new Point2D(motionEvent.getX(), motionEvent.getY());
+			status = Status.STRECTHING;
 			break;
 		case MotionEvent.ACTION_UP:
+			Displacement d = strecthPoint.delta(segment2d.middle);
+			springVelocity = new Velocity(d.getX() * elasticityCoeficient, d.getY() * elasticityCoeficient);
 			status = Status.RELEASED;
 		}
 	}
@@ -62,33 +64,15 @@ public class Net extends CenteredDrawable {
 	public void updateState(Long elapsedTime) {
 		this.elapsedTime = elapsedTime;
 		if (status == Status.RELEASED) {
-			Float distance = strecthPoint.distanceTo(segment2d.middle);
-			if (distance < 1) {
-				Velocity velocity = new Velocity(vx, vy);
-				circle.velocity = velocity;
+			if (strecthPoint.distanceTo(segment2d.middle) < 1) {
+				circle.velocity = new Velocity(springVelocity.getX(), springVelocity.getY());
 				circle.acceleration = new Acceleration(0.0, 9.8);
-				vx = 0f;
-				vy = 0f;
 				status = Status.STANDING;
 			} else {
-				Displacement2D d = strecthPoint.delta(segment2d.middle);
-				vx += d.dx * elasticityCoeficient;
-				vy += d.dy * elasticityCoeficient;
-
-				Long timeFromLastStretch = elapsedTime - startStrecthingTime;
-				Float dx = smallestAbs(vx * timeFromLastStretch, d.dx);
-				Float dy = smallestAbs(vy * timeFromLastStretch, d.dy);
-
-				strecthPoint = strecthPoint.translate(new Displacement2D(dx, dy));
+				Long elapsedStrecthingTime = elapsedTime - strecthingTime;
+				strecthingTime = elapsedTime;
+				strecthPoint = strecthPoint.translate(springVelocity.generatedDisplacement(elapsedStrecthingTime));
 			}
-		}
-	}
-
-	private Float smallestAbs(Float a, Float b) {
-		if (a < 0) {
-			return Math.max(a, b);
-		} else {
-			return Math.min(a, b);
 		}
 	}
 

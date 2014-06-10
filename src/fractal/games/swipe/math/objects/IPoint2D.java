@@ -1,6 +1,6 @@
 package fractal.games.swipe.math.objects;
 
-import fractal.games.swipe.sorin.petre.nica.math.objects.Displacement2D;
+import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public interface IPoint2D {
 
@@ -8,7 +8,7 @@ public interface IPoint2D {
 
 	Float getY();
 
-	Displacement2D delta(IPoint2D other);
+	Displacement delta(IPoint2D other);
 
 	Float distanceTo(IPoint2D point2d);
 
