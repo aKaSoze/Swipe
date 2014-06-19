@@ -7,24 +7,27 @@ import fractal.games.swipe.sorin.petre.nica.physics.units.Unit.DerivedUnitBuilde
 
 public class Velocity extends Vector2D<Velocity> {
 
-	public Velocity(Double vx, Double vy, LengthUnit lengthUnit, TimeUnit timeUnit) {
-		super(vx, vy);
-		setMeasureUnit(DerivedUnitBuilder.newUnit().proportionalTo(lengthUnit).inversProportionalTo(timeUnit).build());
-	}
+    private LengthUnit lengthUnit;
 
-	public Velocity(Double vx, Double vy) {
-		this(vx, vy, LengthUnit.METER, TimeUnit.SECOND);
-	}
+    public Velocity(Double vx, Double vy, LengthUnit lengthUnit, TimeUnit timeUnit) {
+        super(vx, vy);
+        setMeasureUnit(DerivedUnitBuilder.newUnit().proportionalTo(lengthUnit).inversProportionalTo(timeUnit).build());
+        this.lengthUnit = lengthUnit;
+    }
 
-	public Velocity(Integer vx, Integer vy) {
-		this(vx.doubleValue(), vy.doubleValue());
-	}
+    public Velocity(Double vx, Double vy) {
+        this(vx, vy, LengthUnit.METER, TimeUnit.SECOND);
+    }
 
-	public Velocity(Float vx, Float vy) {
-		this(vx.doubleValue(), vy.doubleValue());
-	}
+    public Velocity(Integer vx, Integer vy) {
+        this(vx.doubleValue(), vy.doubleValue());
+    }
 
-	public Displacement generatedDisplacement(Long elapsedTime) {
-		return new Displacement(getX() * elapsedTime, getY() * elapsedTime);
-	}
+    public Velocity(Float vx, Float vy) {
+        this(vx.doubleValue(), vy.doubleValue());
+    }
+
+    public Displacement generatedDisplacement(Long elapsedTime) {
+        return new Displacement(getX() * elapsedTime, getY() * elapsedTime, lengthUnit);
+    }
 }

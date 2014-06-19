@@ -30,10 +30,10 @@ public class GameView extends AutoUpdatableView {
 	public GameView(Context context) {
 		super(context);
 		Point2D x1 = new Point2D(200, 700);
-		Point2D x2 = x1.translate(new Displacement(300, 0));
+		Point2D x2 = x1.translate(new Displacement(150, 0));
 		Segment2D segment2d = new Segment2D(x1, x2);
 		Net net = new Net(segment2d);
-		Circle circle = new Circle(segment2d.middle.translate(new Displacement(0, -30)), 30f);
+		Circle circle = new Circle(segment2d.middle.translate(new Displacement(0, -15)), 30f);
 		net.circle = circle;
 		drawables.add(net);
 		drawables.add(circle);
