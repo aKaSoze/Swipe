@@ -3,6 +3,7 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint.Style;
+import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
@@ -37,7 +38,7 @@ public class Net extends CenteredDrawable {
         this.segment2d = segment2d;
         strecthPoint = segment2d.middle;
 
-        elasticityCoeficient = 0.004;
+        elasticityCoeficient = 6.0;
         status = Status.STANDING;
 
         paint.setColor(Color.WHITE);
@@ -49,27 +50,38 @@ public class Net extends CenteredDrawable {
     public void onMotionEvent(MotionEvent motionEvent) {
         switch (motionEvent.getActionMasked()) {
         case MotionEvent.ACTION_MOVE:
-            strecthingTime = elapsedTime;
-            strecthPoint = new Point2D(motionEvent.getX(), motionEvent.getY());
-            status = Status.STRECTHING;
+            if (motionEvent.getY() > segment2d.middle.getY()) {
+                strecthingTime = elapsedTime;
+                strecthPoint = new Point2D(motionEvent.getX(), motionEvent.getY());
+                if (status != Status.STRECTHING) {
+                    circle.acceleration.neutralize();
+                    circle.velocity.neutralize();
+                    circle.setCenter(segment2d.middle.translate(new Displacement(0, -30)));
+                    status = Status.STRECTHING;
+                }
+            }
             break;
         case MotionEvent.ACTION_UP:
             Displacement displacement = strecthPoint.delta(segment2d.middle);
             springVelocity = new Velocity(displacement.getX() * elasticityCoeficient, displacement.getY() * elasticityCoeficient, LengthUnit.PIXEL, TimeUnit.SECOND);
             status = Status.RELEASED;
+            break;
         }
     }
 
-    public Circle circle;
+    public Circle      circle;
+
+    public MediaPlayer boingSound;
 
     @Override
     public void updateState(Long elapsedTime) {
         this.elapsedTime = elapsedTime;
         if (status == Status.RELEASED) {
             if (strecthPoint.distanceTo(segment2d.middle) < 1) {
-                circle.velocity = new Velocity(springVelocity.getX() / 3, springVelocity.getY() / 3);
-                circle.acceleration = new Acceleration(0.0, 0.0);
+                circle.velocity = new Velocity(springVelocity.getX() / 4, springVelocity.getY() / 4, LengthUnit.PIXEL, TimeUnit.SECOND);
+                circle.acceleration = new Acceleration(0.0, 9.8, LengthUnit.METER, TimeUnit.SECOND);
                 springVelocity.neutralize();
+                boingSound.start();
                 status = Status.STANDING;
             } else {
                 Long elapsedStrecthingTime = elapsedTime - strecthingTime;
@@ -77,7 +89,6 @@ public class Net extends CenteredDrawable {
 
                 Float distanceToSegmentMid = strecthPoint.distanceTo(segment2d.middle);
                 Displacement displacement = springVelocity.generatedDisplacement(elapsedStrecthingTime);
-//                displacement.setMeasureUnit(LengthUnit.PIXEL);
                 if (displacement.magnitude() > distanceToSegmentMid) {
                     displacement = strecthPoint.delta(segment2d.middle);
                 }

@@ -9,56 +9,56 @@ import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 
 public abstract class AnimatedShape extends CenteredDrawable {
 
-	protected Acceleration	acceleration;
+    protected Acceleration acceleration;
 
-	protected Velocity		velocity;
+    protected Velocity     velocity;
 
-	protected Displacement	displacement;
+    protected Displacement displacement;
 
-	protected Long			lastElapsedTime;
+    protected Long         lastElapsedTime;
 
-	public AnimatedShape(Point2D center) {
-		super(center);
-		lastElapsedTime = 0L;
-		acceleration = new Acceleration(0.0, 0.0);
-		velocity = new Velocity(0, 0);
-		displacement = new Displacement(center.getX(), center.getY());
-	}
+    public Integer         boundingBoxRight;
 
-	@Override
-	public void onMotionEvent(MotionEvent motionEvent) {
-		// TODO Auto-generated method stub
+    public AnimatedShape(Point2D center) {
+        super(center);
+        lastElapsedTime = 0L;
+        acceleration = new Acceleration(0.0, 0.0);
+        velocity = new Velocity(0, 0);
+        displacement = new Displacement(center.getX(), center.getY());
+    }
 
-	}
+    @Override
+    public void onMotionEvent(MotionEvent motionEvent) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void draw(Canvas canvas) {
-		canvas.drawLine(center.getX(), center.getY(), center.getX() + acceleration.getX().floatValue(), center.getY() + acceleration.getY().floatValue(), paint);
-		canvas.drawLine(center.getX(), center.getY(), center.getX() + velocity.getX().floatValue(), center.getY() + velocity.getY().floatValue(), paint);
-	}
+    }
 
-	protected Point2D	center;
+    @Override
+    public void setCenter(Point2D newCenter) {
+        super.setCenter(newCenter);
+        displacement = new Displacement(newCenter.getX(), newCenter.getY());
+    }
 
-	public void react(MotionEvent motionEvent) {
-		switch (motionEvent.getActionMasked()) {
-		case MotionEvent.ACTION_MOVE:
-			setCenter(Point2D.Factory.fromMotionEvent(motionEvent));
-		}
-	}
+    @Override
+    public void draw(Canvas canvas) {
+    }
 
-	public void setCenter(Point2D newCenter) {
-		center = newCenter;
-	}
+    public void react(MotionEvent motionEvent) {
+        switch (motionEvent.getActionMasked()) {
+        case MotionEvent.ACTION_MOVE:
+            setCenter(Point2D.Factory.fromMotionEvent(motionEvent));
+        }
+    }
 
-	public Float distanceTo(Point2D point2d) {
-		return center.distanceTo(point2d);
-	}
+    public Float distanceTo(Point2D point2d) {
+        return center.distanceTo(point2d);
+    }
 
-	public void updateState(Long elapsedTime) {
-		Long timeIncrement = elapsedTime - lastElapsedTime;
-		displacement.add(velocity.generatedDisplacement(timeIncrement));
-		velocity.add(acceleration.generatedVelocity(timeIncrement));
-		setCenter(displacement.getTip());
-		lastElapsedTime = elapsedTime;
-	}
+    public void updateState(Long elapsedTime) {
+        Long timeIncrement = elapsedTime - lastElapsedTime;
+        displacement.add(velocity.generatedDisplacement(timeIncrement));
+        velocity.add(acceleration.generatedVelocity(timeIncrement));
+        setCenter(displacement.getTip());
+        lastElapsedTime = elapsedTime;
+    }
 }

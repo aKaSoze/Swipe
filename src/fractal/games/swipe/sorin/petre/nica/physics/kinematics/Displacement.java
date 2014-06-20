@@ -14,7 +14,7 @@ public class Displacement extends Vector2D<Displacement> {
 	}
 
 	public Displacement(Double sx, Double sy) {
-		this(sx, sy, LengthUnit.METER);
+		this(sx, sy, LengthUnit.PIXEL);
 	}
 
 	public Displacement(Integer sx, Integer sy) {

@@ -39,6 +39,10 @@ public class Circle extends AnimatedShape {
     @Override
     public void updateState(Long elapsedTime) {
         super.updateState(elapsedTime);
+        if (center.getX() - radius <= 0 || center.getX() + radius >= boundingBoxRight) {
+            velocity.reverseX();
+            velocity.divideXByScalar(2.0);
+        }
     }
 
 }
