@@ -5,147 +5,175 @@ import java.util.List;
 
 public class Unit<T extends Unit<T>> {
 
-    @SuppressWarnings("rawtypes")
-    public static final Unit<?> ADIMENSIONAL = new Unit("", 1.0, null, null, null);
+	@SuppressWarnings("rawtypes")
+	public static final Unit<?>	ADIMENSIONAL	= new Unit("", 1.0, null, null, null);
 
-    public final String         symbol;
-    public final Double         magnitudeOrder;
+	public final String			symbol;
+	public final Double			magnitudeOrder;
 
-    public LengthUnit           lengthComponent;
-    public TimeUnit             timeComponent;
-    public MassUnit             massComponent;
+	public LengthUnit			lengthComponent;
+	public TimeUnit				timeComponent;
+	public MassUnit				massComponent;
 
-    public Unit(String symbol, Double magnitudeOrder, LengthUnit lengthComponent, TimeUnit timeComponent, MassUnit massComponent) {
-        super();
-        this.symbol = symbol;
-        this.magnitudeOrder = magnitudeOrder;
-        this.lengthComponent = lengthComponent;
-        this.timeComponent = timeComponent;
-        this.massComponent = massComponent;
-    }
+	public Unit(String symbol, Double magnitudeOrder, LengthUnit lengthComponent, TimeUnit timeComponent, MassUnit massComponent) {
+		super();
+		this.symbol = symbol;
+		this.magnitudeOrder = magnitudeOrder;
+		this.lengthComponent = lengthComponent;
+		this.timeComponent = timeComponent;
+		this.massComponent = massComponent;
+	}
 
-    public Double convert(Double magnitude, T otherUnit) {
-        return magnitude * otherUnit.magnitudeOrder;
-    }
+	public Double convert(Double magnitude, T otherUnit) {
+		return magnitude * evaluateMagnitudeOrderTransformation(otherUnit);
+	}
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((magnitudeOrder == null) ? 0 : magnitudeOrder.hashCode());
-        result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
-        return result;
-    }
+	public Double convert(Long magnitude, T otherUnit) {
+		return convert(magnitude.doubleValue(), otherUnit);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Unit<?> other = (Unit<?>) obj;
-        if (magnitudeOrder == null) {
-            if (other.magnitudeOrder != null)
-                return false;
-        } else if (!magnitudeOrder.equals(other.magnitudeOrder))
-            return false;
-        if (symbol == null) {
-            if (other.symbol != null)
-                return false;
-        } else if (!symbol.equals(other.symbol))
-            return false;
-        return true;
-    }
+	public Double evaluateMagnitudeOrderTransformation(Unit<?> otherUnit) {
+		return otherUnit.magnitudeOrder / magnitudeOrder;
+	}
 
-    public static class DerivedUnitBuilder {
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((magnitudeOrder == null) ? 0 : magnitudeOrder.hashCode());
+		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
+		return result;
+	}
 
-        private Double        magnitudeOrder          = 1.0;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Unit<?> other = (Unit<?>) obj;
+		if (magnitudeOrder == null) {
+			if (other.magnitudeOrder != null)
+				return false;
+		} else if (!magnitudeOrder.equals(other.magnitudeOrder))
+			return false;
+		if (symbol == null) {
+			if (other.symbol != null)
+				return false;
+		} else if (!symbol.equals(other.symbol))
+			return false;
+		return true;
+	}
 
-        private List<Unit<?>> proportionalUnits       = new ArrayList<Unit<?>>(3);
-        private List<Unit<?>> inversProportionalUnits = new ArrayList<Unit<?>>(3);
+	@Override
+	public String toString() {
+		return symbol + ", mo = " + magnitudeOrder;
+	}
 
-        public LengthUnit     lengthComponent;
-        public TimeUnit       timeComponent;
-        public MassUnit       massComponent;
+	public static class DerivedUnitBuilder {
 
-        public Double         lengthMagnitude;
-        public Double         timeMagnitude;
-        public Double         massMagnitude;
+		private Double			magnitudeOrder			= 1.0;
 
-        public static DerivedUnitBuilder newUnit() {
-            return new DerivedUnitBuilder();
-        }
+		private List<Unit<?>>	proportionalUnits		= new ArrayList<Unit<?>>(3);
+		private List<Unit<?>>	inversProportionalUnits	= new ArrayList<Unit<?>>(3);
 
-        public DerivedUnitBuilder proportionalTo(Unit<?> unit) {
-            proportionalUnits.add(unit);
-            magnitudeOrder *= unit.magnitudeOrder;
-            return this;
-        }
+		public LengthUnit		lengthComponent;
+		public TimeUnit			timeComponent;
+		public MassUnit			massComponent;
 
-        public DerivedUnitBuilder inversProportionalTo(Unit<?> unit) {
-            inversProportionalUnits.add(unit);
-            magnitudeOrder /= unit.magnitudeOrder;
-            return this;
-        }
+		public Double			lengthMagnitude;
+		public Double			timeMagnitude;
+		public Double			massMagnitude;
 
-        @SuppressWarnings("rawtypes")
-        public Unit<?> build() {
-            StringBuilder symbol = new StringBuilder("");
-            for (Unit<?> unit : proportionalUnits) {
-                symbol.append(unit.symbol);
-                multiplyToComponents(unit);
-            }
-            if (!inversProportionalUnits.isEmpty()) {
-                symbol.append("/");
-                for (Unit<?> unit : inversProportionalUnits) {
-                    symbol.append(unit.symbol);
-                }
-            }
+		public static DerivedUnitBuilder newUnit() {
+			return new DerivedUnitBuilder();
+		}
 
-            if (lengthMagnitude != null) {
-                lengthComponent = new LengthUnit("l'", lengthMagnitude);
-            }
-            if (timeMagnitude != null) {
-                timeComponent = new TimeUnit("t'", timeMagnitude);
-            }
-            if (massMagnitude != null) {
-                massComponent = new MassUnit("m'", massMagnitude);
-            }
+		public DerivedUnitBuilder proportionalTo(Unit<?> unit) {
+			proportionalUnits.add(unit);
+			magnitudeOrder *= unit.magnitudeOrder;
+			return this;
+		}
 
-            return new Unit(symbol.toString(), magnitudeOrder, lengthComponent, timeComponent, massComponent);
-        }
+		public DerivedUnitBuilder inversProportionalTo(Unit<?> unit) {
+			inversProportionalUnits.add(unit);
+			magnitudeOrder /= unit.magnitudeOrder;
+			return this;
+		}
 
-        private void multiplyToComponents(Unit<?> unit) {
-            if (unit == null) {
-                return;
-            }
-            if (unit instanceof LengthUnit) {
-                if (lengthMagnitude == null) {
-                    lengthMagnitude = unit.magnitudeOrder;
-                } else {
-                    lengthMagnitude *= unit.magnitudeOrder;
-                }
-            } else if (unit instanceof TimeUnit) {
-                if (timeMagnitude == null) {
-                    timeMagnitude = unit.magnitudeOrder;
-                } else {
-                    timeMagnitude *= unit.magnitudeOrder;
-                }
-            } else if (unit instanceof MassUnit) {
-                if (massMagnitude == null) {
-                    massMagnitude = unit.magnitudeOrder;
-                } else {
-                    massMagnitude *= unit.magnitudeOrder;
-                }
-            } else {
-                multiplyToComponents(unit.lengthComponent);
-                multiplyToComponents(unit.timeComponent);
-                multiplyToComponents(unit.massComponent);
-            }
-        }
+		@SuppressWarnings("rawtypes")
+		public Unit<?> build() {
+			StringBuilder symbol = new StringBuilder("");
+			for (Unit<?> unit : proportionalUnits) {
+				symbol.append(unit.symbol);
+				contributeToComponents(unit, new Operator<Double>() {
+					@Override
+					public Double apply(Double leftHandOperand, Double rightHandOperand) {
+						return leftHandOperand * rightHandOperand;
+					}
+				});
+			}
+			if (!inversProportionalUnits.isEmpty()) {
+				symbol.append("/");
+				for (Unit<?> unit : inversProportionalUnits) {
+					symbol.append(unit.symbol);
+					contributeToComponents(unit, new Operator<Double>() {
+						@Override
+						public Double apply(Double leftHandOperand, Double rightHandOperand) {
+							return leftHandOperand / rightHandOperand;
+						}
+					});
+				}
+			}
 
-    }
+			if (lengthMagnitude != null) {
+				lengthComponent = new LengthUnit("l'", lengthMagnitude);
+			}
+			if (timeMagnitude != null) {
+				timeComponent = new TimeUnit("t'", timeMagnitude);
+			}
+			if (massMagnitude != null) {
+				massComponent = new MassUnit("m'", massMagnitude);
+			}
+
+			return new Unit(symbol.toString(), magnitudeOrder, lengthComponent, timeComponent, massComponent);
+		}
+
+		private void contributeToComponents(Unit<?> unit, Operator<Double> operator) {
+			if (unit == null) {
+				return;
+			}
+			if (unit instanceof LengthUnit) {
+				if (lengthMagnitude == null) {
+					lengthMagnitude = operator.apply(1.0, unit.magnitudeOrder);
+				} else {
+					lengthMagnitude = operator.apply(lengthMagnitude, unit.magnitudeOrder);
+				}
+			} else if (unit instanceof TimeUnit) {
+				if (timeMagnitude == null) {
+					timeMagnitude = operator.apply(1.0, unit.magnitudeOrder);
+				} else {
+					timeMagnitude = operator.apply(timeMagnitude, unit.magnitudeOrder);
+				}
+			} else if (unit instanceof MassUnit) {
+				if (massMagnitude == null) {
+					massMagnitude = operator.apply(1.0, unit.magnitudeOrder);
+				} else {
+					massMagnitude = operator.apply(massMagnitude, unit.magnitudeOrder);
+				}
+			} else {
+				contributeToComponents(unit.lengthComponent, operator);
+				contributeToComponents(unit.timeComponent, operator);
+				contributeToComponents(unit.massComponent, operator);
+			}
+		}
+
+		public static interface Operator<T> {
+			T apply(T leftHandOperand, T rightHandOperand);
+		}
+
+	}
 
 }
