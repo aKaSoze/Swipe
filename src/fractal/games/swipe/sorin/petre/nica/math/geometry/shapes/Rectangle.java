@@ -1,31 +1,41 @@
 package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 
-public class Circle extends AnimatedShape {
+public class Rectangle extends AnimatedShape {
 
     private static final double COLLISION_SPEED_LOSS = 2.0;
 
-    public Double               radius;
-
     private Boolean             isFilled;
 
-    public Circle(Point2D center, Double radius, Paint paint) {
+    private Double              width;
+
+    public Double               height;
+
+    private Bitmap              bitmap;
+
+    public Rectangle(Point2D center, Double width, Double height, Paint paint) {
         super(center, paint);
-        this.radius = radius;
+        this.width = width;
+        this.height = height;
         isFilled = false;
     }
 
-    public Circle(Point2D center, Double radius) {
-        this(center, radius, DEFAULT_PAINT);
+    public Rectangle(Point2D center, Double width, Double height) {
+        this(center, width, height, DEFAULT_PAINT);
     }
 
-    public Circle(Point2D center, Integer radius) {
-        this(center, radius.doubleValue());
+    public Rectangle(Point2D center, Integer width, Integer height) {
+        this(center, width.doubleValue(), height.doubleValue());
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = Bitmap.createScaledBitmap(bitmap, width.intValue(), height.intValue(), true);
     }
 
     public Boolean isFilled() {
@@ -39,7 +49,12 @@ public class Circle extends AnimatedShape {
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawCircle(getCenter().getX(), getCenter().getY(), radius.floatValue(), paint);
+        if (bitmap == null) {
+            canvas.drawRect(getCenter().getX() - (width.floatValue() / 2), getCenter().getY() - (height.floatValue() / 2), getCenter().getX() + (width.floatValue() / 2), getCenter().getY() + (height.floatValue() / 2),
+                    paint);
+        } else {
+            canvas.drawBitmap(bitmap, getCenter().getX() - (width.floatValue() / 2), getCenter().getY() - (height.floatValue() / 2), paint);
+        }
     }
 
     @Override
@@ -64,19 +79,19 @@ public class Circle extends AnimatedShape {
     }
 
     private void moveToRightSideBoundry() {
-        setCenter(new Point2D(boundingBoxRight - radius, getCenter().getY().doubleValue()));
+        setCenter(new Point2D(boundingBoxRight - (width / 2), getCenter().getY().doubleValue()));
     }
 
     private boolean crossedRightSideBoundry() {
-        return getCenter().getX() + radius > boundingBoxRight;
+        return getCenter().getX() + (width / 2) > boundingBoxRight;
     }
 
     private void moveToLeftSideBoundry() {
-        setCenter(new Point2D(radius, getCenter().getY().doubleValue()));
+        setCenter(new Point2D((width / 2), getCenter().getY().doubleValue()));
     }
 
     private boolean crossedLeftSideBoundry() {
-        return getCenter().getX() - radius < 0;
+        return getCenter().getX() - (width / 2) < 0;
     }
 
     @Override

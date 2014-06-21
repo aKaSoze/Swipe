@@ -33,8 +33,12 @@ public class Net extends CenteredDrawable {
 
     private Velocity        springVelocity;
 
+    public Rectangle        rectangle;
+
+    public MediaPlayer      boingSound;
+
     public Net(Segment2D segment2d) {
-        super(segment2d.middle);
+        super(segment2d.middle, DEFAULT_PAINT);
         this.segment2d = segment2d;
         strecthPoint = segment2d.middle;
 
@@ -54,9 +58,9 @@ public class Net extends CenteredDrawable {
                 strecthingTime = elapsedTime;
                 strecthPoint = new Point2D(motionEvent.getX(), motionEvent.getY());
                 if (status != Status.STRECTHING) {
-                    circle.acceleration.neutralize();
-                    circle.velocity.neutralize();
-                    circle.setCenter(segment2d.middle.translate(new Displacement(0, -30)));
+                    rectangle.acceleration.neutralize();
+                    rectangle.velocity.neutralize();
+                    rectangle.setCenter(segment2d.middle.translate(new Displacement(0.0, -rectangle.height / 2)));
                     status = Status.STRECTHING;
                 }
             }
@@ -69,17 +73,13 @@ public class Net extends CenteredDrawable {
         }
     }
 
-    public Circle      circle;
-
-    public MediaPlayer boingSound;
-
     @Override
     public void updateState(Long elapsedTime) {
         this.elapsedTime = elapsedTime;
         if (status == Status.RELEASED) {
-            if (strecthPoint.distanceTo(segment2d.middle) < 1) {
-                circle.velocity = new Velocity(springVelocity.getX() / 4, springVelocity.getY() / 4, LengthUnit.PIXEL, TimeUnit.SECOND);
-                circle.acceleration = new Acceleration(0.0, 9.8, LengthUnit.METER, TimeUnit.SECOND);
+            if (strecthPoint.distanceTo(segment2d.middle) < 0.1) {
+                rectangle.velocity = new Velocity(springVelocity.getX() / 4, springVelocity.getY() / 4, LengthUnit.PIXEL, TimeUnit.SECOND);
+                rectangle.acceleration = new Acceleration(0.0, 9.8, LengthUnit.METER, TimeUnit.SECOND);
                 springVelocity.neutralize();
                 boingSound.start();
                 status = Status.STANDING;

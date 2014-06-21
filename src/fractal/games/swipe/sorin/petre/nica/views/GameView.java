@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -15,6 +17,7 @@ import fractal.games.swipe.R;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Circle;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Net;
+import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
@@ -29,7 +32,13 @@ public class GameView extends AutoUpdatableView {
 
     private final Set<CenteredDrawable> drawables        = new HashSet<CenteredDrawable>();
 
-    private Circle                      circle;
+    private Rectangle                   rectangle;
+
+    private Circle                      firstObstacle;
+
+    private Circle                      secondObstacle;
+
+    private MediaPlayer                 crowded;
 
     public GameView(Context context) {
         super(context);
@@ -37,18 +46,33 @@ public class GameView extends AutoUpdatableView {
         Point2D x2 = x1.translate(new Displacement(300, 0));
         Segment2D segment2d = new Segment2D(x1, x2);
         Net net = new Net(segment2d);
-        circle = new Circle(segment2d.middle.translate(new Displacement(0, -30)), 30f);
+
+        Bitmap originalHippo_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hippo_wacky);
+        rectangle = new Rectangle(segment2d.middle.translate(new Displacement(0, -96)), 108, 192);
+        rectangle.setBitmap(originalHippo_bmp);
+
         MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.boing);
-        net.circle = circle;
+        crowded = MediaPlayer.create(context, R.raw.crowded);
+        net.rectangle = rectangle;
         net.boingSound = mediaPlayer;
+
+        firstObstacle = new Circle(new Point2D(250, 455), 20);
+        firstObstacle.setFilled(true);
+
+        secondObstacle = new Circle(new Point2D(375, 235), 20);
+        secondObstacle.setFilled(false);
+
         drawables.add(net);
-        drawables.add(circle);
+        drawables.add(rectangle);
+        drawables.add(firstObstacle);
+        drawables.add(secondObstacle);
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        circle.boundingBoxRight = right;
+        rectangle.boundingBoxRight = right;
+        crowded.start();
     }
 
     @Override
@@ -62,11 +86,11 @@ public class GameView extends AutoUpdatableView {
     private CenteredDrawable evaluateTargetShape(Point2D touchPoint) {
         CenteredDrawable closestShape = null;
         float smallestDistance = 60;
-        for (CenteredDrawable movableShape : drawables) {
-            float distanceToTouchPoint = movableShape.distanceTo(touchPoint);
+        for (CenteredDrawable centeredDrawable : drawables) {
+            float distanceToTouchPoint = centeredDrawable.getCenter().distanceTo(touchPoint);
             if (distanceToTouchPoint < smallestDistance) {
                 smallestDistance = distanceToTouchPoint;
-                closestShape = movableShape;
+                closestShape = centeredDrawable;
             }
         }
         return closestShape;
