@@ -63,7 +63,7 @@ public class Rectangle extends AnimatedShape {
 		}
 	}
 
-	private CenteredDrawable checkPossibleCollisions() {
+	private CenteredDrawable checkPossibleOverlap() {
 		for (CenteredDrawable obstacle : obstacles) {
 			if (obstacle instanceof Rectangle) {
 				Rectangle rectangleObstacle = (Rectangle) obstacle;
@@ -88,7 +88,7 @@ public class Rectangle extends AnimatedShape {
 			}
 		}
 
-		CenteredDrawable colidedObstacle = checkPossibleCollisions();
+		CenteredDrawable colidedObstacle = checkPossibleOverlap();
 		moveOutsideBoundriesOfObstacle(colidedObstacle);
 		onCollision(colidedObstacle);
 		colidedObstacle.onCollision(this);
