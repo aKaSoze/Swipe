@@ -6,6 +6,8 @@ public class Vector2D<V extends Vector2D<V>> {
 
     private Double  x;
     private Double  y;
+    
+    public Point2D applyPoint;
 
     private Unit<?> measureUnit;
 
