@@ -15,10 +15,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import fractal.games.swipe.R;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Circle;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Net;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle;
-import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
@@ -34,21 +32,21 @@ public class GameView extends AutoUpdatableView {
 
     private Rectangle                   rectangle;
 
-    private Circle                      firstObstacle;
+    private Rectangle                   firstObstacle;
 
-    private Circle                      secondObstacle;
+    private Rectangle                   secondObstacle;
 
     private MediaPlayer                 crowded;
 
     public GameView(Context context) {
         super(context);
-        Point2D x1 = new Point2D(200, 700);
-        Point2D x2 = x1.translate(new Displacement(300, 0));
+        Displacement x1 = new Displacement(200, 700);
+        Displacement x2 = x1.additionVector(new Displacement(300, 0));
         Segment2D segment2d = new Segment2D(x1, x2);
         Net net = new Net(segment2d);
 
         Bitmap originalHippo_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hippo_wacky);
-        rectangle = new Rectangle(segment2d.middle.translate(new Displacement(0, -96)), 108, 192);
+        rectangle = new Rectangle(segment2d.middle.additionVector(new Displacement(0, -96)), 108, 192);
         rectangle.setBitmap(originalHippo_bmp);
 
         MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.boing);
@@ -56,11 +54,14 @@ public class GameView extends AutoUpdatableView {
         net.rectangle = rectangle;
         net.boingSound = mediaPlayer;
 
-        firstObstacle = new Circle(new Point2D(250, 455), 20);
+        firstObstacle = new Rectangle(new Displacement(250, 455), 20, 30);
         firstObstacle.setFilled(true);
 
-        secondObstacle = new Circle(new Point2D(375, 235), 20);
+        secondObstacle = new Rectangle(new Displacement(375, 235), 20, 15);
         secondObstacle.setFilled(false);
+
+        rectangle.obstacles.add(firstObstacle);
+        rectangle.obstacles.add(secondObstacle);
 
         drawables.add(net);
         drawables.add(rectangle);
@@ -83,11 +84,11 @@ public class GameView extends AutoUpdatableView {
         return true;
     }
 
-    private CenteredDrawable evaluateTargetShape(Point2D touchPoint) {
+    private CenteredDrawable evaluateTargetShape(Displacement touchPoint) {
         CenteredDrawable closestShape = null;
-        float smallestDistance = 60;
+        double smallestDistance = 60;
         for (CenteredDrawable centeredDrawable : drawables) {
-            float distanceToTouchPoint = centeredDrawable.getCenter().distanceTo(touchPoint);
+            double distanceToTouchPoint = centeredDrawable.getCenter().distanceTo(touchPoint);
             if (distanceToTouchPoint < smallestDistance) {
                 smallestDistance = distanceToTouchPoint;
                 closestShape = centeredDrawable;

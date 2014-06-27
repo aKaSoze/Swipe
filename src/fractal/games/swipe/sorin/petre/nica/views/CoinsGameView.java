@@ -16,7 +16,6 @@ import android.view.SurfaceHolder;
 import fractal.games.swipe.R;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.ValueCircle;
-import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
@@ -51,7 +50,7 @@ public class CoinsGameView extends AutoUpdatableView {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
-            selectedShape = evaluateTargetShape(Point2D.Factory.fromMotionEvent(event));
+            selectedShape = evaluateTargetShape(Displacement.Factory.fromMotionEvent(event));
             break;
         case MotionEvent.ACTION_UP:
             selectedShape = null;
@@ -65,11 +64,11 @@ public class CoinsGameView extends AutoUpdatableView {
         return true;
     }
 
-    private CenteredDrawable evaluateTargetShape(Point2D touchPoint) {
+    private CenteredDrawable evaluateTargetShape(Displacement touchPoint) {
         CenteredDrawable closestShape = null;
-        float smallestDistance = 60;
+        double smallestDistance = 60;
         for (CenteredDrawable movableShape : drawables) {
-            float distanceToTouchPoint = movableShape.getCenter().distanceTo(touchPoint);
+            double distanceToTouchPoint = movableShape.getCenter().distanceTo(touchPoint);
             if (distanceToTouchPoint < smallestDistance) {
                 smallestDistance = distanceToTouchPoint;
                 closestShape = movableShape;
@@ -89,8 +88,8 @@ public class CoinsGameView extends AutoUpdatableView {
     public void updateWorld(Long elapsedTime) {
         if (elapsedTime - lastCoinAddTime > 999) {
             Random rng = new Random();
-            Point2D topLeft = new Point2D(rng.nextInt(400), rng.nextInt(400));
-            Point2D bottomRight = topLeft.translate(new Displacement(coinSize, coinSize));
+            Displacement topLeft = new Displacement(rng.nextInt(400), rng.nextInt(400));
+            Displacement bottomRight = topLeft.additionVector(new Displacement(coinSize, coinSize));
             Segment2D diagonal = new Segment2D(topLeft, bottomRight);
             drawables.add(new ValueCircle(diagonal, goldCoin_bmp, elapsedTime));
             lastCoinAddTime = elapsedTime;

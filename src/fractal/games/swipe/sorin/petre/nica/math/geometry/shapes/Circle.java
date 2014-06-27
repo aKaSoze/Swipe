@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.view.MotionEvent;
-import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
+import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class Circle extends AnimatedShape {
 
@@ -14,17 +14,17 @@ public class Circle extends AnimatedShape {
 
     private Boolean             isFilled;
 
-    public Circle(Point2D center, Double radius, Paint paint) {
+    public Circle(Displacement center, Double radius, Paint paint) {
         super(center, paint);
         this.radius = radius;
         isFilled = false;
     }
 
-    public Circle(Point2D center, Double radius) {
+    public Circle(Displacement center, Double radius) {
         this(center, radius, DEFAULT_PAINT);
     }
 
-    public Circle(Point2D center, Integer radius) {
+    public Circle(Displacement center, Integer radius) {
         this(center, radius.doubleValue());
     }
 
@@ -39,7 +39,7 @@ public class Circle extends AnimatedShape {
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawCircle(getCenter().getX(), getCenter().getY(), radius.floatValue(), paint);
+        canvas.drawCircle(getCenter().getX().floatValue(), getCenter().getY().floatValue(), radius.floatValue(), paint);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class Circle extends AnimatedShape {
     }
 
     private void moveToRightSideBoundry() {
-        setCenter(new Point2D(boundingBoxRight - radius, getCenter().getY().doubleValue()));
+        setCenter(new Displacement(boundingBoxRight - radius, getCenter().getY().doubleValue()));
     }
 
     private boolean crossedRightSideBoundry() {
@@ -72,7 +72,7 @@ public class Circle extends AnimatedShape {
     }
 
     private void moveToLeftSideBoundry() {
-        setCenter(new Point2D(radius, getCenter().getY().doubleValue()));
+        setCenter(new Displacement(radius, getCenter().getY().doubleValue()));
     }
 
     private boolean crossedLeftSideBoundry() {

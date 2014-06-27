@@ -1,5 +1,6 @@
 package fractal.games.swipe.sorin.petre.nica.physics.kinematics;
 
+import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Vector2D;
 import fractal.games.swipe.sorin.petre.nica.physics.units.LengthUnit;
 
@@ -33,4 +34,10 @@ public class Displacement extends Vector2D<Displacement> {
 	public Boolean isZero() {
 		return getX() == 0 && getY() == 0;
 	}
+	
+	public static class Factory {
+        public static Displacement fromMotionEvent(MotionEvent motionEvent) {
+            return new Displacement(motionEvent.getX(), motionEvent.getY());
+        }
+    }
 }
