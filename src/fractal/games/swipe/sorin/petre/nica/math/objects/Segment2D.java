@@ -5,38 +5,38 @@ import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class Segment2D {
 
-	public final Point2D	firstPoint;
+	public final Displacement	firstPoint;
 
-	public final Point2D	secondPoint;
+	public final Displacement	secondPoint;
 
-	public final Point2D	middle;
+	public final Displacement	middle;
 
-	public final Float		xComponent;
+	public final Double			xComponent;
 
-	public final Float		yComponent;
+	public final Double			yComponent;
 
-	public final Float		length;
+	public final Double			length;
 
-	public Segment2D(Point2D firstPoint, Point2D secondPoint) {
+	public Segment2D(Displacement firstPoint, Displacement secondPoint) {
 		super();
 		this.firstPoint = firstPoint;
 		this.secondPoint = secondPoint;
-		middle = new Point2D(arithmeticMean(firstPoint.getX(), secondPoint.getX()), arithmeticMean(firstPoint.getY(), secondPoint.getY()));
+		middle = new Displacement(arithmeticMean(firstPoint.getX(), secondPoint.getX()), arithmeticMean(firstPoint.getY(), secondPoint.getY()));
 		xComponent = Math.abs(firstPoint.getX() - secondPoint.getX());
 		yComponent = Math.abs(firstPoint.getY() - secondPoint.getY());
-		length = firstPoint.distanceTo(secondPoint);
+		length = firstPoint.subtractionVector(secondPoint).magnitude();
 	}
 
-	private Float arithmeticMean(Float p1, Float p2) {
+	private Double arithmeticMean(Double p1, Double p2) {
 		return (p1 + p2) / 2;
 	}
 
 	public Rect toRect() {
-		return new Rect(Math.round(firstPoint.getX()), Math.round(firstPoint.getY()), Math.round(secondPoint.getX()), Math.round(secondPoint.getY()));
+		return new Rect(firstPoint.getX().intValue(), firstPoint.getY().intValue(), secondPoint.getX().intValue(), secondPoint.getY().intValue());
 	}
 
-	public Segment2D translate(Displacement displacement) {
-		return new Segment2D(firstPoint.translate(displacement), secondPoint.translate(displacement));
+	public Double distanceToAPoint(Displacement point) {
+		return point.subtractionVector(firstPoint).crossProduct(point.subtractionVector(secondPoint)) / secondPoint.subtractionVector(firstPoint).magnitude();
 	}
 
 	@Override

@@ -33,5 +33,4 @@ public class Displacement extends Vector2D<Displacement> {
 	public Boolean isZero() {
 		return getX() == 0 && getY() == 0;
 	}
-
 }

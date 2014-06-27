@@ -33,7 +33,11 @@ public class Unit<T extends Unit<T>> {
 	}
 
 	public Double evaluateMagnitudeOrderTransformation(Unit<?> otherUnit) {
-		return otherUnit.magnitudeOrder / magnitudeOrder;
+		if (equals(otherUnit)) {
+			return 1.0;
+		} else {
+			return otherUnit.magnitudeOrder / magnitudeOrder;
+		}
 	}
 
 	@Override

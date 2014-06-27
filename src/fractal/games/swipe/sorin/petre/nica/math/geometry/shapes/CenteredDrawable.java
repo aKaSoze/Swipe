@@ -7,7 +7,7 @@ import android.graphics.Paint.Style;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
-import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
+import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public abstract class CenteredDrawable extends Drawable {
 
@@ -19,13 +19,13 @@ public abstract class CenteredDrawable extends Drawable {
 		DEFAULT_PAINT.setStrokeWidth(4);
 	}
 
-	private Point2D					center;
+	private Displacement			center;
 
 	protected Paint					paint;
 
 	public Integer					boundingBoxRight;
 
-	public CenteredDrawable(Point2D center, Paint paint) {
+	public CenteredDrawable(Displacement center, Paint paint) {
 		this.center = center;
 		this.paint = new Paint();
 		this.paint.setColor(paint.getColor());
@@ -39,11 +39,11 @@ public abstract class CenteredDrawable extends Drawable {
 
 	public abstract void updateState(Long elapsedTime);
 
-	public void setCenter(Point2D newCenter) {
+	public void setCenter(Displacement newCenter) {
 		center = newCenter;
 	}
 
-	public Point2D getCenter() {
+	public Displacement getCenter() {
 		return center;
 	}
 
