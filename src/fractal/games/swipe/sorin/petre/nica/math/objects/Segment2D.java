@@ -1,5 +1,6 @@
 package fractal.games.swipe.sorin.petre.nica.math.objects;
 
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
@@ -26,7 +27,8 @@ public class Segment2D {
         middle = new Displacement(arithmeticMean(firstPoint.getX(), secondPoint.getX()), arithmeticMean(firstPoint.getY(), secondPoint.getY()));
         xComponent = Math.abs(firstPoint.getX() - secondPoint.getX());
         yComponent = Math.abs(firstPoint.getY() - secondPoint.getY());
-        vector = firstPoint.subtractionVector(secondPoint);
+        vector = secondPoint.subtractionVector(firstPoint);
+        vector.applyPoint = firstPoint;
         length = vector.magnitude();
     }
 
@@ -39,12 +41,16 @@ public class Segment2D {
     }
 
     public Displacement distanceToAPoint(Displacement point) {
-        Double length = point.subtractionVector(firstPoint).crossProduct(point.subtractionVector(secondPoint)) / secondPoint.subtractionVector(firstPoint).magnitude();
+        Double length = Math.abs(point.subtractionVector(firstPoint).crossProduct(point.subtractionVector(secondPoint)) / secondPoint.subtractionVector(firstPoint).magnitude());
         Displacement perpendicularVector = vector.perpendicularVector();
         perpendicularVector.normalize();
         perpendicularVector.multiplyByScalar(length);
         perpendicularVector.applyPoint = point;
         return perpendicularVector;
+    }
+
+    public void draw(Canvas canvas) {
+        vector.draw(canvas);
     }
 
     @Override

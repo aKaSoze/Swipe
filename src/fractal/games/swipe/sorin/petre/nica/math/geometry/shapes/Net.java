@@ -1,9 +1,8 @@
 package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint.Style;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
@@ -39,13 +38,11 @@ public class Net extends CenteredDrawable {
     public Net(Segment2D segment2d) {
         super(segment2d.middle, DEFAULT_PAINT);
         this.segment2d = segment2d;
-        strecthPoint = segment2d.middle;
+        strecthPoint = segment2d.middle.cloneVector();
 
         elasticityCoeficient = 6.0;
         status = Status.STANDING;
 
-        paint.setColor(Color.WHITE);
-        paint.setStyle(Style.STROKE);
         paint.setStrokeWidth(3);
     }
 
@@ -53,9 +50,11 @@ public class Net extends CenteredDrawable {
     public void onMotionEvent(MotionEvent motionEvent) {
         switch (motionEvent.getActionMasked()) {
         case MotionEvent.ACTION_MOVE:
+            Log.i("spring", "middle x = " + segment2d.middle.getX() + ", y = " + segment2d.middle.getY());
             if (motionEvent.getY() > segment2d.middle.getY()) {
                 strecthingTime = elapsedTime;
                 strecthPoint.setComponents(motionEvent.getX(), motionEvent.getY());
+                Log.i("spring", "x = " + strecthPoint.getX() + ", y = " + strecthPoint.getY());
                 if (status != Status.STRECTHING) {
                     rectangle.acceleration.neutralize();
                     rectangle.velocity.neutralize();

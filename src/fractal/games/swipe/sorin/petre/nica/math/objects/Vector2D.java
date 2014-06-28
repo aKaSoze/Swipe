@@ -1,5 +1,7 @@
 package fractal.games.swipe.sorin.petre.nica.math.objects;
 
+import java.lang.reflect.InvocationTargetException;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -114,7 +116,7 @@ public class Vector2D<V extends Vector2D<V>> {
 
     public Double crossProduct(V otherVector) {
         Double magnitudeOrderTransformation = measureUnit.evaluateMagnitudeOrderTransformation(otherVector.getMeasureUnit());
-        return (this.x * (otherVector.getX() * magnitudeOrderTransformation)) - (this.y * (otherVector.getX() * magnitudeOrderTransformation));
+        return (x * (otherVector.getY() * magnitudeOrderTransformation)) - (y * (otherVector.getX() * magnitudeOrderTransformation));
     }
 
     public Double scalarMultiply(V multiplicand) {
@@ -160,6 +162,23 @@ public class Vector2D<V extends Vector2D<V>> {
 
     public void draw(Canvas canvas) {
         canvas.drawLine(applyPoint.getX().floatValue(), applyPoint.getY().floatValue(), applyPoint.getX().floatValue() + x.floatValue(), applyPoint.getY().floatValue() + y.floatValue(), DEFAULT_PAINT);
+    }
+
+    @SuppressWarnings("unchecked")
+    public V cloneVector() {
+        try {
+            return (V) getClass().getConstructor(Double.class, Double.class, measureUnit.getClass()).newInstance(x, y, measureUnit);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

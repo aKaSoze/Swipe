@@ -1,6 +1,7 @@
 package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import android.graphics.Bitmap;
@@ -65,8 +66,18 @@ public class Rectangle extends AnimatedShape {
         return null;
     }
 
+    public Displacement evaluateLeftTopCorner() {
+        return new Displacement(getCenter().getX() - width / 2, getCenter().getY() - height / 2);
+    }
+
+    public Displacement evaluateRightTopCorner() {
+        return new Displacement(getCenter().getX() + width / 2, getCenter().getY() - height / 2);
+    }
+
     public Set<Segment2D> evaluateSegments() {
-        return null;
+        Set<Segment2D> segments = new LinkedHashSet<Segment2D>();
+        segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateRightTopCorner()));
+        return segments;
     }
 
     @Override
@@ -80,6 +91,7 @@ public class Rectangle extends AnimatedShape {
         }
 
         paint.setColor(Color.RED);
+        evaluateSegments().iterator().next().draw(canvas);
         for (Displacement displacement : displacementsToObstacles) {
             displacement.draw(canvas);
         }

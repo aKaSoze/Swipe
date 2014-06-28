@@ -47,7 +47,7 @@ public class GameView extends AutoUpdatableView {
 
         Bitmap originalHippo_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hippo_wacky);
         rectangle = new Rectangle(segment2d.middle.additionVector(new Displacement(0, -96)), 108, 192);
-        rectangle.setBitmap(originalHippo_bmp);
+//        rectangle.setBitmap(originalHippo_bmp);
 
         MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.boing);
         crowded = MediaPlayer.create(context, R.raw.crowded);
