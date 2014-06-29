@@ -7,23 +7,23 @@ import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 
 public abstract class AnimatedShape extends CenteredDrawable {
 
-	protected Acceleration	acceleration;
+    public Acceleration acceleration;
 
-	protected Velocity		velocity;
+    public Velocity     velocity;
 
-	protected Long			lastElapsedTime;
+    protected Long      lastElapsedTime;
 
-	public AnimatedShape(Displacement center, Paint paint) {
-		super(center, paint);
-		lastElapsedTime = 0L;
-		acceleration = new Acceleration(0.0, 0.0);
-		velocity = new Velocity(0, 0);
-	}
+    public AnimatedShape(Displacement center, Paint paint) {
+        super(center, paint);
+        lastElapsedTime = 0L;
+        acceleration = new Acceleration(0.0, 0.0);
+        velocity = new Velocity(0, 0);
+    }
 
-	public void updateState(Long elapsedTime) {
-		Long timeIncrement = elapsedTime - lastElapsedTime;
-		getCenter().add(velocity.generatedDisplacement(timeIncrement));
-		velocity.add(acceleration.generatedVelocity(timeIncrement));
-		lastElapsedTime = elapsedTime;
-	}
+    public void updateState(Long elapsedTime) {
+        Long timeIncrement = elapsedTime - lastElapsedTime;
+        getCenter().add(velocity.generatedDisplacement(timeIncrement));
+        velocity.add(acceleration.generatedVelocity(timeIncrement));
+        lastElapsedTime = elapsedTime;
+    }
 }

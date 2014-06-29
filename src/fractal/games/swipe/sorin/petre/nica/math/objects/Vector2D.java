@@ -105,9 +105,7 @@ public class Vector2D<V extends Vector2D<V>> {
     }
 
     public Displacement perpendicularVector() {
-        Double x = -this.y;
-        Double y = this.x;
-        return new Displacement(x, y, measureUnit.lengthComponent);
+        return new Displacement(y, -x, measureUnit.lengthComponent);
     }
 
     public Double distanceTo(V otherVector) {

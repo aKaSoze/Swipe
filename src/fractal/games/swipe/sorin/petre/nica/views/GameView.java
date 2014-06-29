@@ -46,18 +46,18 @@ public class GameView extends AutoUpdatableView {
         Net net = new Net(segment2d);
 
         Bitmap originalHippo_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hippo_wacky);
-        rectangle = new Rectangle(segment2d.middle.additionVector(new Displacement(0, -96)), 108, 192);
-//        rectangle.setBitmap(originalHippo_bmp);
+        rectangle = new Rectangle(segment2d.middle.additionVector(new Displacement(0, -96)), 85, 101);
+        rectangle.setBitmap(originalHippo_bmp);
 
         MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.boing);
         crowded = MediaPlayer.create(context, R.raw.crowded);
         net.rectangle = rectangle;
         net.boingSound = mediaPlayer;
 
-        firstObstacle = new Rectangle(new Displacement(250, 455), 20, 30);
+        firstObstacle = new Rectangle(new Displacement(350, 455), 80, 80);
         firstObstacle.setFilled(true);
 
-        secondObstacle = new Rectangle(new Displacement(375, 235), 20, 15);
+        secondObstacle = new Rectangle(new Displacement(375, 235), 60, 60);
         secondObstacle.setFilled(false);
 
         rectangle.obstacles.add(firstObstacle);

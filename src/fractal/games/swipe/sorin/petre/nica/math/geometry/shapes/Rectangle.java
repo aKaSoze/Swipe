@@ -59,11 +59,17 @@ public class Rectangle extends AnimatedShape {
     }
 
     public Set<Segment2D> evaluateHorizontalSegments() {
-        return null;
+        Set<Segment2D> segments = new LinkedHashSet<Segment2D>();
+        segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateRightTopCorner()));
+        segments.add(new Segment2D(evaluateLeftBottomCorner(), evaluateRightBottomCorner()));
+        return segments;
     }
 
     public Set<Segment2D> evaluateVerticalSegments() {
-        return null;
+        Set<Segment2D> segments = new LinkedHashSet<Segment2D>();
+        segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateLeftBottomCorner()));
+        segments.add(new Segment2D(evaluateRightBottomCorner(), evaluateRightTopCorner()));
+        return segments;
     }
 
     public Displacement evaluateLeftTopCorner() {
@@ -74,9 +80,20 @@ public class Rectangle extends AnimatedShape {
         return new Displacement(getCenter().getX() + width / 2, getCenter().getY() - height / 2);
     }
 
+    public Displacement evaluateLeftBottomCorner() {
+        return new Displacement(getCenter().getX() - width / 2, getCenter().getY() + height / 2);
+    }
+
+    public Displacement evaluateRightBottomCorner() {
+        return new Displacement(getCenter().getX() + width / 2, getCenter().getY() + height / 2);
+    }
+
     public Set<Segment2D> evaluateSegments() {
         Set<Segment2D> segments = new LinkedHashSet<Segment2D>();
         segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateRightTopCorner()));
+        segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateLeftBottomCorner()));
+        segments.add(new Segment2D(evaluateLeftBottomCorner(), evaluateRightBottomCorner()));
+        segments.add(new Segment2D(evaluateRightBottomCorner(), evaluateRightTopCorner()));
         return segments;
     }
 
@@ -91,23 +108,44 @@ public class Rectangle extends AnimatedShape {
         }
 
         paint.setColor(Color.RED);
-        evaluateSegments().iterator().next().draw(canvas);
         for (Displacement displacement : displacementsToObstacles) {
             displacement.draw(canvas);
         }
     }
 
     private CenteredDrawable checkPossibleOverlap() {
-        displacementsToObstacles.clear();
+//        displacementsToObstacles.clear();
         for (CenteredDrawable obstacle : obstacles) {
             if (obstacle instanceof Rectangle) {
-                Rectangle rectangleObstacle = (Rectangle) obstacle;
-                for (Segment2D segment : evaluateSegments()) {
-                    displacementsToObstacles.add(segment.distanceToAPoint(obstacle.getCenter()));
+//                displacementsToObstacles.add(evaluateSmallestTouchTransaltion((Rectangle) obstacle));
+                if (intersects((Rectangle) obstacle)) {
+                    return obstacle;
                 }
             }
         }
         return null;
+    }
+
+    public Boolean intersects(Rectangle other) {
+        Double dx = Math.abs(getCenter().getX() - other.getCenter().getX()) - (width / 2 + other.width / 2);
+        Double dy = Math.abs(getCenter().getY() - other.getCenter().getY()) - (height / 2 + other.height / 2);
+        return dx < 0 && dy < 0;
+    }
+
+    private Displacement evaluateSmallestTouchTransaltion(Rectangle other) {
+        Double centerDx = getCenter().getX() - other.getCenter().getX();
+        Double centerDy = getCenter().getY() - other.getCenter().getY();
+        Double dx = Math.abs(Math.abs(centerDx) - (width / 2 + other.width / 2));
+        Double dy = Math.abs(Math.abs(centerDy) - (height / 2 + other.height / 2));
+
+        Displacement displacement;
+        if (dx < dy) {
+            displacement = new Displacement(dx * Math.signum(centerDx), 0.0);
+        } else {
+            displacement = new Displacement(0.0, dy * Math.signum(centerDy));
+        }
+        displacement.applyPoint = getCenter();
+        return displacement;
     }
 
     @Override
@@ -127,15 +165,16 @@ public class Rectangle extends AnimatedShape {
 
         CenteredDrawable colidedObstacle = checkPossibleOverlap();
         if (colidedObstacle != null) {
-            moveOutsideBoundriesOfObstacle(colidedObstacle);
+            moveOutsideBoundriesOfObstacle((Rectangle) colidedObstacle);
             onCollision(colidedObstacle);
             colidedObstacle.onCollision(this);
         }
     }
 
-    private void moveOutsideBoundriesOfObstacle(CenteredDrawable colidedObstacle) {
-        // TODO Auto-generated method stub
-
+    private void moveOutsideBoundriesOfObstacle(Rectangle colidedObstacle) {
+        Displacement escapeDisplacement = evaluateSmallestTouchTransaltion(colidedObstacle);
+        velocity.neutralize();
+        getCenter().add(escapeDisplacement);
     }
 
     private void reverseVelocityAlongX() {

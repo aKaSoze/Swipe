@@ -41,7 +41,7 @@ public class Segment2D {
     }
 
     public Displacement distanceToAPoint(Displacement point) {
-        Double length = Math.abs(point.subtractionVector(firstPoint).crossProduct(point.subtractionVector(secondPoint)) / secondPoint.subtractionVector(firstPoint).magnitude());
+        Double length = point.subtractionVector(firstPoint).crossProduct(point.subtractionVector(secondPoint)) / secondPoint.subtractionVector(firstPoint).magnitude();
         Displacement perpendicularVector = vector.perpendicularVector();
         perpendicularVector.normalize();
         perpendicularVector.multiplyByScalar(length);

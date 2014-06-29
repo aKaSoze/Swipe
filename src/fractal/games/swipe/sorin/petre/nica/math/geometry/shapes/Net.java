@@ -2,7 +2,6 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
 import android.graphics.Canvas;
 import android.media.MediaPlayer;
-import android.util.Log;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
@@ -50,11 +49,9 @@ public class Net extends CenteredDrawable {
     public void onMotionEvent(MotionEvent motionEvent) {
         switch (motionEvent.getActionMasked()) {
         case MotionEvent.ACTION_MOVE:
-            Log.i("spring", "middle x = " + segment2d.middle.getX() + ", y = " + segment2d.middle.getY());
             if (motionEvent.getY() > segment2d.middle.getY()) {
                 strecthingTime = elapsedTime;
                 strecthPoint.setComponents(motionEvent.getX(), motionEvent.getY());
-                Log.i("spring", "x = " + strecthPoint.getX() + ", y = " + strecthPoint.getY());
                 if (status != Status.STRECTHING) {
                     rectangle.acceleration.neutralize();
                     rectangle.velocity.neutralize();
