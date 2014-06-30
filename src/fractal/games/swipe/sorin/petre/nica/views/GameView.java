@@ -1,7 +1,7 @@
 package fractal.games.swipe.sorin.petre.nica.views;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,130 +15,130 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import fractal.games.swipe.R;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Net;
+import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle;
-import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
+import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle.Property;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class GameView extends AutoUpdatableView {
 
-    private final ColorDrawable         backGround_drwbl = new ColorDrawable(Color.BLACK);
+	private final ColorDrawable			backGround_drwbl	= new ColorDrawable(Color.BLACK);
 
-    private CenteredDrawable            selectedShape    = null;
+	private CenteredDrawable			selectedShape		= null;
 
-    private Boolean                     isOkToRunGameLoop;
+	private Boolean						isOkToRunGameLoop;
 
-    private final Set<CenteredDrawable> drawables        = new HashSet<CenteredDrawable>();
+	public final Set<CenteredDrawable>	drawables			= new CopyOnWriteArraySet<CenteredDrawable>();
 
-    private Rectangle                   rectangle;
+	private Rectangle					rectangle;
 
-    private Rectangle                   firstObstacle;
+	private Rectangle					firstObstacle;
 
-    private Rectangle                   secondObstacle;
+	private Rectangle					secondObstacle;
 
-    private MediaPlayer                 crowded;
+	private MediaPlayer					crowded;
 
-    public GameView(Context context) {
-        super(context);
-        Displacement x1 = new Displacement(200, 700);
-        Displacement x2 = x1.additionVector(new Displacement(300, 0));
-        Segment2D segment2d = new Segment2D(x1, x2);
-        Net net = new Net(segment2d);
+	public GameView(Context context) {
+		super(context);
+		Displacement platformCenter = new Displacement(200, 700);
 
-        Bitmap originalHippo_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hippo_wacky);
-        rectangle = new Rectangle(segment2d.middle.additionVector(new Displacement(0, -96)), 85, 101);
-        rectangle.setBitmap(originalHippo_bmp);
+		Bitmap originalHippo_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hippo_wacky);
+		rectangle = new Rectangle(platformCenter.additionVector(new Displacement(0, -96)), 85, 101);
+		rectangle.setBitmap(originalHippo_bmp);
+		PropulsionPlatform net = new PropulsionPlatform(new Rectangle(platformCenter, 200, 20), rectangle);
 
-        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.boing);
-        crowded = MediaPlayer.create(context, R.raw.crowded);
-        net.rectangle = rectangle;
-        net.boingSound = mediaPlayer;
+		MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.boing);
+		crowded = MediaPlayer.create(context, R.raw.crowded);
+		net.boingSound = mediaPlayer;
 
-        firstObstacle = new Rectangle(new Displacement(350, 455), 80, 80);
-        firstObstacle.setFilled(true);
+		firstObstacle = new Rectangle(new Displacement(350, 455), 80, 80);
+		firstObstacle.setFilled(true);
+		firstObstacle.properties.add(Property.MOVABLE);
+		firstObstacle.properties.add(Property.CLONEABLE);
+		firstObstacle.scene = this;
 
-        secondObstacle = new Rectangle(new Displacement(375, 235), 60, 60);
-        secondObstacle.setFilled(false);
+		secondObstacle = new Rectangle(new Displacement(375, 235), 60, 60);
+		secondObstacle.setFilled(false);
 
-        rectangle.obstacles.add(firstObstacle);
-        rectangle.obstacles.add(secondObstacle);
+		rectangle.obstacles.add(firstObstacle);
+		rectangle.obstacles.add(secondObstacle);
 
-        drawables.add(net);
-        drawables.add(rectangle);
-        drawables.add(firstObstacle);
-        drawables.add(secondObstacle);
-    }
+		drawables.add(net);
+		drawables.add(rectangle);
+		drawables.add(firstObstacle);
+		drawables.add(secondObstacle);
+	}
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        rectangle.boundingBoxRight = right;
-        crowded.start();
-    }
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+		super.onLayout(changed, left, top, right, bottom);
+		rectangle.boundingBoxRight = right;
+		crowded.start();
+	}
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        for (CenteredDrawable centeredDrawable : drawables) {
-            centeredDrawable.onMotionEvent(event);
-        }
-        return true;
-    }
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		for (CenteredDrawable centeredDrawable : drawables) {
+			centeredDrawable.onMotionEvent(event, Displacement.Factory.fromMotionEvent(event));
+		}
+		return true;
+	}
 
-    private CenteredDrawable evaluateTargetShape(Displacement touchPoint) {
-        CenteredDrawable closestShape = null;
-        double smallestDistance = 60;
-        for (CenteredDrawable centeredDrawable : drawables) {
-            double distanceToTouchPoint = centeredDrawable.getCenter().distanceTo(touchPoint);
-            if (distanceToTouchPoint < smallestDistance) {
-                smallestDistance = distanceToTouchPoint;
-                closestShape = centeredDrawable;
-            }
-        }
-        return closestShape;
-    }
+	private CenteredDrawable evaluateTargetShape(Displacement touchPoint) {
+		CenteredDrawable closestShape = null;
+		double smallestDistance = 60;
+		for (CenteredDrawable centeredDrawable : drawables) {
+			double distanceToTouchPoint = centeredDrawable.getCenter().distanceTo(touchPoint);
+			if (distanceToTouchPoint < smallestDistance) {
+				smallestDistance = distanceToTouchPoint;
+				closestShape = centeredDrawable;
+			}
+		}
+		return closestShape;
+	}
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        drawSurface(canvas);
-    }
+	@Override
+	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+		drawSurface(canvas);
+	}
 
-    public void updateWorld(Long elapsedTime) {
-        for (CenteredDrawable movableShape : drawables) {
-            movableShape.updateState(elapsedTime);
-        }
-    }
+	public void updateWorld(Long elapsedTime) {
+		for (CenteredDrawable movableShape : drawables) {
+			movableShape.updateState(elapsedTime);
+		}
+	}
 
-    @Override
-    protected Runnable getBehavior() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                isOkToRunGameLoop = true;
-                Log.d(logTag, "Game loop started.");
-                Long startTime = System.currentTimeMillis();
-                while (isOkToRunGameLoop) {
-                    Long elapsedTime = System.currentTimeMillis() - startTime;
-                    updateWorld(elapsedTime);
-                    drawSurface();
-                }
-            }
-        };
-    }
+	@Override
+	protected Runnable getBehavior() {
+		return new Runnable() {
+			@Override
+			public void run() {
+				isOkToRunGameLoop = true;
+				Log.d(logTag, "Game loop started.");
+				Long startTime = System.currentTimeMillis();
+				while (isOkToRunGameLoop) {
+					Long elapsedTime = System.currentTimeMillis() - startTime;
+					updateWorld(elapsedTime);
+					drawSurface();
+				}
+			}
+		};
+	}
 
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        isOkToRunGameLoop = false;
-        super.surfaceDestroyed(holder);
-    }
+	@Override
+	public void surfaceDestroyed(SurfaceHolder holder) {
+		isOkToRunGameLoop = false;
+		super.surfaceDestroyed(holder);
+	}
 
-    @Override
-    protected void drawSurface(Canvas canvas) {
-        backGround_drwbl.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        backGround_drwbl.draw(canvas);
-        for (CenteredDrawable movableShape : drawables) {
-            movableShape.draw(canvas);
-        }
-    }
+	@Override
+	protected void drawSurface(Canvas canvas) {
+		backGround_drwbl.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+		backGround_drwbl.draw(canvas);
+		for (CenteredDrawable movableShape : drawables) {
+			movableShape.draw(canvas);
+		}
+	}
 
 }

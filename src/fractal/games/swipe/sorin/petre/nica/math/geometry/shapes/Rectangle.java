@@ -12,196 +12,224 @@ import android.graphics.Paint.Style;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
+import fractal.games.swipe.sorin.petre.nica.views.GameView;
 
 public class Rectangle extends AnimatedShape {
 
-    private static final double        COLLISION_SPEED_LOSS     = 2.0;
+	private static final double	COLLISION_SPEED_LOSS	= 2.0;
 
-    private Boolean                    isFilled;
+	public enum Property {
+		MOVABLE, CLONEABLE;
+	}
 
-    private Double                     width;
+	public GameView						scene;
 
-    public Double                      height;
+	private Boolean						isFilled;
 
-    private Bitmap                     bitmap;
+	private Double						width;
 
-    public final Set<CenteredDrawable> obstacles;
+	public Double						height;
 
-    private final Set<Displacement>    displacementsToObstacles = new HashSet<Displacement>();
+	private Bitmap						bitmap;
 
-    public Rectangle(Displacement center, Double width, Double height, Paint paint) {
-        super(center, paint);
-        this.width = width;
-        this.height = height;
-        isFilled = false;
-        obstacles = new HashSet<CenteredDrawable>();
-    }
+	public final Set<CenteredDrawable>	obstacles;
 
-    public Rectangle(Displacement center, Double width, Double height) {
-        this(center, width, height, DEFAULT_PAINT);
-    }
+	private final Set<Displacement>		displacementsToObstacles	= new HashSet<Displacement>();
 
-    public Rectangle(Displacement center, Integer width, Integer height) {
-        this(center, width.doubleValue(), height.doubleValue());
-    }
+	public final Set<Property>			properties;
 
-    public void setBitmap(Bitmap bitmap) {
-        this.bitmap = Bitmap.createScaledBitmap(bitmap, width.intValue(), height.intValue(), true);
-    }
+	public Rectangle(Displacement center, Double width, Double height, Paint paint) {
+		super(center, paint);
+		this.width = width;
+		this.height = height;
+		isFilled = false;
+		obstacles = new HashSet<CenteredDrawable>();
+		properties = new HashSet<Property>();
+	}
 
-    public Boolean isFilled() {
-        return isFilled;
-    }
+	public Rectangle(Displacement center, Double width, Double height) {
+		this(center, width, height, DEFAULT_PAINT);
+	}
 
-    public void setFilled(Boolean isFilled) {
-        paint.setStyle(isFilled ? Style.FILL : Style.STROKE);
-        this.isFilled = isFilled;
-    }
+	public Rectangle(Displacement center, Integer width, Integer height) {
+		this(center, width.doubleValue(), height.doubleValue());
+	}
 
-    public Set<Segment2D> evaluateHorizontalSegments() {
-        Set<Segment2D> segments = new LinkedHashSet<Segment2D>();
-        segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateRightTopCorner()));
-        segments.add(new Segment2D(evaluateLeftBottomCorner(), evaluateRightBottomCorner()));
-        return segments;
-    }
+	public void setBitmap(Bitmap bitmap) {
+		this.bitmap = Bitmap.createScaledBitmap(bitmap, width.intValue(), height.intValue(), true);
+	}
 
-    public Set<Segment2D> evaluateVerticalSegments() {
-        Set<Segment2D> segments = new LinkedHashSet<Segment2D>();
-        segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateLeftBottomCorner()));
-        segments.add(new Segment2D(evaluateRightBottomCorner(), evaluateRightTopCorner()));
-        return segments;
-    }
+	public Boolean isFilled() {
+		return isFilled;
+	}
 
-    public Displacement evaluateLeftTopCorner() {
-        return new Displacement(getCenter().getX() - width / 2, getCenter().getY() - height / 2);
-    }
+	public void setFilled(Boolean isFilled) {
+		paint.setStyle(isFilled ? Style.FILL : Style.STROKE);
+		this.isFilled = isFilled;
+	}
 
-    public Displacement evaluateRightTopCorner() {
-        return new Displacement(getCenter().getX() + width / 2, getCenter().getY() - height / 2);
-    }
+	public Set<Segment2D> evaluateHorizontalSegments() {
+		Set<Segment2D> segments = new LinkedHashSet<Segment2D>();
+		segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateRightTopCorner()));
+		segments.add(new Segment2D(evaluateLeftBottomCorner(), evaluateRightBottomCorner()));
+		return segments;
+	}
 
-    public Displacement evaluateLeftBottomCorner() {
-        return new Displacement(getCenter().getX() - width / 2, getCenter().getY() + height / 2);
-    }
+	public Set<Segment2D> evaluateVerticalSegments() {
+		Set<Segment2D> segments = new LinkedHashSet<Segment2D>();
+		segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateLeftBottomCorner()));
+		segments.add(new Segment2D(evaluateRightBottomCorner(), evaluateRightTopCorner()));
+		return segments;
+	}
 
-    public Displacement evaluateRightBottomCorner() {
-        return new Displacement(getCenter().getX() + width / 2, getCenter().getY() + height / 2);
-    }
+	public Displacement evaluateLeftTopCorner() {
+		return new Displacement(getCenter().getX() - width / 2, getCenter().getY() - height / 2);
+	}
 
-    public Set<Segment2D> evaluateSegments() {
-        Set<Segment2D> segments = new LinkedHashSet<Segment2D>();
-        segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateRightTopCorner()));
-        segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateLeftBottomCorner()));
-        segments.add(new Segment2D(evaluateLeftBottomCorner(), evaluateRightBottomCorner()));
-        segments.add(new Segment2D(evaluateRightBottomCorner(), evaluateRightTopCorner()));
-        return segments;
-    }
+	public Displacement evaluateRightTopCorner() {
+		return new Displacement(getCenter().getX() + width / 2, getCenter().getY() - height / 2);
+	}
 
-    @Override
-    public void draw(Canvas canvas) {
-        paint.setColor(Color.WHITE);
-        if (bitmap == null) {
-            canvas.drawRect(getCenter().getX().floatValue() - (width.floatValue() / 2), getCenter().getY().floatValue() - (height.floatValue() / 2), getCenter().getX().floatValue() + (width.floatValue() / 2),
-                    getCenter().getY().floatValue() + (height.floatValue() / 2), paint);
-        } else {
-            canvas.drawBitmap(bitmap, getCenter().getX().floatValue() - (width.floatValue() / 2), getCenter().getY().floatValue() - (height.floatValue() / 2), paint);
-        }
+	public Displacement evaluateLeftBottomCorner() {
+		return new Displacement(getCenter().getX() - width / 2, getCenter().getY() + height / 2);
+	}
 
-        paint.setColor(Color.RED);
-        for (Displacement displacement : displacementsToObstacles) {
-            displacement.draw(canvas);
-        }
-    }
+	public Displacement evaluateRightBottomCorner() {
+		return new Displacement(getCenter().getX() + width / 2, getCenter().getY() + height / 2);
+	}
 
-    private CenteredDrawable checkPossibleOverlap() {
-//        displacementsToObstacles.clear();
-        for (CenteredDrawable obstacle : obstacles) {
-            if (obstacle instanceof Rectangle) {
-//                displacementsToObstacles.add(evaluateSmallestTouchTransaltion((Rectangle) obstacle));
-                if (intersects((Rectangle) obstacle)) {
-                    return obstacle;
-                }
-            }
-        }
-        return null;
-    }
+	public Set<Segment2D> evaluateSegments() {
+		Set<Segment2D> segments = new LinkedHashSet<Segment2D>();
+		segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateRightTopCorner()));
+		segments.add(new Segment2D(evaluateLeftTopCorner(), evaluateLeftBottomCorner()));
+		segments.add(new Segment2D(evaluateLeftBottomCorner(), evaluateRightBottomCorner()));
+		segments.add(new Segment2D(evaluateRightBottomCorner(), evaluateRightTopCorner()));
+		return segments;
+	}
 
-    public Boolean intersects(Rectangle other) {
-        Double dx = Math.abs(getCenter().getX() - other.getCenter().getX()) - (width / 2 + other.width / 2);
-        Double dy = Math.abs(getCenter().getY() - other.getCenter().getY()) - (height / 2 + other.height / 2);
-        return dx < 0 && dy < 0;
-    }
+	@Override
+	public void draw(Canvas canvas) {
+		paint.setColor(Color.WHITE);
+		if (bitmap == null) {
+			canvas.drawRect(getCenter().getX().floatValue() - (width.floatValue() / 2), getCenter().getY().floatValue() - (height.floatValue() / 2), getCenter().getX().floatValue() + (width.floatValue() / 2),
+					getCenter().getY().floatValue() + (height.floatValue() / 2), paint);
+		} else {
+			canvas.drawBitmap(bitmap, getCenter().getX().floatValue() - (width.floatValue() / 2), getCenter().getY().floatValue() - (height.floatValue() / 2), paint);
+		}
 
-    private Displacement evaluateSmallestTouchTransaltion(Rectangle other) {
-        Double centerDx = getCenter().getX() - other.getCenter().getX();
-        Double centerDy = getCenter().getY() - other.getCenter().getY();
-        Double dx = Math.abs(Math.abs(centerDx) - (width / 2 + other.width / 2));
-        Double dy = Math.abs(Math.abs(centerDy) - (height / 2 + other.height / 2));
+		paint.setColor(Color.RED);
+		for (Displacement displacement : displacementsToObstacles) {
+			displacement.draw(canvas);
+		}
+	}
 
-        Displacement displacement;
-        if (dx < dy) {
-            displacement = new Displacement(dx * Math.signum(centerDx), 0.0);
-        } else {
-            displacement = new Displacement(0.0, dy * Math.signum(centerDy));
-        }
-        displacement.applyPoint = getCenter();
-        return displacement;
-    }
+	private CenteredDrawable checkPossibleOverlap() {
+		// displacementsToObstacles.clear();
+		for (CenteredDrawable obstacle : obstacles) {
+			if (obstacle instanceof Rectangle) {
+				// displacementsToObstacles.add(evaluateSmallestTouchTransaltion((Rectangle)
+				// obstacle));
+				if (intersects((Rectangle) obstacle)) {
+					return obstacle;
+				}
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public void updateState(Long elapsedTime) {
-        super.updateState(elapsedTime);
+	public Boolean intersects(Rectangle other) {
+		Double dx = Math.abs(getCenter().getX() - other.getCenter().getX()) - (width / 2 + other.width / 2);
+		Double dy = Math.abs(getCenter().getY() - other.getCenter().getY()) - (height / 2 + other.height / 2);
+		return dx < 0 && dy < 0;
+	}
 
-        if (boundingBoxRight != null) {
-            if (crossedLeftSideBoundry()) {
-                moveToLeftSideBoundry();
-                reverseVelocityAlongX();
-            }
-            if (crossedRightSideBoundry()) {
-                moveToRightSideBoundry();
-                reverseVelocityAlongX();
-            }
-        }
+	private Displacement evaluateSmallestTouchTransaltion(Rectangle other) {
+		Double centerDx = getCenter().getX() - other.getCenter().getX();
+		Double centerDy = getCenter().getY() - other.getCenter().getY();
+		Double dx = Math.abs(Math.abs(centerDx) - (width / 2 + other.width / 2));
+		Double dy = Math.abs(Math.abs(centerDy) - (height / 2 + other.height / 2));
 
-        CenteredDrawable colidedObstacle = checkPossibleOverlap();
-        if (colidedObstacle != null) {
-            moveOutsideBoundriesOfObstacle((Rectangle) colidedObstacle);
-            onCollision(colidedObstacle);
-            colidedObstacle.onCollision(this);
-        }
-    }
+		Displacement displacement;
+		if (dx < dy) {
+			displacement = new Displacement(dx * Math.signum(centerDx), 0.0);
+		} else {
+			displacement = new Displacement(0.0, dy * Math.signum(centerDy));
+		}
+		displacement.applyPoint = getCenter();
+		return displacement;
+	}
 
-    private void moveOutsideBoundriesOfObstacle(Rectangle colidedObstacle) {
-        Displacement escapeDisplacement = evaluateSmallestTouchTransaltion(colidedObstacle);
-        velocity.neutralize();
-        getCenter().add(escapeDisplacement);
-    }
+	@Override
+	public void updateState(Long elapsedTime) {
+		super.updateState(elapsedTime);
 
-    private void reverseVelocityAlongX() {
-        velocity.reverseX();
-        velocity.divideXByScalar(COLLISION_SPEED_LOSS);
-    }
+		if (boundingBoxRight != null) {
+			if (crossedLeftSideBoundry()) {
+				moveToLeftSideBoundry();
+				reverseVelocityAlongX();
+			}
+			if (crossedRightSideBoundry()) {
+				moveToRightSideBoundry();
+				reverseVelocityAlongX();
+			}
+		}
 
-    private void moveToRightSideBoundry() {
-        setCenter(new Displacement(boundingBoxRight - (width / 2), getCenter().getY()));
-    }
+		CenteredDrawable colidedObstacle = checkPossibleOverlap();
+		if (colidedObstacle != null) {
+			moveOutsideBoundriesOfObstacle((Rectangle) colidedObstacle);
+			onCollision(colidedObstacle);
+			colidedObstacle.onCollision(this);
+		}
+	}
 
-    private boolean crossedRightSideBoundry() {
-        return getCenter().getX() + (width / 2) > boundingBoxRight;
-    }
+	private void moveOutsideBoundriesOfObstacle(Rectangle colidedObstacle) {
+		Displacement escapeDisplacement = evaluateSmallestTouchTransaltion(colidedObstacle);
+		velocity.neutralize();
+		getCenter().add(escapeDisplacement);
+	}
 
-    private void moveToLeftSideBoundry() {
-        setCenter(new Displacement((width / 2), getCenter().getY()));
-    }
+	private void reverseVelocityAlongX() {
+		velocity.reverseX();
+		velocity.divideXByScalar(COLLISION_SPEED_LOSS);
+	}
 
-    private boolean crossedLeftSideBoundry() {
-        return getCenter().getX() - (width / 2) < 0;
-    }
+	private void moveToRightSideBoundry() {
+		setCenter(new Displacement(boundingBoxRight - (width / 2), getCenter().getY()));
+	}
 
-    @Override
-    public void onMotionEvent(MotionEvent motionEvent) {
-        // TODO Auto-generated method stub
+	private boolean crossedRightSideBoundry() {
+		return getCenter().getX() + (width / 2) > boundingBoxRight;
+	}
 
-    }
+	private void moveToLeftSideBoundry() {
+		setCenter(new Displacement((width / 2), getCenter().getY()));
+	}
 
+	private boolean crossedLeftSideBoundry() {
+		return getCenter().getX() - (width / 2) < 0;
+	}
+
+	@Override
+	public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
+		if (properties.contains(Property.MOVABLE)) {
+			switch (motionEvent.getActionMasked()) {
+			case MotionEvent.ACTION_MOVE:
+				if (touchPoint.distanceTo(getCenter()) < 50) {
+					setCenter(touchPoint);
+				}
+				break;
+			}
+		}
+
+		if (properties.contains(Property.CLONEABLE) && motionEvent.getPointerCount() == 2 && touchPoint.distanceTo(getCenter()) < 50) {
+			switch (motionEvent.getActionMasked()) {
+			case MotionEvent.ACTION_MOVE:
+				Rectangle newRectangle = new Rectangle(getCenter().cloneVector(), width, height);
+				newRectangle.properties.addAll(properties);
+				newRectangle.scene = scene;
+				scene.drawables.add(newRectangle);
+				break;
+			}
+		}
+	}
 }

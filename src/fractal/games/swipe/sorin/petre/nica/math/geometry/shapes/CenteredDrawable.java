@@ -35,7 +35,7 @@ public abstract class CenteredDrawable extends Drawable {
 		this.paint.setDither(true);
 	}
 
-	public abstract void onMotionEvent(MotionEvent motionEvent);
+	public abstract void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint);
 
 	public abstract void updateState(Long elapsedTime);
 
