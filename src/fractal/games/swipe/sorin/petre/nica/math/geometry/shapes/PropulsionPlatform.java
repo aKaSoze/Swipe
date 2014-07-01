@@ -9,15 +9,13 @@ import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.swipe.sorin.petre.nica.physics.units.LengthUnit;
 import fractal.games.swipe.sorin.petre.nica.physics.units.TimeUnit;
 
-public class PropulsionPlatform extends CenteredDrawable {
+public class PropulsionPlatform extends Rectangle {
 
-	private static final int	MAX_SPRING_DISPLACEMENT	= 200;
+	private static final Double	MAX_SPRING_DISPLACEMENT	= 200.0;
 
 	private enum Status {
 		STANDING, STRECTHING, RELEASED;
 	}
-
-	private final Rectangle	platform;
 
 	private Displacement	strecthPoint;
 
@@ -35,14 +33,13 @@ public class PropulsionPlatform extends CenteredDrawable {
 
 	public MediaPlayer		boingSound;
 
-	public PropulsionPlatform(Rectangle platform, Rectangle projectile) {
-		super(platform.getCenter(), DEFAULT_PAINT);
-		this.platform = platform;
+	public PropulsionPlatform(Displacement center, Double width, Double height, Rectangle projectile) {
+		super(center, width, height);
 		this.projectile = projectile;
-		projectile.obstacles.add(platform);
-		strecthPoint = platform.getCenter().cloneVector();
+		projectile.obstacles.add(this);
+		strecthPoint = center.cloneVector();
 
-		elasticityCoeficient = 22.0;
+		elasticityCoeficient = 21.0;
 		status = Status.STANDING;
 
 		paint.setStrokeWidth(3);
@@ -50,25 +47,42 @@ public class PropulsionPlatform extends CenteredDrawable {
 
 	@Override
 	public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
+		switch (status) {
+		case STANDING:
+			handleStandingMotionEvent(motionEvent, touchPoint);
+			break;
+		case STRECTHING:
+			handleStrecthingMotionEvent(motionEvent, touchPoint);
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void handleStrecthingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
 		switch (motionEvent.getActionMasked()) {
+		case MotionEvent.ACTION_UP:
+			status = Status.RELEASED;
+			strecthingTime = elapsedTime;
+			Displacement springDisplacement = strecthPoint.subtractionVector(getCenter());
+			springVelocity = new Velocity(springDisplacement.getX() * elasticityCoeficient, springDisplacement.getY() * elasticityCoeficient, LengthUnit.PIXEL, TimeUnit.SECOND);
+			break;
 		case MotionEvent.ACTION_MOVE:
-			Displacement springDisplacement = touchPoint.subtractionVector(platform.getCenter());
-			if (motionEvent.getY() > platform.getCenter().getY() && springDisplacement.magnitude() < MAX_SPRING_DISPLACEMENT) {
-				strecthingTime = elapsedTime;
-				strecthPoint.setComponents(motionEvent.getX(), motionEvent.getY());
-				if (status != Status.STRECTHING) {
-					projectile.acceleration.neutralize();
-					projectile.velocity.neutralize();
-					projectile.setCenter(platform.getCenter().additionVector(new Displacement(0.0, -projectile.height / 2)));
-					status = Status.STRECTHING;
-				}
+			strecthPoint.makeEqualTo(touchPoint);
+			if (strecthPoint.distanceTo(getCenter()) > MAX_SPRING_DISPLACEMENT) {
+				strecthPoint.setMagnitude(MAX_SPRING_DISPLACEMENT);
+			}
+			if (strecthPoint.getY() < getCenter().getY()) {
+				strecthPoint.setY(getCenter().getY());
 			}
 			break;
-		case MotionEvent.ACTION_UP:
-			Displacement displacement = strecthPoint.delta(platform.getCenter());
-			springVelocity = new Velocity(displacement.getX() * elasticityCoeficient, displacement.getY() * elasticityCoeficient, LengthUnit.PIXEL, TimeUnit.SECOND);
-			status = Status.RELEASED;
-			break;
+		}
+	}
+
+	private void handleStandingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
+		if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN && touchPoint.distanceTo(getCenter()) < 20 && touchPoint.getY() >= getCenter().getY()) {
+			status = Status.STRECTHING;
+			strecthPoint.makeEqualTo(touchPoint);
 		}
 	}
 
@@ -76,7 +90,7 @@ public class PropulsionPlatform extends CenteredDrawable {
 	public void updateState(Long elapsedTime) {
 		this.elapsedTime = elapsedTime;
 		if (status == Status.RELEASED) {
-			if (strecthPoint.distanceTo(platform.getCenter()) < 0.01) {
+			if (strecthPoint.distanceTo(getCenter()) < 0.01) {
 				projectile.velocity = new Velocity(springVelocity.getX() / 4, springVelocity.getY() / 4, LengthUnit.PIXEL, TimeUnit.SECOND);
 				projectile.acceleration = new Acceleration(0.0, 9.8, LengthUnit.METER, TimeUnit.SECOND);
 				springVelocity.neutralize();
@@ -86,10 +100,10 @@ public class PropulsionPlatform extends CenteredDrawable {
 				Long elapsedStrecthingTime = elapsedTime - strecthingTime;
 				strecthingTime = elapsedTime;
 
-				Double distanceToSegmentMid = strecthPoint.distanceTo(platform.getCenter());
+				Double distanceToSegmentMid = strecthPoint.distanceTo(getCenter());
 				Displacement displacement = springVelocity.generatedDisplacement(elapsedStrecthingTime);
 				if (displacement.magnitude() > distanceToSegmentMid) {
-					displacement = strecthPoint.delta(platform.getCenter());
+					displacement = strecthPoint.subtractionVector(getCenter());
 				}
 				strecthPoint.add(displacement);
 			}
@@ -98,11 +112,24 @@ public class PropulsionPlatform extends CenteredDrawable {
 
 	@Override
 	public void draw(Canvas canvas) {
-		platform.draw(canvas);
+		super.draw(canvas);
 		canvas.drawCircle(strecthPoint.getX().floatValue(), strecthPoint.getY().floatValue(), 10, paint);
-		canvas.drawLine(strecthPoint.getX().floatValue(), strecthPoint.getY().floatValue(), platform.evaluateLeftTopCorner().getX().floatValue(), platform.evaluateLeftTopCorner().getY().floatValue(), paint);
-		canvas.drawLine(strecthPoint.getX().floatValue(), strecthPoint.getY().floatValue(), platform.evaluateRightTopCorner().getX().floatValue(), platform.evaluateRightTopCorner().getY().floatValue(), paint);
-		canvas.drawLine(strecthPoint.getX().floatValue(), strecthPoint.getY().floatValue(), platform.getCenter().getX().floatValue(), platform.getCenter().getY().floatValue(), paint);
+		canvas.drawLine(strecthPoint.getX().floatValue(), strecthPoint.getY().floatValue(), evaluateLeftTopCorner().getX().floatValue(), evaluateLeftTopCorner().getY().floatValue(), paint);
+		canvas.drawLine(strecthPoint.getX().floatValue(), strecthPoint.getY().floatValue(), evaluateRightTopCorner().getX().floatValue(), evaluateRightTopCorner().getY().floatValue(), paint);
+		canvas.drawLine(strecthPoint.getX().floatValue(), strecthPoint.getY().floatValue(), getCenter().getX().floatValue(), getCenter().getY().floatValue(), paint);
+	}
+
+	@Override
+	public void onCollision(AnimatedShape obstacle) {
+		super.onCollision(obstacle);
+		obstacle.velocity.divideYByScalar(-5.0);
+		obstacle.velocity.setY(getCenter().getX() - obstacle.getCenter().getX());
+	}
+
+	@Override
+	public void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

@@ -19,11 +19,16 @@ public abstract class CenteredDrawable extends Drawable {
 		DEFAULT_PAINT.setStrokeWidth(4);
 	}
 
+	private static final Long		DOUBLE_TAP_TIME		= 10L;
+	private static final Double		VECINITY_DISTANCE	= 50.0;
+
 	private Displacement			center;
 
 	protected Paint					paint;
 
 	public Integer					boundingBoxRight;
+
+	private Long					lastTapTime			= 0L;
 
 	public CenteredDrawable(Displacement center, Paint paint) {
 		this.center = center;
@@ -35,7 +40,21 @@ public abstract class CenteredDrawable extends Drawable {
 		this.paint.setDither(true);
 	}
 
-	public abstract void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint);
+	public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
+		if (touchPoint.distanceTo(getCenter()) < VECINITY_DISTANCE) {
+			switch (motionEvent.getActionMasked()) {
+			case MotionEvent.ACTION_DOWN:
+				Long now = System.currentTimeMillis();
+				Long tapTime = lastTapTime - now;
+				lastTapTime = now;
+				if (tapTime < DOUBLE_TAP_TIME) {
+					onDoubleTap(motionEvent, touchPoint);
+				}
+			}
+		}
+	}
+
+	public abstract void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint);
 
 	public abstract void updateState(Long elapsedTime);
 
@@ -63,7 +82,7 @@ public abstract class CenteredDrawable extends Drawable {
 
 	}
 
-	public void onCollision(CenteredDrawable obstacle) {
+	public void onCollision(AnimatedShape obstacle) {
 		// TODO Auto-generated method stub
 
 	}

@@ -127,8 +127,6 @@ public class Rectangle extends AnimatedShape {
 		// displacementsToObstacles.clear();
 		for (CenteredDrawable obstacle : obstacles) {
 			if (obstacle instanceof Rectangle) {
-				// displacementsToObstacles.add(evaluateSmallestTouchTransaltion((Rectangle)
-				// obstacle));
 				if (intersects((Rectangle) obstacle)) {
 					return obstacle;
 				}
@@ -177,7 +175,7 @@ public class Rectangle extends AnimatedShape {
 		CenteredDrawable colidedObstacle = checkPossibleOverlap();
 		if (colidedObstacle != null) {
 			moveOutsideBoundriesOfObstacle((Rectangle) colidedObstacle);
-			onCollision(colidedObstacle);
+			onCollision((AnimatedShape) colidedObstacle);
 			colidedObstacle.onCollision(this);
 		}
 	}
@@ -211,6 +209,8 @@ public class Rectangle extends AnimatedShape {
 
 	@Override
 	public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
+		super.onMotionEvent(motionEvent, touchPoint);
+
 		if (properties.contains(Property.MOVABLE)) {
 			switch (motionEvent.getActionMasked()) {
 			case MotionEvent.ACTION_MOVE:
@@ -220,16 +220,15 @@ public class Rectangle extends AnimatedShape {
 				break;
 			}
 		}
+	}
 
-		if (properties.contains(Property.CLONEABLE) && motionEvent.getPointerCount() == 2 && touchPoint.distanceTo(getCenter()) < 50) {
-			switch (motionEvent.getActionMasked()) {
-			case MotionEvent.ACTION_MOVE:
-				Rectangle newRectangle = new Rectangle(getCenter().cloneVector(), width, height);
-				newRectangle.properties.addAll(properties);
-				newRectangle.scene = scene;
-				scene.drawables.add(newRectangle);
-				break;
-			}
+	@Override
+	public void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint) {
+		if (properties.contains(Property.CLONEABLE)) {
+			Rectangle newRectangle = new Rectangle(new Displacement(width / 2, height / 2), width, height);
+			newRectangle.properties.addAll(properties);
+			newRectangle.scene = scene;
+			scene.drawables.add(newRectangle);
 		}
 	}
 }

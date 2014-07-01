@@ -30,7 +30,7 @@ public class GameView extends AutoUpdatableView {
 
 	public final Set<CenteredDrawable>	drawables			= new CopyOnWriteArraySet<CenteredDrawable>();
 
-	private Rectangle					rectangle;
+	private Rectangle					hippo;
 
 	private Rectangle					firstObstacle;
 
@@ -43,9 +43,9 @@ public class GameView extends AutoUpdatableView {
 		Displacement platformCenter = new Displacement(200, 700);
 
 		Bitmap originalHippo_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hippo_wacky);
-		rectangle = new Rectangle(platformCenter.additionVector(new Displacement(0, -96)), 85, 101);
-		rectangle.setBitmap(originalHippo_bmp);
-		PropulsionPlatform net = new PropulsionPlatform(new Rectangle(platformCenter, 200, 20), rectangle);
+		hippo = new Rectangle(platformCenter.additionVector(new Displacement(0, -96)), 85, 101);
+		hippo.setBitmap(originalHippo_bmp);
+		PropulsionPlatform net = new PropulsionPlatform(platformCenter, 200.0, 20.0, hippo);
 
 		MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.boing);
 		crowded = MediaPlayer.create(context, R.raw.crowded);
@@ -60,11 +60,11 @@ public class GameView extends AutoUpdatableView {
 		secondObstacle = new Rectangle(new Displacement(375, 235), 60, 60);
 		secondObstacle.setFilled(false);
 
-		rectangle.obstacles.add(firstObstacle);
-		rectangle.obstacles.add(secondObstacle);
+		hippo.obstacles.add(firstObstacle);
+		hippo.obstacles.add(secondObstacle);
 
 		drawables.add(net);
-		drawables.add(rectangle);
+		drawables.add(hippo);
 		drawables.add(firstObstacle);
 		drawables.add(secondObstacle);
 	}
@@ -72,7 +72,7 @@ public class GameView extends AutoUpdatableView {
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
-		rectangle.boundingBoxRight = right;
+		hippo.boundingBoxRight = right;
 		crowded.start();
 	}
 

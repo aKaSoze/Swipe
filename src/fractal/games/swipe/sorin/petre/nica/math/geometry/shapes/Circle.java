@@ -85,4 +85,10 @@ public class Circle extends AnimatedShape {
 
 	}
 
+	@Override
+	public void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

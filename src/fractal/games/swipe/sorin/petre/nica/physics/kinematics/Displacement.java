@@ -26,18 +26,13 @@ public class Displacement extends Vector2D<Displacement> {
 		this(sx.doubleValue(), sy.doubleValue());
 	}
 
-	public Displacement delta(Displacement other) {
-		Double magnitudeTrans = getMeasureUnit().evaluateMagnitudeOrderTransformation(other.getMeasureUnit());
-		return new Displacement((other.getX() * magnitudeTrans) - getX(), (other.getY() * magnitudeTrans) - getY(), getMeasureUnit().lengthComponent);
-	}
-
 	public Boolean isZero() {
 		return getX() == 0 && getY() == 0;
 	}
-	
+
 	public static class Factory {
-        public static Displacement fromMotionEvent(MotionEvent motionEvent) {
-            return new Displacement(motionEvent.getX(), motionEvent.getY());
-        }
-    }
+		public static Displacement fromMotionEvent(MotionEvent motionEvent) {
+			return new Displacement(motionEvent.getX(), motionEvent.getY());
+		}
+	}
 }
