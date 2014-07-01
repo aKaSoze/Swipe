@@ -26,10 +26,6 @@ public class Displacement extends Vector2D<Displacement> {
 		this(sx.doubleValue(), sy.doubleValue());
 	}
 
-	public Boolean isZero() {
-		return getX() == 0 && getY() == 0;
-	}
-
 	public static class Factory {
 		public static Displacement fromMotionEvent(MotionEvent motionEvent) {
 			return new Displacement(motionEvent.getX(), motionEvent.getY());

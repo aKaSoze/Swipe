@@ -30,7 +30,7 @@ public class GameView extends AutoUpdatableView {
 
 	public final Set<CenteredDrawable>	drawables			= new CopyOnWriteArraySet<CenteredDrawable>();
 
-	private Rectangle					hippo;
+	public Rectangle					hippo;
 
 	private Rectangle					firstObstacle;
 

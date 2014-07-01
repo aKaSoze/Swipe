@@ -26,4 +26,8 @@ public abstract class AnimatedShape extends CenteredDrawable {
         velocity.add(acceleration.generatedVelocity(timeIncrement));
         lastElapsedTime = elapsedTime;
     }
+
+    public void onCollision(AnimatedShape obstacle) {
+        velocity.neutralize();
+    }
 }
