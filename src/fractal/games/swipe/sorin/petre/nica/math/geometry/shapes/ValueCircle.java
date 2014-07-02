@@ -2,7 +2,6 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
-import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class ValueCircle extends BitmapDrawable {
@@ -13,7 +12,7 @@ public class ValueCircle extends BitmapDrawable {
 
 	public Boolean		isDestroyed	= false;
 
-	public ValueCircle(Segment2D cornerToCorner, Bitmap bitmap, Long value) {
+	public ValueCircle(Displacement cornerToCorner, Bitmap bitmap, Long value) {
 		super(cornerToCorner, bitmap);
 		this.value = value;
 	}

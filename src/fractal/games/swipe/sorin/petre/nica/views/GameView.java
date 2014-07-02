@@ -88,7 +88,7 @@ public class GameView extends AutoUpdatableView {
 		CenteredDrawable closestShape = null;
 		double smallestDistance = 60;
 		for (CenteredDrawable centeredDrawable : drawables) {
-			double distanceToTouchPoint = centeredDrawable.getCenter().distanceTo(touchPoint);
+			double distanceToTouchPoint = centeredDrawable.center.distanceTo(touchPoint);
 			if (distanceToTouchPoint < smallestDistance) {
 				smallestDistance = distanceToTouchPoint;
 				closestShape = centeredDrawable;

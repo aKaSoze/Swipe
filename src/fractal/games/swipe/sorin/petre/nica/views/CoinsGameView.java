@@ -16,7 +16,6 @@ import android.view.SurfaceHolder;
 import fractal.games.swipe.R;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.ValueCircle;
-import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class CoinsGameView extends AutoUpdatableView {
@@ -69,7 +68,7 @@ public class CoinsGameView extends AutoUpdatableView {
 		CenteredDrawable closestShape = null;
 		double smallestDistance = 60;
 		for (CenteredDrawable movableShape : drawables) {
-			double distanceToTouchPoint = movableShape.getCenter().distanceTo(touchPoint);
+			double distanceToTouchPoint = movableShape.center.distanceTo(touchPoint);
 			if (distanceToTouchPoint < smallestDistance) {
 				smallestDistance = distanceToTouchPoint;
 				closestShape = movableShape;
@@ -90,8 +89,8 @@ public class CoinsGameView extends AutoUpdatableView {
 		if (elapsedTime - lastCoinAddTime > 999) {
 			Random rng = new Random();
 			Displacement topLeft = new Displacement(rng.nextInt(400), rng.nextInt(400));
-			Displacement bottomRight = topLeft.additionVector(new Displacement(coinSize, coinSize));
-			Segment2D diagonal = new Segment2D(topLeft, bottomRight);
+			Displacement diagonal = topLeft.additionVector(new Displacement(coinSize, coinSize));
+			diagonal.applyPoint = topLeft;
 			drawables.add(new ValueCircle(diagonal, goldCoin_bmp, elapsedTime));
 			lastCoinAddTime = elapsedTime;
 		}

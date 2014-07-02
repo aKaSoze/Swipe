@@ -12,16 +12,16 @@ public class Circle extends AnimatedShape {
 
 	public Double				radius;
 
-	private Boolean				isFilled;
+	private Boolean				isFilled				= false;
 
 	public Circle(Displacement center, Double radius, Paint paint) {
 		super(center, paint);
 		this.radius = radius;
-		isFilled = false;
 	}
 
 	public Circle(Displacement center, Double radius) {
-		this(center, radius, DEFAULT_PAINT);
+		super(center);
+		this.radius = radius;
 	}
 
 	public Circle(Displacement center, Integer radius) {
@@ -39,7 +39,7 @@ public class Circle extends AnimatedShape {
 
 	@Override
 	public void draw(Canvas canvas) {
-		canvas.drawCircle(getCenter().getX().floatValue(), getCenter().getY().floatValue(), radius.floatValue(), paint);
+		canvas.drawCircle(center.getX().floatValue(), center.getY().floatValue(), radius.floatValue(), paint);
 	}
 
 	@Override
@@ -64,25 +64,19 @@ public class Circle extends AnimatedShape {
 	}
 
 	private void moveToRightSideBoundry() {
-		setCenter(new Displacement(boundingBoxRight - radius, getCenter().getY().doubleValue()));
+		center = new Displacement(boundingBoxRight - radius, center.getY().doubleValue());
 	}
 
 	private boolean crossedRightSideBoundry() {
-		return getCenter().getX() + radius > boundingBoxRight;
+		return center.getX() + radius > boundingBoxRight;
 	}
 
 	private void moveToLeftSideBoundry() {
-		setCenter(new Displacement(radius, getCenter().getY().doubleValue()));
+		center = new Displacement(radius, center.getY().doubleValue());
 	}
 
 	private boolean crossedLeftSideBoundry() {
-		return getCenter().getX() - radius < 0;
-	}
-
-	@Override
-	public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
-		// TODO Auto-generated method stub
-
+		return center.getX() - radius < 0;
 	}
 
 	@Override

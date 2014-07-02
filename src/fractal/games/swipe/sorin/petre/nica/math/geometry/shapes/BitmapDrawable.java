@@ -7,7 +7,6 @@ import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
-import fractal.games.swipe.sorin.petre.nica.math.objects.Segment2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class BitmapDrawable extends CenteredDrawable {
@@ -26,8 +25,8 @@ public class BitmapDrawable extends CenteredDrawable {
 		private final Camera	camera;
 		private final Bitmap	clip;
 
-		public Tile(Bitmap original, Segment2D bounds) {
-			bitmap = Bitmap.createBitmap(bounds.xComponent.intValue(), bounds.yComponent.intValue(), Bitmap.Config.ARGB_8888);
+		public Tile(Bitmap original, Displacement bounds) {
+			bitmap = Bitmap.createBitmap(bounds.getX().intValue(), bounds.getY().intValue(), Bitmap.Config.ARGB_8888);
 			clip = null;
 			ownCanvas = new Canvas(bitmap);
 			camera = new Camera();
@@ -70,7 +69,7 @@ public class BitmapDrawable extends CenteredDrawable {
 
 	private final Bitmap	bitmap;
 
-	private Segment2D		cornerToCorner;
+	private Displacement	cornerToCorner;
 
 	private DrawState		drawState;
 
@@ -80,10 +79,10 @@ public class BitmapDrawable extends CenteredDrawable {
 
 	private Set<Tile>		tiles;
 
-	public BitmapDrawable(Segment2D cornerToCorner, Bitmap bitmap) {
-		super(cornerToCorner.middle, DEFAULT_PAINT);
+	public BitmapDrawable(Displacement cornerToCorner, Bitmap bitmap) {
+		super(cornerToCorner.evaluateMiddle());
 		this.cornerToCorner = cornerToCorner;
-		this.bitmap = Bitmap.createScaledBitmap(bitmap, cornerToCorner.xComponent.intValue(), cornerToCorner.yComponent.intValue(), true);
+		this.bitmap = Bitmap.createScaledBitmap(bitmap, cornerToCorner.getX().intValue(), cornerToCorner.getY().intValue(), true);
 		drawState = DrawState.Stable;
 	}
 
@@ -91,7 +90,7 @@ public class BitmapDrawable extends CenteredDrawable {
 	public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
 		switch (motionEvent.getActionMasked()) {
 		case MotionEvent.ACTION_MOVE:
-			setCenter(touchPoint);
+			center.makeEqualTo(touchPoint);
 		}
 	}
 
@@ -114,23 +113,16 @@ public class BitmapDrawable extends CenteredDrawable {
 	}
 
 	@Override
-	public void setCenter(Displacement newCenter) {
-		// cornerToCorner =
-		// cornerToCorner.translate(getCenter().delta(newCenter));
-		super.setCenter(newCenter);
-	}
-
-	@Override
 	public void draw(Canvas canvas) {
 		switch (drawState) {
 		case Stable:
-			canvas.drawBitmap(bitmap, cornerToCorner.firstPoint.getX().floatValue(), cornerToCorner.firstPoint.getY().floatValue(), paint);
+			canvas.drawBitmap(bitmap, cornerToCorner.applyPoint.getX().floatValue(), cornerToCorner.applyPoint.getY().floatValue(), paint);
 		case Exploding:
 			for (Tile tile : tiles) {
 				canvas.drawBitmap(tile.bitmap, tile.drawPos.getX(), tile.drawPos.getY(), paint);
 			}
 		case Exploded:
-			canvas.drawBitmap(bitmap, cornerToCorner.firstPoint.getX().floatValue(), cornerToCorner.firstPoint.getY().floatValue(), paint);
+			canvas.drawBitmap(bitmap, cornerToCorner.applyPoint.getX().floatValue(), cornerToCorner.applyPoint.getY().floatValue(), paint);
 		}
 	}
 
