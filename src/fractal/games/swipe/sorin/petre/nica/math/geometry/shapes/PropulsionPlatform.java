@@ -3,6 +3,7 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 import android.graphics.Canvas;
 import android.media.MediaPlayer;
 import android.view.MotionEvent;
+import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle.Property;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
@@ -58,6 +59,16 @@ public class PropulsionPlatform extends Rectangle {
 		default:
 			break;
 		}
+		
+//        if (properties.contains(Property.MOVABLE)) {
+//            switch (motionEvent.getActionMasked()) {
+//            case MotionEvent.ACTION_MOVE:
+//                if (touchPoint.distanceTo(evalRightTopCorner()) < 50) {
+//                    center.makeEqualTo(touchPoint);
+//                }
+//                break;
+//            }
+//        }
 	}
 
 	private void handleStrecthingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
@@ -119,7 +130,7 @@ public class PropulsionPlatform extends Rectangle {
 		super.draw(canvas);
 		Displacement springTip = strecthPoint.evaluateTip();
 		strecthPoint.draw(canvas);
-		canvas.drawCircle(springTip.getX().floatValue(), springTip.evaluateTip().getY().floatValue(), 10, paint);
+		canvas.drawCircle(springTip.getX().floatValue(), springTip.getY().floatValue(), 10, paint);
 		canvas.drawLine(springTip.getX().floatValue(), springTip.getY().floatValue(), evalLeftTopCorner().getX().floatValue(), evalLeftTopCorner().getY().floatValue(), paint);
 		canvas.drawLine(springTip.getX().floatValue(), springTip.getY().floatValue(), evalRightTopCorner().getX().floatValue(), evalRightTopCorner().getY().floatValue(), paint);
 	}
