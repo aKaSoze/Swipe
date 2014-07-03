@@ -22,8 +22,8 @@ public class Rectangle extends AnimatedShape {
 
 	public GameView					scene;
 
-	private Double					width;
-	private Double					height;
+	protected Double				width;
+	protected Double				height;
 
 	private Boolean					isFilled					= false;
 
@@ -68,6 +68,10 @@ public class Rectangle extends AnimatedShape {
 
 	public Displacement evalRightTopCorner() {
 		return new Displacement(center.getX() + evalHalfWidth(), center.getY() - evalHalfHeight());
+	}
+
+	public void setRightTopCorner(Displacement rightTopCorner) {
+		center.makeEqualTo(rightTopCorner.subtractionVector(new Displacement(evalHalfWidth(), evalHalfHeight())));
 	}
 
 	public Double evalHalfWidth() {

@@ -45,11 +45,14 @@ public class GameView extends AutoUpdatableView {
 		Bitmap originalHippo_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hippo_wacky);
 		hippo = new Rectangle(platformCenter.additionVector(new Displacement(0, -96)), 85, 101);
 		hippo.setBitmap(originalHippo_bmp);
-		PropulsionPlatform net = new PropulsionPlatform(platformCenter, 200.0, 20.0, hippo);
+		PropulsionPlatform propulsionPlatform = new PropulsionPlatform(platformCenter, 200.0, 20.0, hippo);
+		propulsionPlatform.properties.add(Property.MOVABLE);
+		propulsionPlatform.properties.add(Property.CLONEABLE);
+		propulsionPlatform.scene = this;
 
 		MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.boing);
 		crowded = MediaPlayer.create(context, R.raw.crowded);
-		net.boingSound = mediaPlayer;
+		propulsionPlatform.boingSound = mediaPlayer;
 
 		firstObstacle = new Rectangle(new Displacement(350, 455), 80, 80);
 		firstObstacle.setFilled(true);
@@ -58,12 +61,15 @@ public class GameView extends AutoUpdatableView {
 		firstObstacle.scene = this;
 
 		secondObstacle = new Rectangle(new Displacement(375, 235), 60, 60);
+		secondObstacle.properties.add(Property.MOVABLE);
+		secondObstacle.properties.add(Property.CLONEABLE);
+		secondObstacle.scene = this;
 		secondObstacle.setFilled(false);
 
 		hippo.obstacles.add(firstObstacle);
 		hippo.obstacles.add(secondObstacle);
 
-		drawables.add(net);
+		drawables.add(propulsionPlatform);
 		drawables.add(hippo);
 		drawables.add(firstObstacle);
 		drawables.add(secondObstacle);

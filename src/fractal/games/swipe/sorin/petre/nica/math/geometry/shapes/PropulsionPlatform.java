@@ -3,7 +3,6 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 import android.graphics.Canvas;
 import android.media.MediaPlayer;
 import android.view.MotionEvent;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle.Property;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
@@ -59,46 +58,6 @@ public class PropulsionPlatform extends Rectangle {
 		default:
 			break;
 		}
-		
-//        if (properties.contains(Property.MOVABLE)) {
-//            switch (motionEvent.getActionMasked()) {
-//            case MotionEvent.ACTION_MOVE:
-//                if (touchPoint.distanceTo(evalRightTopCorner()) < 50) {
-//                    center.makeEqualTo(touchPoint);
-//                }
-//                break;
-//            }
-//        }
-	}
-
-	private void handleStrecthingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
-		switch (motionEvent.getActionMasked()) {
-		case MotionEvent.ACTION_UP:
-			status = Status.RELEASED;
-			strecthingTime = elapsedTime;
-			springVelocity = new Velocity(-strecthPoint.getX() * elasticityCoeficient, -strecthPoint.getY() * elasticityCoeficient, LengthUnit.PIXEL, TimeUnit.SECOND);
-			break;
-		case MotionEvent.ACTION_MOVE:
-			Displacement rawStrecthPoint = touchPoint.subtractionVector(center);
-			if (rawStrecthPoint.magnitude() > MAX_SPRING_DISPLACEMENT) {
-				rawStrecthPoint.setMagnitude(MAX_SPRING_DISPLACEMENT);
-			}
-			if (rawStrecthPoint.getY() < 0) {
-				rawStrecthPoint.setY(0.0);
-			}
-			strecthPoint.makeEqualTo(rawStrecthPoint);
-			break;
-		}
-	}
-
-	private void handleStandingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
-		if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN && touchPoint.distanceTo(center) < 50 && touchPoint.getY() >= center.getY()) {
-			status = Status.STRECTHING;
-			projectile.velocity.neutralize();
-			projectile.acceleration.neutralize();
-			projectile.center = center.subtractionVector(new Displacement(0.0, projectile.evalHalfHeight() + evalHalfHeight()));
-			strecthPoint.makeEqualTo(touchPoint.subtractionVector(center));
-		}
 	}
 
 	@Override
@@ -140,10 +99,69 @@ public class PropulsionPlatform extends Rectangle {
 		obstacle.velocity.divideYByScalar(-5.0);
 	}
 
+	public PropulsionPlatform clonePropulsionPlatform() {
+		PropulsionPlatform newPropulsionPlatform = new PropulsionPlatform(new Displacement(evalHalfWidth(), evalHalfHeight()), width, height, projectile);
+		newPropulsionPlatform.properties.addAll(properties);
+		newPropulsionPlatform.scene = scene;
+		newPropulsionPlatform.boingSound = boingSound;
+		return newPropulsionPlatform;
+	}
+
 	@Override
 	public void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint) {
-		// TODO Auto-generated method stub
+		if (properties.contains(Property.CLONEABLE)) {
+			PropulsionPlatform newPropulsionPlatform = clonePropulsionPlatform();
+			newPropulsionPlatform.properties.addAll(properties);
+			newPropulsionPlatform.scene = scene;
+			scene.drawables.add(newPropulsionPlatform);
+			projectile.obstacles.add(newPropulsionPlatform);
+		}
+	}
 
+	private void handleStandingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
+		switch (motionEvent.getActionMasked()) {
+		case MotionEvent.ACTION_DOWN:
+			if (touchPoint.distanceTo(center) < 45 && touchPoint.getY() >= center.getY()) {
+				status = Status.STRECTHING;
+				projectile.velocity.neutralize();
+				projectile.acceleration.neutralize();
+				projectile.center = center.subtractionVector(new Displacement(0.0, projectile.evalHalfHeight() + evalHalfHeight()));
+				strecthPoint.makeEqualTo(touchPoint.subtractionVector(center));
+			}
+			if (properties.contains(Property.CLONEABLE) && touchPoint.distanceTo(evalLeftTopCorner()) < 20) {
+				PropulsionPlatform newPropulsionPlatform = clonePropulsionPlatform();
+				scene.drawables.add(newPropulsionPlatform);
+				projectile.obstacles.add(newPropulsionPlatform);
+			}
+			break;
+		case MotionEvent.ACTION_MOVE:
+			if (properties.contains(Property.MOVABLE)) {
+				if (touchPoint.distanceTo(evalRightTopCorner()) < 50) {
+					setRightTopCorner(touchPoint);
+				}
+			}
+			break;
+		}
+	}
+
+	private void handleStrecthingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
+		switch (motionEvent.getActionMasked()) {
+		case MotionEvent.ACTION_UP:
+			status = Status.RELEASED;
+			strecthingTime = elapsedTime;
+			springVelocity = new Velocity(-strecthPoint.getX() * elasticityCoeficient, -strecthPoint.getY() * elasticityCoeficient, LengthUnit.PIXEL, TimeUnit.SECOND);
+			break;
+		case MotionEvent.ACTION_MOVE:
+			Displacement rawStrecthPoint = touchPoint.subtractionVector(center);
+			if (rawStrecthPoint.magnitude() > MAX_SPRING_DISPLACEMENT) {
+				rawStrecthPoint.setMagnitude(MAX_SPRING_DISPLACEMENT);
+			}
+			if (rawStrecthPoint.getY() < 0) {
+				rawStrecthPoint.setY(0.0);
+			}
+			strecthPoint.makeEqualTo(rawStrecthPoint);
+			break;
+		}
 	}
 
 }
