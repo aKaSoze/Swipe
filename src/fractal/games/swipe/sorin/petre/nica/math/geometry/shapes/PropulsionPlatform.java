@@ -8,6 +8,7 @@ import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.swipe.sorin.petre.nica.physics.units.LengthUnit;
 import fractal.games.swipe.sorin.petre.nica.physics.units.TimeUnit;
+import fractal.games.swipe.sorin.petre.nica.views.Score;
 
 public class PropulsionPlatform extends Rectangle {
 
@@ -96,7 +97,8 @@ public class PropulsionPlatform extends Rectangle {
 
 	@Override
 	public void onCollision(AnimatedShape obstacle) {
-		obstacle.velocity.divideYByScalar(-5.0);
+		Score.instance.addPoints(3L);
+		Score.instance.postInvalidate();
 	}
 
 	public PropulsionPlatform clonePropulsionPlatform() {

@@ -38,6 +38,8 @@ public class GameView extends AutoUpdatableView {
 
 	private MediaPlayer					crowded;
 
+	public Score						score;
+
 	public GameView(Context context) {
 		super(context);
 		Displacement platformCenter = new Displacement(200, 700);
