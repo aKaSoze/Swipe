@@ -98,7 +98,6 @@ public class PropulsionPlatform extends Rectangle {
 	@Override
 	public void onCollision(AnimatedShape obstacle) {
 		Score.instance.addPoints(3L);
-		Score.instance.postInvalidate();
 	}
 
 	public PropulsionPlatform clonePropulsionPlatform() {
@@ -115,7 +114,7 @@ public class PropulsionPlatform extends Rectangle {
 			PropulsionPlatform newPropulsionPlatform = clonePropulsionPlatform();
 			newPropulsionPlatform.properties.addAll(properties);
 			newPropulsionPlatform.scene = scene;
-			scene.drawables.add(newPropulsionPlatform);
+			scene.centeredDrawables.add(newPropulsionPlatform);
 			projectile.obstacles.add(newPropulsionPlatform);
 		}
 	}
@@ -132,7 +131,7 @@ public class PropulsionPlatform extends Rectangle {
 			}
 			if (properties.contains(Property.CLONEABLE) && touchPoint.distanceTo(evalLeftTopCorner()) < 20) {
 				PropulsionPlatform newPropulsionPlatform = clonePropulsionPlatform();
-				scene.drawables.add(newPropulsionPlatform);
+				scene.centeredDrawables.add(newPropulsionPlatform);
 				projectile.obstacles.add(newPropulsionPlatform);
 			}
 			break;

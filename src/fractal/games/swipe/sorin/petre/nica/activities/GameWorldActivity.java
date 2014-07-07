@@ -6,7 +6,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import fractal.games.swipe.sorin.petre.nica.views.GameView;
-import fractal.games.swipe.sorin.petre.nica.views.Score;
 import fractal.games.swipe.sorin.petre.nica.views.TimerView;
 
 public class GameWorldActivity extends Activity {
@@ -20,7 +19,6 @@ public class GameWorldActivity extends Activity {
 		LinearLayout layout = new LinearLayout(this);
 		layout.setOrientation(LinearLayout.VERTICAL);
 		layout.addView(new TimerView(this, 50));
-		layout.addView(new Score(this));
 		layout.addView(new GameView(this));
 		setContentView(layout);
 	}

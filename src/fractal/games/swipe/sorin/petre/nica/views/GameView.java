@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -28,7 +29,9 @@ public class GameView extends AutoUpdatableView {
 
 	private Boolean						isOkToRunGameLoop;
 
-	public final Set<CenteredDrawable>	drawables			= new CopyOnWriteArraySet<CenteredDrawable>();
+	public final Set<CenteredDrawable>	centeredDrawables	= new CopyOnWriteArraySet<CenteredDrawable>();
+
+	public final Set<Drawable>			drawables			= new CopyOnWriteArraySet<Drawable>();
 
 	public Rectangle					hippo;
 
@@ -71,10 +74,13 @@ public class GameView extends AutoUpdatableView {
 		hippo.obstacles.add(firstObstacle);
 		hippo.obstacles.add(secondObstacle);
 
-		drawables.add(propulsionPlatform);
-		drawables.add(hippo);
-		drawables.add(firstObstacle);
-		drawables.add(secondObstacle);
+		Score score = new Score(200L, 200L, 5L);
+
+		centeredDrawables.add(propulsionPlatform);
+		centeredDrawables.add(hippo);
+		centeredDrawables.add(firstObstacle);
+		centeredDrawables.add(secondObstacle);
+		drawables.add(score);
 	}
 
 	@Override
@@ -86,7 +92,7 @@ public class GameView extends AutoUpdatableView {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		for (CenteredDrawable centeredDrawable : drawables) {
+		for (CenteredDrawable centeredDrawable : centeredDrawables) {
 			centeredDrawable.onMotionEvent(event, Displacement.Factory.fromMotionEvent(event));
 		}
 		return true;
@@ -95,7 +101,7 @@ public class GameView extends AutoUpdatableView {
 	private CenteredDrawable evaluateTargetShape(Displacement touchPoint) {
 		CenteredDrawable closestShape = null;
 		double smallestDistance = 60;
-		for (CenteredDrawable centeredDrawable : drawables) {
+		for (CenteredDrawable centeredDrawable : centeredDrawables) {
 			double distanceToTouchPoint = centeredDrawable.center.distanceTo(touchPoint);
 			if (distanceToTouchPoint < smallestDistance) {
 				smallestDistance = distanceToTouchPoint;
@@ -112,7 +118,7 @@ public class GameView extends AutoUpdatableView {
 	}
 
 	public void updateWorld(Long elapsedTime) {
-		for (CenteredDrawable movableShape : drawables) {
+		for (CenteredDrawable movableShape : centeredDrawables) {
 			movableShape.updateState(elapsedTime);
 		}
 	}
@@ -144,7 +150,7 @@ public class GameView extends AutoUpdatableView {
 	protected void drawSurface(Canvas canvas) {
 		backGround_drwbl.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
 		backGround_drwbl.draw(canvas);
-		for (CenteredDrawable movableShape : drawables) {
+		for (CenteredDrawable movableShape : centeredDrawables) {
 			movableShape.draw(canvas);
 		}
 	}

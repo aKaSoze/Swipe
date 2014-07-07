@@ -132,7 +132,7 @@ public class Rectangle extends AnimatedShape {
 			Rectangle newRectangle = new Rectangle(new Displacement(evalHalfWidth(), evalHalfHeight()), width, height);
 			newRectangle.properties.addAll(properties);
 			newRectangle.scene = scene;
-			scene.drawables.add(newRectangle);
+			scene.centeredDrawables.add(newRectangle);
 			scene.hippo.obstacles.add(newRectangle);
 		}
 	}

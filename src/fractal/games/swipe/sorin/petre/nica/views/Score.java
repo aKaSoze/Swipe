@@ -1,17 +1,21 @@
 package fractal.games.swipe.sorin.petre.nica.views;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
-import android.util.AttributeSet;
-import android.view.View;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 
-public class Score extends View {
+public class Score extends Drawable {
 
 	private static final Paint	paint;
 
 	public static Score			instance;
+
+	private final Long			x;
+
+	private final Long			y;
 
 	static {
 		paint = new Paint();
@@ -23,25 +27,11 @@ public class Score extends View {
 
 	private Long				points	= 0L;
 
-	public Score(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
-
-	public Score(Context context) {
-		super(context);
+	public Score(Long x, Long y, Long textSize) {
 		instance = this;
-	}
-
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		setMeasuredDimension(200, 60);
-	}
-
-	@Override
-	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
-		canvas.drawColor(Color.DKGRAY);
-		canvas.drawText(points.toString(), 0, 0, paint);
+		this.x = x;
+		this.y = y;
+		paint.setTextSize(textSize);
 	}
 
 	public void addPoints(Long points) {
@@ -50,6 +40,26 @@ public class Score extends View {
 
 	public void reset() {
 		points = 0L;
+	}
+
+	@Override
+	public void draw(Canvas canvas) {
+		canvas.drawText(points.toString(), x, y, paint);
+	}
+
+	@Override
+	public int getOpacity() {
+		return PixelFormat.OPAQUE;
+	}
+
+	@Override
+	public void setAlpha(int alpha) {
+		paint.setAlpha(alpha % 256);
+	}
+
+	@Override
+	public void setColorFilter(ColorFilter cf) {
+		// TODO Auto-generated method stub
 	}
 
 }
