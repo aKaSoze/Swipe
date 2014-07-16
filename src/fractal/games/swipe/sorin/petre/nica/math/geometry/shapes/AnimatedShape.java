@@ -2,7 +2,6 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
 import android.graphics.Paint;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
-import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 
 public abstract class AnimatedShape extends CenteredDrawable {
@@ -13,13 +12,13 @@ public abstract class AnimatedShape extends CenteredDrawable {
 
 	protected Long		lastElapsedTime;
 
-	public AnimatedShape(Displacement center, Paint paint) {
-		super(center, paint);
+	public AnimatedShape(LayoutProportions layoutProportions, Paint paint) {
+		super(layoutProportions, paint);
 		initState();
 	}
 
-	public AnimatedShape(Displacement center) {
-		super(center);
+	public AnimatedShape(LayoutProportions layoutProportions) {
+		super(layoutProportions);
 		initState();
 	}
 

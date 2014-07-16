@@ -40,6 +40,10 @@ public class Vector2D<V extends Vector2D<V>> {
 		this(x.doubleValue(), y.doubleValue());
 	}
 
+	public Vector2D() {
+		this(0.0, 0.0);
+	}
+
 	public Double getX() {
 		return x;
 	}

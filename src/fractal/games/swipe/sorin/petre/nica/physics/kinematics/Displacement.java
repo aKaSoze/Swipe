@@ -18,12 +18,20 @@ public class Displacement extends Vector2D<Displacement> {
 		this(sx, sy, LengthUnit.PIXEL);
 	}
 
+	public Displacement(Long sx, Long sy) {
+		this(sx.doubleValue(), sy.doubleValue());
+	}
+
 	public Displacement(Integer sx, Integer sy) {
 		this(sx.doubleValue(), sy.doubleValue());
 	}
 
 	public Displacement(Float sx, Float sy) {
 		this(sx.doubleValue(), sy.doubleValue());
+	}
+
+	public Displacement() {
+		this(0.0, 0.0);
 	}
 
 	public static class Factory {

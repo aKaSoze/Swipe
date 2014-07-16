@@ -22,9 +22,6 @@ public class Rectangle extends AnimatedShape {
 
 	public GameView					scene;
 
-	protected Double				width;
-	protected Double				height;
-
 	private Boolean					isFilled					= false;
 
 	private Bitmap					bitmap;
@@ -35,22 +32,16 @@ public class Rectangle extends AnimatedShape {
 
 	public final Set<Property>		properties					= new HashSet<Property>();
 
-	public Rectangle(Displacement center, Double width, Double height, Paint paint) {
-		super(center, paint);
-		initState(width, height);
+	public Rectangle(LayoutProportions layoutProportions, Paint paint) {
+		super(layoutProportions, paint);
 	}
 
-	public Rectangle(Displacement center, Double width, Double height) {
-		super(center);
-		initState(width, height);
-	}
-
-	public Rectangle(Displacement center, Integer width, Integer height) {
-		this(center, width.doubleValue(), height.doubleValue());
+	public Rectangle(LayoutProportions layoutProportions) {
+		super(layoutProportions);
 	}
 
 	public void setBitmap(Bitmap bitmap) {
-		this.bitmap = Bitmap.createScaledBitmap(bitmap, width.intValue(), height.intValue(), true);
+		this.bitmap = Bitmap.createScaledBitmap(bitmap, getWidth().intValue(), getHeight().intValue(), true);
 	}
 
 	public Boolean isFilled() {
@@ -75,11 +66,11 @@ public class Rectangle extends AnimatedShape {
 	}
 
 	public Double evalHalfWidth() {
-		return width / 2;
+		return getWidth() / 2.0;
 	}
 
 	public Double evalHalfHeight() {
-		return height / 2;
+		return getHeight() / 2.0;
 	}
 
 	public Boolean intersects(Rectangle other) {
@@ -92,7 +83,7 @@ public class Rectangle extends AnimatedShape {
 	public void updateState(Long elapsedTime) {
 		super.updateState(elapsedTime);
 
-		if (boundingBoxRight != null) {
+		if (getBounds() != null) {
 			if (crossedLeftSideBoundry()) {
 				moveToLeftSideBoundry();
 				reverseVelocityAlongX();
@@ -151,11 +142,6 @@ public class Rectangle extends AnimatedShape {
 		for (Displacement displacement : displacementsToObstacles) {
 			displacement.draw(canvas);
 		}
-	}
-
-	private void initState(Double width, Double height) {
-		this.width = width;
-		this.height = height;
 	}
 
 	private AnimatedShape checkPossibleOverlap() {

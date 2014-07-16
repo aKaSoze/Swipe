@@ -1,6 +1,8 @@
 package fractal.games.swipe.sorin.petre.nica.views;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import android.content.Context;
@@ -16,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import fractal.games.swipe.R;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
+import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable.LayoutProportions;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle.Property;
@@ -23,25 +26,24 @@ import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class GameView extends AutoUpdatableView {
 
-	private final ColorDrawable			backGround_drwbl	= new ColorDrawable(Color.BLACK);
+	private Integer									left;
+	private Integer									top;
+	private Integer									right;
+	private Integer									bottom;
 
-	private CenteredDrawable			selectedShape		= null;
+	private final ColorDrawable						backGround_drwbl	= new ColorDrawable(Color.BLACK);
 
-	private Boolean						isOkToRunGameLoop;
+	private CenteredDrawable						selectedShape		= null;
 
-	public final Set<CenteredDrawable>	centeredDrawables	= new CopyOnWriteArraySet<CenteredDrawable>();
+	private Boolean									isOkToRunGameLoop;
 
-	public final Set<Drawable>			drawables			= new CopyOnWriteArraySet<Drawable>();
+	public final Set<CenteredDrawable>				centeredDrawables	= new CopyOnWriteArraySet<CenteredDrawable>();
 
-	public Rectangle					hippo;
+	public final Map<Drawable, LayoutProportions>	drawables			= new ConcurrentHashMap<Drawable, LayoutProportions>();
 
-	private Rectangle					firstObstacle;
+	private MediaPlayer								soundTrackPlayer;
 
-	private Rectangle					secondObstacle;
-
-	private MediaPlayer					crowded;
-
-	public Score						score;
+	public Score									score;
 
 	public GameView(Context context) {
 		super(context);
@@ -56,7 +58,7 @@ public class GameView extends AutoUpdatableView {
 		propulsionPlatform.scene = this;
 
 		MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.boing);
-		crowded = MediaPlayer.create(context, R.raw.crowded);
+		soundTrackPlayer = MediaPlayer.create(context, R.raw.crowded);
 		propulsionPlatform.boingSound = mediaPlayer;
 
 		firstObstacle = new Rectangle(new Displacement(350, 455), 80, 80);
@@ -83,11 +85,19 @@ public class GameView extends AutoUpdatableView {
 		drawables.add(score);
 	}
 
+	public void addDrawable(CenteredDrawable drawable) {
+
+	}
+
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
-		hippo.boundingBoxRight = right;
-		crowded.start();
+		if (changed) {
+			for (CenteredDrawable drawable : centeredDrawables) {
+				drawable.setBounds(left, top, right, bottom);
+			}
+			soundTrackPlayer.start();
+		}
 	}
 
 	@Override
