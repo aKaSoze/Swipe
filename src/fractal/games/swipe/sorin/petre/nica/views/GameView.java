@@ -1,92 +1,42 @@
 package fractal.games.swipe.sorin.petre.nica.views;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import fractal.games.swipe.R;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable.LayoutProportions;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle.Property;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class GameView extends AutoUpdatableView {
 
-	private Integer									left;
-	private Integer									top;
-	private Integer									right;
-	private Integer									bottom;
+	private Integer						left;
+	private Integer						top;
+	private Integer						right;
+	private Integer						bottom;
 
-	private final ColorDrawable						backGround_drwbl	= new ColorDrawable(Color.BLACK);
+	private final ColorDrawable			backGround_drwbl	= new ColorDrawable(Color.BLACK);
 
-	private CenteredDrawable						selectedShape		= null;
+	private CenteredDrawable			selectedShape;
 
-	private Boolean									isOkToRunGameLoop;
+	private Boolean						isOkToRunGameLoop	= false;
 
-	public final Set<CenteredDrawable>				centeredDrawables	= new CopyOnWriteArraySet<CenteredDrawable>();
+	public final Set<CenteredDrawable>	centeredDrawables	= new CopyOnWriteArraySet<CenteredDrawable>();
 
-	public final Map<Drawable, LayoutProportions>	drawables			= new ConcurrentHashMap<Drawable, LayoutProportions>();
+	private MediaPlayer					soundTrackPlayer;
 
-	private MediaPlayer								soundTrackPlayer;
-
-	public Score									score;
+	public Score						score;
 
 	public GameView(Context context) {
 		super(context);
-		Displacement platformCenter = new Displacement(200, 700);
-
-		Bitmap originalHippo_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.hippo_wacky);
-		hippo = new Rectangle(platformCenter.additionVector(new Displacement(0, -96)), 85, 101);
-		hippo.setBitmap(originalHippo_bmp);
-		PropulsionPlatform propulsionPlatform = new PropulsionPlatform(platformCenter, 200.0, 20.0, hippo);
-		propulsionPlatform.properties.add(Property.MOVABLE);
-		propulsionPlatform.properties.add(Property.CLONEABLE);
-		propulsionPlatform.scene = this;
-
-		MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.boing);
 		soundTrackPlayer = MediaPlayer.create(context, R.raw.crowded);
-		propulsionPlatform.boingSound = mediaPlayer;
-
-		firstObstacle = new Rectangle(new Displacement(350, 455), 80, 80);
-		firstObstacle.setFilled(true);
-		firstObstacle.properties.add(Property.MOVABLE);
-		firstObstacle.properties.add(Property.CLONEABLE);
-		firstObstacle.scene = this;
-
-		secondObstacle = new Rectangle(new Displacement(375, 235), 60, 60);
-		secondObstacle.properties.add(Property.MOVABLE);
-		secondObstacle.properties.add(Property.CLONEABLE);
-		secondObstacle.scene = this;
-		secondObstacle.setFilled(false);
-
-		hippo.obstacles.add(firstObstacle);
-		hippo.obstacles.add(secondObstacle);
-
-		Score score = new Score(200L, 200L, 5L);
-
-		centeredDrawables.add(propulsionPlatform);
-		centeredDrawables.add(hippo);
-		centeredDrawables.add(firstObstacle);
-		centeredDrawables.add(secondObstacle);
-		drawables.add(score);
-	}
-
-	public void addDrawable(CenteredDrawable drawable) {
-
 	}
 
 	@Override

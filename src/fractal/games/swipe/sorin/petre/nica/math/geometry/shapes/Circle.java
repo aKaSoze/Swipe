@@ -14,18 +14,18 @@ public class Circle extends AnimatedShape {
 
 	private Boolean				isFilled				= false;
 
-	public Circle(Displacement center, Double radius, Paint paint) {
-		super(center, paint);
+	public Circle(LayoutProportions layoutProportions, Double radius, Paint paint) {
+		super(layoutProportions, paint);
 		this.radius = radius;
 	}
 
-	public Circle(Displacement center, Double radius) {
-		super(center);
+	public Circle(LayoutProportions layoutProportions, Double radius) {
+		super(layoutProportions);
 		this.radius = radius;
 	}
 
-	public Circle(Displacement center, Integer radius) {
-		this(center, radius.doubleValue());
+	public Circle(LayoutProportions layoutProportions, Integer radius) {
+		this(layoutProportions, radius.doubleValue());
 	}
 
 	public Boolean isFilled() {
@@ -46,7 +46,7 @@ public class Circle extends AnimatedShape {
 	public void updateState(Long elapsedTime) {
 		super.updateState(elapsedTime);
 
-		if (boundingBoxRight != null) {
+		if (getBounds() != null) {
 			if (crossedLeftSideBoundry()) {
 				moveToLeftSideBoundry();
 				reverseVelocityAlongX();
@@ -64,11 +64,11 @@ public class Circle extends AnimatedShape {
 	}
 
 	private void moveToRightSideBoundry() {
-		center = new Displacement(boundingBoxRight - radius, center.getY().doubleValue());
+		center = new Displacement(getBounds().right - radius, center.getY().doubleValue());
 	}
 
 	private boolean crossedRightSideBoundry() {
-		return center.getX() + radius > boundingBoxRight;
+		return center.getX() + radius > getBounds().right;
 	}
 
 	private void moveToLeftSideBoundry() {
@@ -83,6 +83,12 @@ public class Circle extends AnimatedShape {
 	public void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	protected Boolean intersects(AnimatedShape obstacle) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

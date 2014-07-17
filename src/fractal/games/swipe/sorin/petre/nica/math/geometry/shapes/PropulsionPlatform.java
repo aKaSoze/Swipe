@@ -1,6 +1,7 @@
 package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
@@ -8,7 +9,6 @@ import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.swipe.sorin.petre.nica.physics.units.LengthUnit;
 import fractal.games.swipe.sorin.petre.nica.physics.units.TimeUnit;
-import fractal.games.swipe.sorin.petre.nica.views.Score;
 
 public class PropulsionPlatform extends Rectangle {
 
@@ -32,19 +32,25 @@ public class PropulsionPlatform extends Rectangle {
 
 	public final Rectangle	projectile;
 
-	public MediaPlayer		boingSound;
+	public MediaPlayer		boingSoundPlayer;
 
-	public PropulsionPlatform(Displacement center, Double width, Double height, Rectangle projectile) {
-		super(center, width, height);
+	public PropulsionPlatform(LayoutProportions layoutProportions, Rectangle projectile, MediaPlayer boingSoundPlayer) {
+		super(layoutProportions);
 		this.projectile = projectile;
-		projectile.obstacles.add(this);
-		strecthPoint = new Displacement(0.0, 0.0);
-		strecthPoint.applyPoint = center;
+		this.boingSoundPlayer = boingSoundPlayer;
 
+		projectile.addObstacle(this);
+		strecthPoint = new Displacement(0.0, 0.0);
 		elasticityCoeficient = 18.0;
 		status = Status.STANDING;
 
 		paint.setStrokeWidth(3);
+	}
+
+	@Override
+	protected void onBoundsChange(Rect bounds) {
+		super.onBoundsChange(bounds);
+		strecthPoint.applyPoint = center;
 	}
 
 	@Override
@@ -69,7 +75,7 @@ public class PropulsionPlatform extends Rectangle {
 				projectile.velocity = new Velocity(springVelocity.getX() / 4, springVelocity.getY() / 4, LengthUnit.PIXEL, TimeUnit.SECOND);
 				projectile.acceleration = new Acceleration(0.0, 9.8, LengthUnit.METER, TimeUnit.SECOND);
 				springVelocity.neutralize();
-				boingSound.start();
+				boingSoundPlayer.start();
 				status = Status.STANDING;
 			} else {
 				Long elapsedStrecthingTime = elapsedTime - strecthingTime;
@@ -97,14 +103,12 @@ public class PropulsionPlatform extends Rectangle {
 
 	@Override
 	public void onCollision(AnimatedShape obstacle) {
-		Score.instance.addPoints(3L);
+		// Score.instance.addPoints(3L);
 	}
 
 	public PropulsionPlatform clonePropulsionPlatform() {
-		PropulsionPlatform newPropulsionPlatform = new PropulsionPlatform(new Displacement(evalHalfWidth(), evalHalfHeight()), width, height, projectile);
+		PropulsionPlatform newPropulsionPlatform = new PropulsionPlatform(layoutProportions, projectile, boingSoundPlayer);
 		newPropulsionPlatform.properties.addAll(properties);
-		newPropulsionPlatform.scene = scene;
-		newPropulsionPlatform.boingSound = boingSound;
 		return newPropulsionPlatform;
 	}
 
@@ -113,16 +117,14 @@ public class PropulsionPlatform extends Rectangle {
 		if (properties.contains(Property.CLONEABLE)) {
 			PropulsionPlatform newPropulsionPlatform = clonePropulsionPlatform();
 			newPropulsionPlatform.properties.addAll(properties);
-			newPropulsionPlatform.scene = scene;
-			scene.centeredDrawables.add(newPropulsionPlatform);
-			projectile.obstacles.add(newPropulsionPlatform);
+			projectile.addObstacle(newPropulsionPlatform);
 		}
 	}
 
 	private void handleStandingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
 		switch (motionEvent.getActionMasked()) {
 		case MotionEvent.ACTION_DOWN:
-			if (touchPoint.distanceTo(center) < 45 && touchPoint.getY() >= center.getY()) {
+			if (touchPoint.distanceTo(center) < 35) {
 				status = Status.STRECTHING;
 				projectile.velocity.neutralize();
 				projectile.acceleration.neutralize();
@@ -131,8 +133,7 @@ public class PropulsionPlatform extends Rectangle {
 			}
 			if (properties.contains(Property.CLONEABLE) && touchPoint.distanceTo(evalLeftTopCorner()) < 20) {
 				PropulsionPlatform newPropulsionPlatform = clonePropulsionPlatform();
-				scene.centeredDrawables.add(newPropulsionPlatform);
-				projectile.obstacles.add(newPropulsionPlatform);
+				projectile.addObstacle(newPropulsionPlatform);
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:

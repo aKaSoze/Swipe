@@ -7,6 +7,7 @@ import android.graphics.Paint.Style;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
@@ -32,12 +33,13 @@ public abstract class CenteredDrawable extends Drawable {
 	private Long				lastTapTime			= 0L;
 
 	public static class LayoutProportions {
-		public final Long	widthRatio;
-		public final Long	heightRatio;
-		public final Long	xRatio;
-		public final Long	yRatio;
+		public final Double	widthRatio;
+		public final Double	heightRatio;
+		public final Double	xRatio;
+		public final Double	yRatio;
 
-		public LayoutProportions(Long widthRatio, Long heightRatio, Long xRatio, Long yRatio) {
+		public LayoutProportions(Double widthRatio, Double heightRatio, Double xRatio, Double yRatio) {
+			super();
 			this.widthRatio = widthRatio;
 			this.heightRatio = heightRatio;
 			this.xRatio = xRatio;
@@ -47,6 +49,7 @@ public abstract class CenteredDrawable extends Drawable {
 
 	public CenteredDrawable(LayoutProportions layoutProportions, Paint paint) {
 		this.paint = new Paint();
+		this.layoutProportions = layoutProportions;
 		this.paint.setColor(paint.getColor());
 		this.paint.setStyle(paint.getStyle());
 		this.paint.setStrokeWidth(paint.getStrokeWidth());
@@ -75,17 +78,18 @@ public abstract class CenteredDrawable extends Drawable {
 	@Override
 	protected void onBoundsChange(Rect bounds) {
 		super.onBoundsChange(bounds);
-		Long x = layoutProportions.xRatio * (bounds.right - bounds.left);
-		Long y = layoutProportions.yRatio * (bounds.top - bounds.bottom);
+		Log.i("bounds", "bounds changed");
+		Double x = layoutProportions.xRatio * (bounds.right - bounds.left);
+		Double y = layoutProportions.yRatio * (bounds.bottom - bounds.top);
 		center = new Displacement(x, y);
 	}
 
-	protected Long getWidth() {
+	protected Double getWidth() {
 		return layoutProportions.widthRatio * (getBounds().right - getBounds().left);
 	}
 
-	protected Long getHeight() {
-		return layoutProportions.heightRatio * (getBounds().top - getBounds().bottom);
+	protected Double getHeight() {
+		return layoutProportions.heightRatio * (getBounds().bottom - getBounds().top);
 	}
 
 	@Override

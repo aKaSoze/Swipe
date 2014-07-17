@@ -91,7 +91,8 @@ public class CoinsGameView extends AutoUpdatableView {
 			Displacement topLeft = new Displacement(rng.nextInt(400), rng.nextInt(400));
 			Displacement diagonal = topLeft.additionVector(new Displacement(coinSize, coinSize));
 			diagonal.applyPoint = topLeft;
-			drawables.add(new ValueCircle(diagonal, goldCoin_bmp, elapsedTime));
+			// drawables.add(new ValueCircle(diagonal, goldCoin_bmp,
+			// elapsedTime));
 			lastCoinAddTime = elapsedTime;
 		}
 

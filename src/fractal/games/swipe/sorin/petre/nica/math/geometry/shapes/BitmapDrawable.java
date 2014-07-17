@@ -79,8 +79,8 @@ public class BitmapDrawable extends CenteredDrawable {
 
 	private Set<Tile>		tiles;
 
-	public BitmapDrawable(Displacement cornerToCorner, Bitmap bitmap) {
-		super(cornerToCorner.evaluateMiddle());
+	public BitmapDrawable(LayoutProportions layoutProportions, Displacement cornerToCorner, Bitmap bitmap) {
+		super(layoutProportions);
 		this.cornerToCorner = cornerToCorner;
 		this.bitmap = Bitmap.createScaledBitmap(bitmap, cornerToCorner.getX().intValue(), cornerToCorner.getY().intValue(), true);
 		drawState = DrawState.Stable;

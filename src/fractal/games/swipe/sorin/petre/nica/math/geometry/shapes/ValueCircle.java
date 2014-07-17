@@ -12,8 +12,8 @@ public class ValueCircle extends BitmapDrawable {
 
 	public Boolean		isDestroyed	= false;
 
-	public ValueCircle(Displacement cornerToCorner, Bitmap bitmap, Long value) {
-		super(cornerToCorner, bitmap);
+	public ValueCircle(LayoutProportions layoutProportions, Displacement cornerToCorner, Bitmap bitmap, Long value) {
+		super(layoutProportions, cornerToCorner, bitmap);
 		this.value = value;
 	}
 

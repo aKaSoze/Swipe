@@ -8,9 +8,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
-import fractal.games.swipe.sorin.petre.nica.views.GameView;
 
 public class Rectangle extends AnimatedShape {
 
@@ -20,17 +20,19 @@ public class Rectangle extends AnimatedShape {
 		MOVABLE, CLONEABLE;
 	}
 
-	public GameView					scene;
+	private Boolean						isFilled					= false;
 
-	private Boolean					isFilled					= false;
+	private Bitmap						bitmap;
 
-	private Bitmap					bitmap;
+	private final Set<Displacement>		displacementsToObstacles	= new HashSet<Displacement>();
 
-	public final Set<AnimatedShape>	obstacles					= new HashSet<AnimatedShape>();
+	public final Set<Property>			properties					= new HashSet<Property>();
 
-	private final Set<Displacement>	displacementsToObstacles	= new HashSet<Displacement>();
+	public final Set<DoubleTapHandler>	doubleTapHandlers			= new HashSet<DoubleTapHandler>();
 
-	public final Set<Property>		properties					= new HashSet<Property>();
+	public interface DoubleTapHandler {
+		void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint);
+	}
 
 	public Rectangle(LayoutProportions layoutProportions, Paint paint) {
 		super(layoutProportions, paint);
@@ -41,7 +43,15 @@ public class Rectangle extends AnimatedShape {
 	}
 
 	public void setBitmap(Bitmap bitmap) {
-		this.bitmap = Bitmap.createScaledBitmap(bitmap, getWidth().intValue(), getHeight().intValue(), true);
+		this.bitmap = bitmap;
+	}
+
+	@Override
+	protected void onBoundsChange(Rect bounds) {
+		super.onBoundsChange(bounds);
+		if (bitmap != null) {
+			bitmap = Bitmap.createScaledBitmap(bitmap, getWidth().intValue(), getHeight().intValue(), true);
+		}
 	}
 
 	public Boolean isFilled() {
@@ -73,7 +83,15 @@ public class Rectangle extends AnimatedShape {
 		return getHeight() / 2.0;
 	}
 
-	public Boolean intersects(Rectangle other) {
+	@Override
+	protected Boolean intersects(AnimatedShape obstacle) {
+		if (obstacle instanceof Rectangle) {
+			return intersects((Rectangle) obstacle);
+		}
+		return false;
+	}
+
+	private Boolean intersects(Rectangle other) {
 		Double dx = Math.abs(center.getX() - other.center.getX()) - (evalHalfWidth() + other.evalHalfWidth());
 		Double dy = Math.abs(center.getY() - other.center.getY()) - (evalHalfHeight() + other.evalHalfHeight());
 		return dx < 0 && dy < 0;
@@ -119,12 +137,8 @@ public class Rectangle extends AnimatedShape {
 
 	@Override
 	public void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint) {
-		if (properties.contains(Property.CLONEABLE)) {
-			Rectangle newRectangle = new Rectangle(new Displacement(evalHalfWidth(), evalHalfHeight()), width, height);
-			newRectangle.properties.addAll(properties);
-			newRectangle.scene = scene;
-			scene.centeredDrawables.add(newRectangle);
-			scene.hippo.obstacles.add(newRectangle);
+		for (DoubleTapHandler doubleTapHandler : doubleTapHandlers) {
+			doubleTapHandler.onDoubleTap(motionEvent, touchPoint);
 		}
 	}
 
@@ -132,27 +146,16 @@ public class Rectangle extends AnimatedShape {
 	public void draw(Canvas canvas) {
 		paint.setColor(Color.WHITE);
 		if (bitmap == null) {
-			canvas.drawRect(center.getX().floatValue() - (width.floatValue() / 2), center.getY().floatValue() - (height.floatValue() / 2), center.getX().floatValue() + (width.floatValue() / 2), center.getY()
-					.floatValue() + (height.floatValue() / 2), paint);
+			canvas.drawRect(center.getX().floatValue() - (getWidth().floatValue() / 2), center.getY().floatValue() - (getHeight().floatValue() / 2), center.getX().floatValue() + (getWidth().floatValue() / 2), center
+					.getY().floatValue() + (getHeight().floatValue() / 2), paint);
 		} else {
-			canvas.drawBitmap(bitmap, center.getX().floatValue() - (width.floatValue() / 2), center.getY().floatValue() - (height.floatValue() / 2), paint);
+			canvas.drawBitmap(bitmap, center.getX().floatValue() - (getWidth().floatValue() / 2), center.getY().floatValue() - (getHeight().floatValue() / 2), paint);
 		}
 
 		paint.setColor(Color.RED);
 		for (Displacement displacement : displacementsToObstacles) {
 			displacement.draw(canvas);
 		}
-	}
-
-	private AnimatedShape checkPossibleOverlap() {
-		for (AnimatedShape obstacle : obstacles) {
-			if (obstacle instanceof Rectangle) {
-				if (intersects((Rectangle) obstacle)) {
-					return obstacle;
-				}
-			}
-		}
-		return null;
 	}
 
 	private Displacement evaluateSmallestTouchTransaltion(Rectangle other) {
@@ -185,11 +188,11 @@ public class Rectangle extends AnimatedShape {
 	}
 
 	private void moveToRightSideBoundry() {
-		center = new Displacement(boundingBoxRight - evalHalfWidth(), center.getY());
+		center = new Displacement(getBounds().right - evalHalfWidth(), center.getY());
 	}
 
 	private Boolean crossedRightSideBoundry() {
-		return center.getX() + evalHalfWidth() > boundingBoxRight;
+		return center.getX() + evalHalfWidth() > getBounds().right;
 	}
 
 	private void reverseVelocityAlongX() {
