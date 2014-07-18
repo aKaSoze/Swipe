@@ -84,12 +84,20 @@ public abstract class CenteredDrawable extends Drawable {
 		center = new Displacement(x, y);
 	}
 
-	protected Double getWidth() {
+	protected Double evalWidth() {
 		return layoutProportions.widthRatio * (getBounds().right - getBounds().left);
 	}
 
-	protected Double getHeight() {
+	protected Double evalHeight() {
 		return layoutProportions.heightRatio * (getBounds().bottom - getBounds().top);
+	}
+
+	public Double evalHalfWidth() {
+		return evalWidth() / 2.0;
+	}
+
+	public Double evalHalfHeight() {
+		return evalHeight() / 2.0;
 	}
 
 	@Override

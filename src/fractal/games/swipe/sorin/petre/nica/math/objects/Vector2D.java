@@ -171,6 +171,10 @@ public class Vector2D<V extends Vector2D<V>> {
 		x = -x;
 	}
 
+	public void reverseY() {
+		y = -y;
+	}
+
 	public void divideXByScalar(Double divisor) {
 		x /= divisor;
 	}

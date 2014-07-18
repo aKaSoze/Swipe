@@ -5,7 +5,6 @@ import java.util.Set;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
@@ -20,15 +19,13 @@ public class Rectangle extends AnimatedShape {
 		MOVABLE, CLONEABLE;
 	}
 
-	private Boolean						isFilled					= false;
+	private Boolean						isFilled			= false;
 
 	private Bitmap						bitmap;
 
-	private final Set<Displacement>		displacementsToObstacles	= new HashSet<Displacement>();
+	public final Set<Property>			properties			= new HashSet<Property>();
 
-	public final Set<Property>			properties					= new HashSet<Property>();
-
-	public final Set<DoubleTapHandler>	doubleTapHandlers			= new HashSet<DoubleTapHandler>();
+	public final Set<DoubleTapHandler>	doubleTapHandlers	= new HashSet<DoubleTapHandler>();
 
 	public interface DoubleTapHandler {
 		void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint);
@@ -46,21 +43,17 @@ public class Rectangle extends AnimatedShape {
 		this.bitmap = bitmap;
 	}
 
-	@Override
-	protected void onBoundsChange(Rect bounds) {
-		super.onBoundsChange(bounds);
-		if (bitmap != null) {
-			bitmap = Bitmap.createScaledBitmap(bitmap, getWidth().intValue(), getHeight().intValue(), true);
-		}
+	public void setFilled(Boolean isFilled) {
+		paint.setStyle(isFilled ? Style.FILL : Style.STROKE);
+		this.isFilled = isFilled;
 	}
 
 	public Boolean isFilled() {
 		return isFilled;
 	}
 
-	public void setFilled(Boolean isFilled) {
-		paint.setStyle(isFilled ? Style.FILL : Style.STROKE);
-		this.isFilled = isFilled;
+	public void setRightTopCorner(Displacement rightTopCorner) {
+		center.makeEqualTo(rightTopCorner.subtractionVector(new Displacement(evalHalfWidth(), evalHalfHeight())));
 	}
 
 	public Displacement evalLeftTopCorner() {
@@ -69,32 +62,6 @@ public class Rectangle extends AnimatedShape {
 
 	public Displacement evalRightTopCorner() {
 		return new Displacement(center.getX() + evalHalfWidth(), center.getY() - evalHalfHeight());
-	}
-
-	public void setRightTopCorner(Displacement rightTopCorner) {
-		center.makeEqualTo(rightTopCorner.subtractionVector(new Displacement(evalHalfWidth(), evalHalfHeight())));
-	}
-
-	public Double evalHalfWidth() {
-		return getWidth() / 2.0;
-	}
-
-	public Double evalHalfHeight() {
-		return getHeight() / 2.0;
-	}
-
-	@Override
-	protected Boolean intersects(AnimatedShape obstacle) {
-		if (obstacle instanceof Rectangle) {
-			return intersects((Rectangle) obstacle);
-		}
-		return false;
-	}
-
-	private Boolean intersects(Rectangle other) {
-		Double dx = Math.abs(center.getX() - other.center.getX()) - (evalHalfWidth() + other.evalHalfWidth());
-		Double dy = Math.abs(center.getY() - other.center.getY()) - (evalHalfHeight() + other.evalHalfHeight());
-		return dx < 0 && dy < 0;
 	}
 
 	@Override
@@ -112,11 +79,26 @@ public class Rectangle extends AnimatedShape {
 			}
 		}
 
-		AnimatedShape colidedObstacle = checkPossibleOverlap();
-		if (colidedObstacle != null) {
-			moveOutsideBoundriesOfObstacle((Rectangle) colidedObstacle);
-			onCollision(colidedObstacle);
-			colidedObstacle.onCollision(this);
+		if (!velocity.isZero()) {
+			AnimatedShape colidedObstacle = checkPossibleOverlap();
+			if (colidedObstacle != null) {
+				moveOutsideBoundriesOfObstacle((Rectangle) colidedObstacle);
+				onCollision(colidedObstacle);
+				colidedObstacle.onCollision(this);
+			}
+		}
+	}
+
+	@Override
+	public void onCollision(AnimatedShape obstacle) {
+		if (obstacle instanceof Rectangle) {
+			if (touchesOnVerticalSide((Rectangle) obstacle)) {
+				velocity.reverseX();
+			} else {
+				velocity.reverseY();
+			}
+		} else {
+			super.onCollision(obstacle);
 		}
 	}
 
@@ -144,18 +126,38 @@ public class Rectangle extends AnimatedShape {
 
 	@Override
 	public void draw(Canvas canvas) {
-		paint.setColor(Color.WHITE);
 		if (bitmap == null) {
-			canvas.drawRect(center.getX().floatValue() - (getWidth().floatValue() / 2), center.getY().floatValue() - (getHeight().floatValue() / 2), center.getX().floatValue() + (getWidth().floatValue() / 2), center
-					.getY().floatValue() + (getHeight().floatValue() / 2), paint);
+			canvas.drawRect(center.getX().floatValue() - (evalHalfWidth().floatValue()), center.getY().floatValue() - (evalHeight().floatValue() / 2), center.getX().floatValue() + (evalHalfWidth().floatValue()),
+					center.getY().floatValue() + (evalHeight().floatValue() / 2), paint);
 		} else {
-			canvas.drawBitmap(bitmap, center.getX().floatValue() - (getWidth().floatValue() / 2), center.getY().floatValue() - (getHeight().floatValue() / 2), paint);
+			canvas.drawBitmap(bitmap, center.getX().floatValue() - (evalHalfWidth().floatValue()), center.getY().floatValue() - (evalHeight().floatValue() / 2), paint);
 		}
+	}
 
-		paint.setColor(Color.RED);
-		for (Displacement displacement : displacementsToObstacles) {
-			displacement.draw(canvas);
+	@Override
+	protected void onBoundsChange(Rect bounds) {
+		super.onBoundsChange(bounds);
+		if (bitmap != null) {
+			bitmap = Bitmap.createScaledBitmap(bitmap, evalWidth().intValue(), evalHeight().intValue(), true);
 		}
+	}
+
+	@Override
+	protected Boolean intersects(AnimatedShape obstacle) {
+		if (obstacle instanceof Rectangle) {
+			return intersects((Rectangle) obstacle);
+		}
+		return false;
+	}
+
+	private Boolean intersects(Rectangle other) {
+		Double dx = Math.abs(center.getX() - other.center.getX()) - (evalHalfWidth() + other.evalHalfWidth());
+		Double dy = Math.abs(center.getY() - other.center.getY()) - (evalHalfHeight() + other.evalHalfHeight());
+		return dx < 0 && dy < 0;
+	}
+
+	private Boolean touchesOnVerticalSide(Rectangle other) {
+		return Math.abs(center.getX() - other.center.getX()) - (evalHalfWidth() + other.evalHalfWidth()) == 0;
 	}
 
 	private Displacement evaluateSmallestTouchTransaltion(Rectangle other) {
@@ -180,7 +182,7 @@ public class Rectangle extends AnimatedShape {
 	}
 
 	private void moveToLeftSideBoundry() {
-		center = new Displacement(evalHalfWidth(), center.getY());
+		center.setComponents(evalHalfWidth(), center.getY());
 	}
 
 	private Boolean crossedLeftSideBoundry() {
@@ -188,7 +190,7 @@ public class Rectangle extends AnimatedShape {
 	}
 
 	private void moveToRightSideBoundry() {
-		center = new Displacement(getBounds().right - evalHalfWidth(), center.getY());
+		center.setComponents(getBounds().right - evalHalfWidth(), center.getY());
 	}
 
 	private Boolean crossedRightSideBoundry() {

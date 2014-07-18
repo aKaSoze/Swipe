@@ -12,45 +12,36 @@ import fractal.games.swipe.sorin.petre.nica.physics.units.TimeUnit;
 
 public class PropulsionPlatform extends Rectangle {
 
-	private static final Double	MAX_SPRING_DISPLACEMENT	= 200.0;
-
 	private enum Status {
 		STANDING, STRECTHING, RELEASED;
 	}
 
-	private Displacement	strecthPoint;
+	private static final Double	ELASTICITY_COEFICIENT	= 18.0;															;
 
-	private Double			elasticityCoeficient;
+	private Double				maxSpringDisplacement;
 
-	private Status			status;
+	private Displacement		strecthPoint			= new Displacement(0.0, 0.0);
 
-	private Long			strecthingTime;
+	private Status				status					= Status.STANDING;
 
-	private Long			elapsedTime;
+	private Long				strecthingTime;
 
-	private Velocity		springVelocity;
+	private Long				elapsedTime;
 
-	public final Rectangle	projectile;
+	private Velocity			springVelocity			= new Velocity(0.0, 0.0, LengthUnit.PIXEL, TimeUnit.SECOND);
 
-	public MediaPlayer		boingSoundPlayer;
+	public final AnimatedShape	projectile;
 
-	public PropulsionPlatform(LayoutProportions layoutProportions, Rectangle projectile, MediaPlayer boingSoundPlayer) {
+	public MediaPlayer			boingSoundPlayer;
+
+	public PropulsionPlatform(LayoutProportions layoutProportions, AnimatedShape projectile, MediaPlayer boingSoundPlayer) {
 		super(layoutProportions);
 		this.projectile = projectile;
 		this.boingSoundPlayer = boingSoundPlayer;
-
 		projectile.addObstacle(this);
-		strecthPoint = new Displacement(0.0, 0.0);
-		elasticityCoeficient = 18.0;
-		status = Status.STANDING;
-
+		projectile.velocity = new Velocity(0.0, 0.0, LengthUnit.PIXEL, TimeUnit.SECOND);
+		projectile.acceleration = new Acceleration(0.0, 0.0, LengthUnit.METER, TimeUnit.SECOND);
 		paint.setStrokeWidth(3);
-	}
-
-	@Override
-	protected void onBoundsChange(Rect bounds) {
-		super.onBoundsChange(bounds);
-		strecthPoint.applyPoint = center;
 	}
 
 	@Override
@@ -72,11 +63,11 @@ public class PropulsionPlatform extends Rectangle {
 		this.elapsedTime = elapsedTime;
 		if (status == Status.RELEASED) {
 			if (strecthPoint.isZero()) {
-				projectile.velocity = new Velocity(springVelocity.getX() / 4, springVelocity.getY() / 4, LengthUnit.PIXEL, TimeUnit.SECOND);
-				projectile.acceleration = new Acceleration(0.0, 9.8, LengthUnit.METER, TimeUnit.SECOND);
+				projectile.velocity.setComponents(springVelocity.getX() / 4, springVelocity.getY() / 4);
+				projectile.acceleration.setY(9.8);
 				springVelocity.neutralize();
-				boingSoundPlayer.start();
 				status = Status.STANDING;
+				boingSoundPlayer.start();
 			} else {
 				Long elapsedStrecthingTime = elapsedTime - strecthingTime;
 				strecthingTime = elapsedTime;
@@ -89,16 +80,6 @@ public class PropulsionPlatform extends Rectangle {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void draw(Canvas canvas) {
-		super.draw(canvas);
-		Displacement springTip = strecthPoint.evaluateTip();
-		strecthPoint.draw(canvas);
-		canvas.drawCircle(springTip.getX().floatValue(), springTip.getY().floatValue(), 10, paint);
-		canvas.drawLine(springTip.getX().floatValue(), springTip.getY().floatValue(), evalLeftTopCorner().getX().floatValue(), evalLeftTopCorner().getY().floatValue(), paint);
-		canvas.drawLine(springTip.getX().floatValue(), springTip.getY().floatValue(), evalRightTopCorner().getX().floatValue(), evalRightTopCorner().getY().floatValue(), paint);
 	}
 
 	@Override
@@ -121,6 +102,23 @@ public class PropulsionPlatform extends Rectangle {
 		}
 	}
 
+	@Override
+	public void draw(Canvas canvas) {
+		super.draw(canvas);
+		Displacement springTip = strecthPoint.evaluateTip();
+		strecthPoint.draw(canvas);
+		canvas.drawCircle(springTip.getX().floatValue(), springTip.getY().floatValue(), 10, paint);
+		canvas.drawLine(springTip.getX().floatValue(), springTip.getY().floatValue(), evalLeftTopCorner().getX().floatValue(), evalLeftTopCorner().getY().floatValue(), paint);
+		canvas.drawLine(springTip.getX().floatValue(), springTip.getY().floatValue(), evalRightTopCorner().getX().floatValue(), evalRightTopCorner().getY().floatValue(), paint);
+	}
+
+	@Override
+	protected void onBoundsChange(Rect bounds) {
+		super.onBoundsChange(bounds);
+		strecthPoint.applyPoint = center;
+		maxSpringDisplacement = evalWidth();
+	}
+
 	private void handleStandingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
 		switch (motionEvent.getActionMasked()) {
 		case MotionEvent.ACTION_DOWN:
@@ -131,14 +129,10 @@ public class PropulsionPlatform extends Rectangle {
 				projectile.center = center.subtractionVector(new Displacement(0.0, projectile.evalHalfHeight() + evalHalfHeight()));
 				strecthPoint.makeEqualTo(touchPoint.subtractionVector(center));
 			}
-			if (properties.contains(Property.CLONEABLE) && touchPoint.distanceTo(evalLeftTopCorner()) < 20) {
-				PropulsionPlatform newPropulsionPlatform = clonePropulsionPlatform();
-				projectile.addObstacle(newPropulsionPlatform);
-			}
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (properties.contains(Property.MOVABLE)) {
-				if (touchPoint.distanceTo(evalRightTopCorner()) < 50) {
+				if (touchPoint.distanceTo(evalRightTopCorner()) < 35) {
 					setRightTopCorner(touchPoint);
 				}
 			}
@@ -151,12 +145,12 @@ public class PropulsionPlatform extends Rectangle {
 		case MotionEvent.ACTION_UP:
 			status = Status.RELEASED;
 			strecthingTime = elapsedTime;
-			springVelocity = new Velocity(-strecthPoint.getX() * elasticityCoeficient, -strecthPoint.getY() * elasticityCoeficient, LengthUnit.PIXEL, TimeUnit.SECOND);
+			springVelocity.setComponents(-strecthPoint.getX() * ELASTICITY_COEFICIENT, -strecthPoint.getY() * ELASTICITY_COEFICIENT);
 			break;
 		case MotionEvent.ACTION_MOVE:
 			Displacement rawStrecthPoint = touchPoint.subtractionVector(center);
-			if (rawStrecthPoint.magnitude() > MAX_SPRING_DISPLACEMENT) {
-				rawStrecthPoint.setMagnitude(MAX_SPRING_DISPLACEMENT);
+			if (rawStrecthPoint.magnitude() > maxSpringDisplacement) {
+				rawStrecthPoint.setMagnitude(maxSpringDisplacement);
 			}
 			if (rawStrecthPoint.getY() < 0) {
 				rawStrecthPoint.setY(0.0);
