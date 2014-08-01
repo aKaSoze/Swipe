@@ -7,7 +7,7 @@ import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class Painting extends Rectangle {
 
-	public Bitmap	bitmap;
+	protected Bitmap	bitmap;
 
 	public Painting(LayoutProportions layoutProportions, Bitmap bitmap) {
 		super(layoutProportions);
