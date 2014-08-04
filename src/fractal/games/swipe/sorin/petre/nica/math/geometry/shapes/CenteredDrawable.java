@@ -11,7 +11,6 @@ import android.graphics.Paint.Style;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.math.objects.Vector2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
@@ -103,7 +102,6 @@ public abstract class CenteredDrawable extends Drawable {
 	@Override
 	protected void onBoundsChange(Rect bounds) {
 		super.onBoundsChange(bounds);
-		Log.i("bounds", "bounds changed");
 		Double x = layoutProportions.xRatio * (bounds.right - bounds.left);
 		Double y = layoutProportions.yRatio * (bounds.bottom - bounds.top);
 		center.setComponents(x, y);
