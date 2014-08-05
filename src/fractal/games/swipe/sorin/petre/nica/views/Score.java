@@ -9,10 +9,10 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable.LayoutProportions;
 
 public class Score extends Drawable {
 
+	private static final String	FONT	= "fonts/Blazed.ttf";
 	public static final double	SCALE_FACTOR	= 1.159;
 	private LayoutProportions	layoutProportions;
 
@@ -31,7 +31,7 @@ public class Score extends Drawable {
 	private Long				points			= 0L;
 
 	public Score(LayoutProportions layoutProportions, AssetManager assets) {
-		paint.setTypeface(Typeface.createFromAsset(assets, "fonts/Blazed.ttf"));
+		paint.setTypeface(Typeface.createFromAsset(assets, FONT));
 		this.layoutProportions = layoutProportions;
 	}
 

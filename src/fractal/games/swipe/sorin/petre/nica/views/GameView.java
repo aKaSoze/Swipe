@@ -55,10 +55,10 @@ public class GameView extends AutoUpdatableView {
 		super.onLayout(changed, left, top, right, bottom);
 		if (changed) {
 			followedObject.setBounds(left, top, right, bottom);
-			coordinateTransaltion.setComponents(Double.valueOf(left), bottom + followedObject.center.getY() + bottom / 2);
+			coordinateTransaltion.setComponents(Double.valueOf(left), bottom + followedObject.center.y + bottom / 2);
 			for (CenteredDrawable drawable : centeredDrawables) {
 				drawable.setBounds(left, top, right, bottom);
-				drawable.drawTranslation.setComponents(coordinateTransaltion.getX(), coordinateTransaltion.getY());
+				drawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
 			}
 			backGround_drwbl = Bitmap.createScaledBitmap(backGround_drwbl, right - left, bottom - top, true);
 			if (score != null) {
@@ -70,7 +70,7 @@ public class GameView extends AutoUpdatableView {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		realTouchPoint.setComponents(Double.valueOf(event.getX()), coordinateTransaltion.getY() - event.getY());
+		realTouchPoint.setComponents(Double.valueOf(event.getX()), coordinateTransaltion.y - event.getY());
 		for (CenteredDrawable centeredDrawable : centeredDrawables) {
 			centeredDrawable.onMotionEvent(event, realTouchPoint);
 		}
@@ -126,10 +126,10 @@ public class GameView extends AutoUpdatableView {
 
 	@Override
 	protected void drawSurface(Canvas canvas) {
-		coordinateTransaltion.setComponents(Double.valueOf(getLeft()), getBottom() + followedObject.center.getY() - (getBottom() / 2));
-		canvas.drawBitmap(backGround_drwbl, coordinateTransaltion.getX().floatValue() - getLeft(), coordinateTransaltion.getY().floatValue() - getBottom(), DEFAULT_PAINT);
+		coordinateTransaltion.setComponents(Double.valueOf(getLeft()), getBottom() + followedObject.center.y - (getBottom() / 2));
+		canvas.drawBitmap(backGround_drwbl, coordinateTransaltion.x.floatValue() - getLeft(), coordinateTransaltion.y.floatValue() - getBottom(), DEFAULT_PAINT);
 		for (CenteredDrawable centeredDrawable : centeredDrawables) {
-			centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.getX(), coordinateTransaltion.getY());
+			centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
 			centeredDrawable.draw(canvas);
 		}
 		if (score != null) {

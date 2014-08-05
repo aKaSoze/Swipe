@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public class Rectangle extends AnimatedShape {
 
@@ -43,11 +44,11 @@ public class Rectangle extends AnimatedShape {
 	}
 
 	public Displacement evalLeftTopCorner() {
-		return new Displacement(center.getX() - evalHalfWidth(), center.getY() + evalHalfHeight());
+		return new Displacement(center.x - evalHalfWidth(), center.y + evalHalfHeight());
 	}
 
 	public Displacement evalRightTopCorner() {
-		return new Displacement(center.getX() + evalHalfWidth(), center.getY() + evalHalfHeight());
+		return new Displacement(center.x + evalHalfWidth(), center.y + evalHalfHeight());
 	}
 
 	@Override
@@ -104,8 +105,8 @@ public class Rectangle extends AnimatedShape {
 	@Override
 	public void draw(Canvas canvas) {
 		Displacement center = evalDrawCenter();
-		canvas.drawRect(center.getX().floatValue() - (evalHalfWidth().floatValue()), center.getY().floatValue() - (evalHalfHeight().floatValue()), center.getX().floatValue() + (evalHalfWidth().floatValue()), center
-				.getY().floatValue() + (evalHalfHeight().floatValue()), paint);
+		canvas.drawRect(center.x.floatValue() - (evalHalfWidth().floatValue()), center.y.floatValue() - (evalHalfHeight().floatValue()), center.x.floatValue() + (evalHalfWidth().floatValue()), center.y.floatValue()
+				+ (evalHalfHeight().floatValue()), paint);
 	}
 
 	@Override
@@ -117,18 +118,18 @@ public class Rectangle extends AnimatedShape {
 	}
 
 	private Boolean intersects(Rectangle other) {
-		Double dx = Math.abs(center.getX() - other.center.getX()) - (evalHalfWidth() + other.evalHalfWidth());
-		Double dy = Math.abs(center.getY() - other.center.getY()) - (evalHalfHeight() + other.evalHalfHeight());
+		Double dx = Math.abs(center.x - other.center.x) - (evalHalfWidth() + other.evalHalfWidth());
+		Double dy = Math.abs(center.y - other.center.y) - (evalHalfHeight() + other.evalHalfHeight());
 		return dx < 0 && dy < 0;
 	}
 
 	private Boolean touchesOnVerticalSide(Rectangle other) {
-		return Math.abs(center.getX() - other.center.getX()) - (evalHalfWidth() + other.evalHalfWidth()) == 0;
+		return Math.abs(center.x - other.center.x) - (evalHalfWidth() + other.evalHalfWidth()) == 0;
 	}
 
 	private Displacement evaluateSmallestTouchTransaltion(Rectangle other) {
-		Double centerDx = center.getX() - other.center.getX();
-		Double centerDy = center.getY() - other.center.getY();
+		Double centerDx = center.x - other.center.x;
+		Double centerDy = center.y - other.center.y;
 		Double dx = Math.abs(Math.abs(centerDx) - (evalHalfWidth() + other.evalHalfWidth()));
 		Double dy = Math.abs(Math.abs(centerDy) - (evalHalfHeight() + other.evalHalfHeight()));
 
@@ -148,23 +149,29 @@ public class Rectangle extends AnimatedShape {
 	}
 
 	private void moveToLeftSideBoundry() {
-		center.setComponents(evalHalfWidth(), center.getY());
+		center.setComponents(evalHalfWidth(), center.y);
 	}
 
 	private Boolean crossedLeftSideBoundry() {
-		return center.getX() - evalHalfWidth() < 0;
+		return center.x - evalHalfWidth() < 0;
 	}
 
 	private void moveToRightSideBoundry() {
-		center.setComponents(getBounds().right - evalHalfWidth(), center.getY());
+		center.setComponents(getBounds().right - evalHalfWidth(), center.y);
 	}
 
 	private Boolean crossedRightSideBoundry() {
-		return center.getX() + evalHalfWidth() > getBounds().right;
+		return center.x + evalHalfWidth() > getBounds().right;
 	}
 
 	private void reverseVelocityAlongX() {
 		velocity.reverseX();
 		velocity.divideXByScalar(COLLISION_SPEED_LOSS);
+	}
+
+	@Override
+	public void onMove(Displacement translation) {
+		// TODO Auto-generated method stub
+
 	}
 }

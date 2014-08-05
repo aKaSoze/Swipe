@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import fractal.games.swipe.sorin.petre.nica.collections.RollingList;
 import fractal.games.swipe.sorin.petre.nica.collections.Tuple2;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public class Billboard extends Painting {
 

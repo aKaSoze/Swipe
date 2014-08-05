@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public class PaintingFactory extends Painting {
 
@@ -19,8 +20,8 @@ public class PaintingFactory extends Painting {
 	public void draw(Canvas canvas) {
 		super.draw(canvas);
 		Displacement drawCenter = evalDrawCenter();
-		canvas.drawRect(drawCenter.getX().floatValue() - (evalHalfWidth().floatValue()), drawCenter.getY().floatValue() - (evalHalfHeight().floatValue()),
-				drawCenter.getX().floatValue() + (evalHalfWidth().floatValue()), drawCenter.getY().floatValue() + (evalHalfHeight().floatValue()), paint);
+		canvas.drawRect(drawCenter.x.floatValue() - (evalHalfWidth().floatValue()), drawCenter.y.floatValue() - (evalHalfHeight().floatValue()), drawCenter.x.floatValue() + (evalHalfWidth().floatValue()),
+				drawCenter.y.floatValue() + (evalHalfHeight().floatValue()), paint);
 	}
 
 	@Override

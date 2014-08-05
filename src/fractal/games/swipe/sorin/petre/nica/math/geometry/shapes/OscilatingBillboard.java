@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import fractal.games.swipe.sorin.petre.nica.collections.Tuple2;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public class OscilatingBillboard extends Billboard {
 

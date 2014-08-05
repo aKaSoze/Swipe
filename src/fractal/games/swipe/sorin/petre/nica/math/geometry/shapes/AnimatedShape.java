@@ -6,6 +6,7 @@ import java.util.Set;
 import android.graphics.Paint;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public abstract class AnimatedShape extends CenteredDrawable {
 
@@ -13,7 +14,7 @@ public abstract class AnimatedShape extends CenteredDrawable {
 
 	public Velocity						velocity;
 
-	private final Set<AnimatedShape>	obstacles	= new HashSet<AnimatedShape>();
+	protected final Set<AnimatedShape>	obstacles	= new HashSet<AnimatedShape>();
 
 	public AnimatedShape(LayoutProportions layoutProportions, Paint paint) {
 		super(layoutProportions, paint);

@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable.LayoutProportions;
 
 public class LevelDefinition {
 
@@ -13,14 +12,15 @@ public class LevelDefinition {
 
 	public final CenteredDrawableSerialForm			followedObject;
 
-	public void loadLevel(LevelDefinition levelDefinition) {
-		selectedShape = null;
-		centeredDrawables.clear();
-		followedObject = fromSerialForm(levelDefinition.followedObject);
-		for (CenteredDrawableSerialForm serialForm : levelDefinition.centeredDrawables) {
-			centeredDrawables.add(fromSerialForm(serialForm));
-		}
-	}
+	// public void loadLevel(LevelDefinition levelDefinition) {
+	// selectedShape = null;
+	// centeredDrawables.clear();
+	// followedObject = fromSerialForm(levelDefinition.followedObject);
+	// for (CenteredDrawableSerialForm serialForm :
+	// levelDefinition.centeredDrawables) {
+	// centeredDrawables.add(fromSerialForm(serialForm));
+	// }
+	// }
 
 	public LevelDefinition(CenteredDrawableSerialForm followedObject) {
 		this.followedObject = followedObject;
