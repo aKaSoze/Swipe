@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public class RammedPainting extends Painting {
 
@@ -21,8 +22,8 @@ public class RammedPainting extends Painting {
     public void draw(Canvas canvas) {
         super.draw(canvas);
         Displacement center = evalDrawCenter();
-        canvas.drawRect(center.getX().floatValue() - (evalHalfWidth().floatValue()), center.getY().floatValue() - (evalHalfHeight().floatValue()), center.getX().floatValue() + (evalHalfWidth().floatValue()), center
-                .getY().floatValue() + (evalHalfHeight().floatValue()), paint);
+        canvas.drawRect(center.x.floatValue() - (evalHalfWidth().floatValue()), center.y.floatValue() - (evalHalfHeight().floatValue()), center.x.floatValue() + (evalHalfWidth().floatValue()), center.y.floatValue()
+                + (evalHalfHeight().floatValue()), paint);
     }
 
     public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
