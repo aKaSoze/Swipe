@@ -30,22 +30,22 @@ public abstract class CenteredDrawable extends Drawable {
         MOVABLE, CLONEABLE;
     }
 
-    private static final Long   DOUBLE_TAP_TIME   = 300L;
-    private static final Double VECINITY_DISTANCE = 50.0;
+    private static final Long     DOUBLE_TAP_TIME   = 300L;
+    protected static final Double VECINITY_DISTANCE = 50.0;
 
-    public final Set<Property>  properties        = new HashSet<Property>();
+    public final Set<Property>    properties        = new HashSet<Property>();
 
-    public Displacement         center            = new Displacement(0, 0);
+    public Displacement           center            = new Displacement(0, 0);
 
-    private Displacement        drawCenter        = new Displacement(0, 0);
+    private Displacement          drawCenter        = new Displacement(0, 0);
 
-    public Displacement         drawTranslation   = new Displacement(0, 0);
+    public Displacement           drawTranslation   = new Displacement(0, 0);
 
-    public LayoutProportions    layoutProportions;
+    public LayoutProportions      layoutProportions;
 
-    protected final Paint       paint;
+    protected final Paint         paint;
 
-    private Long                lastTapTime       = 0L;
+    private Long                  lastTapTime       = 0L;
 
     public static class LayoutProportions {
         public final Double widthRatio;
