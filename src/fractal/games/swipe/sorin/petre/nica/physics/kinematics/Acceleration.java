@@ -25,7 +25,7 @@ public class Acceleration extends Vector2D<Acceleration> {
 		Double timeMagnitude = Math.sqrt(1 / getMeasureUnit().timeComponent.magnitudeOrder);
 		Double timeInUnit = elapsedTime.doubleValue() * (TimeUnit.MILLISECOND.magnitudeOrder / timeMagnitude);
 		TimeUnit velocityTimeUnit = new TimeUnit("t'", timeMagnitude);
-		return new Velocity(getX() * timeInUnit, getY() * timeInUnit, getMeasureUnit().lengthComponent, velocityTimeUnit);
+		return new Velocity(x * timeInUnit, y * timeInUnit, getMeasureUnit().lengthComponent, velocityTimeUnit);
 	}
 
 }

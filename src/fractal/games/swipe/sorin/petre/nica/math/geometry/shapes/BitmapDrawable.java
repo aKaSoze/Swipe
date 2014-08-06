@@ -6,8 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
-import fractal.games.swipe.sorin.petre.nica.math.objects.Point2D;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public class BitmapDrawable extends CenteredDrawable {
 
@@ -19,14 +19,14 @@ public class BitmapDrawable extends CenteredDrawable {
 
 	private class Tile {
 
-		public Point2D			drawPos;
+		public Displacement		drawPos;
 		public Bitmap			bitmap;
 		public Canvas			ownCanvas;
 		private final Camera	camera;
 		private final Bitmap	clip;
 
 		public Tile(Bitmap original, Displacement bounds) {
-			bitmap = Bitmap.createBitmap(bounds.getX().intValue(), bounds.getY().intValue(), Bitmap.Config.ARGB_8888);
+			bitmap = Bitmap.createBitmap(bounds.x.intValue(), bounds.y.intValue(), Bitmap.Config.ARGB_8888);
 			clip = null;
 			ownCanvas = new Canvas(bitmap);
 			camera = new Camera();
@@ -82,7 +82,7 @@ public class BitmapDrawable extends CenteredDrawable {
 	public BitmapDrawable(LayoutProportions layoutProportions, Displacement cornerToCorner, Bitmap bitmap) {
 		super(layoutProportions);
 		this.cornerToCorner = cornerToCorner;
-		this.bitmap = Bitmap.createScaledBitmap(bitmap, cornerToCorner.getX().intValue(), cornerToCorner.getY().intValue(), true);
+		this.bitmap = Bitmap.createScaledBitmap(bitmap, cornerToCorner.x.intValue(), cornerToCorner.y.intValue(), true);
 		drawState = DrawState.Stable;
 	}
 
@@ -116,18 +116,24 @@ public class BitmapDrawable extends CenteredDrawable {
 	public void draw(Canvas canvas) {
 		switch (drawState) {
 		case Stable:
-			canvas.drawBitmap(bitmap, cornerToCorner.applyPoint.getX().floatValue(), cornerToCorner.applyPoint.getY().floatValue(), paint);
+			canvas.drawBitmap(bitmap, cornerToCorner.applyPoint.x.floatValue(), cornerToCorner.applyPoint.y.floatValue(), paint);
 		case Exploding:
 			for (Tile tile : tiles) {
-				canvas.drawBitmap(tile.bitmap, tile.drawPos.getX(), tile.drawPos.getY(), paint);
+				canvas.drawBitmap(tile.bitmap, tile.drawPos.x.floatValue(), tile.drawPos.y.floatValue(), paint);
 			}
 		case Exploded:
-			canvas.drawBitmap(bitmap, cornerToCorner.applyPoint.getX().floatValue(), cornerToCorner.applyPoint.getY().floatValue(), paint);
+			canvas.drawBitmap(bitmap, cornerToCorner.applyPoint.x.floatValue(), cornerToCorner.applyPoint.y.floatValue(), paint);
 		}
 	}
 
 	@Override
 	public void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onMove(Displacement translation) {
 		// TODO Auto-generated method stub
 
 	}

@@ -5,6 +5,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public class Circle extends AnimatedShape {
 
@@ -39,7 +40,7 @@ public class Circle extends AnimatedShape {
 
 	@Override
 	public void draw(Canvas canvas) {
-		canvas.drawCircle(center.getX().floatValue(), center.getY().floatValue(), radius.floatValue(), paint);
+		canvas.drawCircle(center.x.floatValue(), center.y.floatValue(), radius.floatValue(), paint);
 	}
 
 	@Override
@@ -64,19 +65,19 @@ public class Circle extends AnimatedShape {
 	}
 
 	private void moveToRightSideBoundry() {
-		center = new Displacement(getBounds().right - radius, center.getY().doubleValue());
+		center = new Displacement(getBounds().right - radius, center.y.doubleValue());
 	}
 
 	private boolean crossedRightSideBoundry() {
-		return center.getX() + radius > getBounds().right;
+		return center.x + radius > getBounds().right;
 	}
 
 	private void moveToLeftSideBoundry() {
-		center = new Displacement(radius, center.getY().doubleValue());
+		center = new Displacement(radius, center.y.doubleValue());
 	}
 
 	private boolean crossedLeftSideBoundry() {
-		return center.getX() - radius < 0;
+		return center.x - radius < 0;
 	}
 
 	@Override
@@ -89,6 +90,12 @@ public class Circle extends AnimatedShape {
 	protected Boolean intersects(AnimatedShape obstacle) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void onMove(Displacement translation) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

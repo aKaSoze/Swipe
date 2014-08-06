@@ -26,6 +26,7 @@ public class Velocity extends Vector2D<Velocity> {
 	public Displacement generatedDisplacement(Long elapsedTime) {
 		Double timeMagnitude = 1 / getMeasureUnit().timeComponent.magnitudeOrder;
 		Double timeInUnit = elapsedTime.doubleValue() * (TimeUnit.MILLISECOND.magnitudeOrder / timeMagnitude);
-		return new Displacement(getX() * timeInUnit, getY() * timeInUnit, getMeasureUnit().lengthComponent);
+		return new Displacement(x * timeInUnit, y * timeInUnit, getMeasureUnit().lengthComponent);
 	}
+
 }

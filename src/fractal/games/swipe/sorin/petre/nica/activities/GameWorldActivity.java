@@ -9,13 +9,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import fractal.games.swipe.R;
-import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable.LayoutProportions;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.CenteredDrawable.Property;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Painting;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform.CollisionHandler;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.RammedPainting;
 import fractal.games.swipe.sorin.petre.nica.views.GameView;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 import fractal.games.swipe.sorin.petre.nica.views.Score;
 
 public class GameWorldActivity extends Activity {

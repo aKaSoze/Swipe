@@ -6,6 +6,7 @@ import java.util.Set;
 import android.graphics.Paint;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public abstract class AnimatedShape extends CenteredDrawable {
 
@@ -13,9 +14,7 @@ public abstract class AnimatedShape extends CenteredDrawable {
 
 	public Velocity						velocity;
 
-	protected Long						lastElapsedTime;
-
-	private final Set<AnimatedShape>	obstacles	= new HashSet<AnimatedShape>();
+	protected final Set<AnimatedShape>	obstacles	= new HashSet<AnimatedShape>();
 
 	public AnimatedShape(LayoutProportions layoutProportions, Paint paint) {
 		super(layoutProportions, paint);
@@ -28,16 +27,14 @@ public abstract class AnimatedShape extends CenteredDrawable {
 	}
 
 	private void initState() {
-		lastElapsedTime = 0L;
 		acceleration = new Acceleration(0.0, 0.0);
 		velocity = new Velocity(0, 0);
 	}
 
 	public void updateState(Long elapsedTime) {
-		Long timeIncrement = elapsedTime - lastElapsedTime;
+		super.updateState(elapsedTime);
 		center.add(velocity.generatedDisplacement(timeIncrement));
 		velocity.add(acceleration.generatedVelocity(timeIncrement));
-		lastElapsedTime = elapsedTime;
 	}
 
 	public void onCollision(AnimatedShape obstacle) {

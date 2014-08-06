@@ -3,6 +3,7 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public class ValueCircle extends BitmapDrawable {
 

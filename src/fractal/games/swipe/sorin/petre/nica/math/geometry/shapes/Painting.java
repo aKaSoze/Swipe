@@ -4,10 +4,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
+import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public class Painting extends Rectangle {
 
-	public Bitmap	bitmap;
+	protected Bitmap	bitmap;
 
 	public Painting(LayoutProportions layoutProportions, Bitmap bitmap) {
 		super(layoutProportions);
@@ -17,7 +18,7 @@ public class Painting extends Rectangle {
 	@Override
 	public void draw(Canvas canvas) {
 		Displacement drawCenter = evalDrawCenter();
-		canvas.drawBitmap(bitmap, drawCenter.getX().floatValue() - (evalHalfWidth().floatValue()), drawCenter.getY().floatValue() - (evalHalfHeight().floatValue()), paint);
+		canvas.drawBitmap(bitmap, drawCenter.x.floatValue() - (evalHalfWidth().floatValue()), drawCenter.y.floatValue() - (evalHalfHeight().floatValue()), paint);
 	}
 
 	@Override
