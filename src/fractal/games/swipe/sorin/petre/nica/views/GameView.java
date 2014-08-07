@@ -72,6 +72,12 @@ public class GameView extends AutoUpdatableView {
 		}
 	}
 
+	public void addWorldObject(CenteredDrawable drawable) {
+		drawable.setBounds(getLeft(), getTop(), getRight(), getBottom());
+		drawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+		centeredDrawables.add(drawable);
+	}
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		realTouchPoint.setComponents(Double.valueOf(event.getX()), coordinateTransaltion.y - event.getY());
@@ -94,12 +100,6 @@ public class GameView extends AutoUpdatableView {
 		return closestShape;
 	}
 
-	public void addWorldObject(CenteredDrawable drawable) {
-		drawable.setBounds(getLeft(), getTop(), getRight(), getBottom());
-		drawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
-		centeredDrawables.add(drawable);
-	}
-
 	@Override
 	protected void onDraw(Canvas canvas) {
 		drawSurface(canvas);
@@ -112,7 +112,7 @@ public class GameView extends AutoUpdatableView {
 	}
 
 	@Override
-	protected Runnable getBehavior() {
+	protected Runnable behavior() {
 		return new Runnable() {
 			@Override
 			public void run() {
@@ -137,7 +137,7 @@ public class GameView extends AutoUpdatableView {
 	@Override
 	protected void drawSurface(Canvas canvas) {
 		coordinateTransaltion.setComponents(Double.valueOf(getLeft()), getBottom() + followedObject.center.y - (getBottom() / 2));
-		canvas.drawBitmap(backGround_drwbl, coordinateTransaltion.x.floatValue() - getLeft(), coordinateTransaltion.y.floatValue() - getBottom(), DEFAULT_PAINT);
+		canvas.drawBitmap(backGround_drwbl, getLeft(), getTop(), DEFAULT_PAINT);
 		for (CenteredDrawable centeredDrawable : centeredDrawables) {
 			centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
 			centeredDrawable.draw(canvas);

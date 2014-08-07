@@ -161,4 +161,5 @@ public abstract class CenteredDrawable extends Drawable {
 
 		return serialization;
 	}
+
 }

@@ -113,7 +113,7 @@ public class CoinsGameView extends AutoUpdatableView {
 	}
 
 	@Override
-	protected Runnable getBehavior() {
+	protected Runnable behavior() {
 		return new Runnable() {
 			@Override
 			public void run() {
