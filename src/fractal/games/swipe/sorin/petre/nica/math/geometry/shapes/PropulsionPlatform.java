@@ -3,11 +3,13 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
-import android.util.Log;
 import android.view.MotionEvent;
+import fractal.games.swipe.R;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
@@ -15,7 +17,7 @@ import fractal.games.swipe.sorin.petre.nica.physics.units.LengthUnit;
 import fractal.games.swipe.sorin.petre.nica.physics.units.TimeUnit;
 import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
-public class PropulsionPlatform extends Rectangle {
+public class PropulsionPlatform extends Painting {
 
 	private enum Status {
 		STANDING, STRECTHING, RELEASED;
@@ -25,7 +27,7 @@ public class PropulsionPlatform extends Rectangle {
 		void onCollison();
 	}
 
-	private static final Double		ELASTICITY_COEFICIENT	= 18.0;															;
+	private static final Double		ELASTICITY_COEFICIENT	= 18.0;
 
 	private Double					maxSpringDisplacement;
 
@@ -45,10 +47,13 @@ public class PropulsionPlatform extends Rectangle {
 
 	public Set<CollisionHandler>	collisionHandlers		= new HashSet<PropulsionPlatform.CollisionHandler>();
 
-	public PropulsionPlatform(LayoutProportions layoutProportions, AnimatedShape projectile, MediaPlayer boingSoundPlayer) {
-		super(layoutProportions);
+	private final Context			context;
+
+	public PropulsionPlatform(Context context, LayoutProportions layoutProportions, AnimatedShape projectile) {
+		super(layoutProportions, BitmapFactory.decodeResource(context.getResources(), R.drawable.beam));
+		this.context = context;
+		this.boingSoundPlayer = MediaPlayer.create(context, R.raw.boing);
 		this.projectile = projectile;
-		this.boingSoundPlayer = boingSoundPlayer;
 		projectile.addObstacle(this);
 		projectile.velocity = new Velocity(0.0, 0.0, LengthUnit.PIXEL, TimeUnit.SECOND);
 		projectile.acceleration = new Acceleration(0.0, 0.0, LengthUnit.METER, TimeUnit.SECOND);
@@ -95,7 +100,6 @@ public class PropulsionPlatform extends Rectangle {
 
 	@Override
 	public void onCollision(AnimatedShape obstacle) {
-		Log.i("velocity", obstacle.velocity.magnitude().toString());
 		if (obstacle.velocity.magnitude() < 20) {
 			obstacle.acceleration.neutralize();
 			obstacle.velocity.neutralize();
@@ -106,7 +110,7 @@ public class PropulsionPlatform extends Rectangle {
 	}
 
 	public PropulsionPlatform clonePropulsionPlatform() {
-		PropulsionPlatform newPropulsionPlatform = new PropulsionPlatform(layoutProportions, projectile, boingSoundPlayer);
+		PropulsionPlatform newPropulsionPlatform = new PropulsionPlatform(context, layoutProportions, projectile);
 		newPropulsionPlatform.properties.addAll(properties);
 		return newPropulsionPlatform;
 	}
@@ -140,14 +144,14 @@ public class PropulsionPlatform extends Rectangle {
 	protected void onBoundsChange(Rect bounds) {
 		super.onBoundsChange(bounds);
 		strecthPoint.applyPoint = center;
-		maxSpringDisplacement = evalWidth() * 0.9;
+		maxSpringDisplacement = evalWidth();
 		projectile.center.setComponents(center.x, center.y + projectile.evalHalfHeight() + evalHalfHeight());
 	}
 
 	private void handleStandingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
 		switch (motionEvent.getActionMasked()) {
 		case MotionEvent.ACTION_DOWN:
-			if (touchPoint.distanceTo(center) < 35) {
+			if (touchPoint.distanceTo(center) < VECINITY_DISTANCE) {
 				status = Status.STRECTHING;
 				projectile.velocity.neutralize();
 				projectile.acceleration.neutralize();
@@ -157,7 +161,7 @@ public class PropulsionPlatform extends Rectangle {
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (properties.contains(Property.MOVABLE)) {
-				if (touchPoint.distanceTo(evalRightTopCorner()) < 35) {
+				if (touchPoint.distanceTo(evalRightTopCorner()) < VECINITY_DISTANCE) {
 					setRightTopCorner(touchPoint);
 				}
 			}
