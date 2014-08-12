@@ -3,6 +3,7 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
@@ -22,12 +23,12 @@ public class Rectangle extends AnimatedShape {
 		void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint);
 	}
 
-	public Rectangle(LayoutProportions layoutProportions, Paint paint) {
-		super(layoutProportions, paint);
+	public Rectangle(Context context, LayoutProportions layoutProportions, Paint paint) {
+		super(context, layoutProportions, paint);
 	}
 
-	public Rectangle(LayoutProportions layoutProportions) {
-		super(layoutProportions);
+	public Rectangle(Context context, LayoutProportions layoutProportions) {
+		super(context, layoutProportions);
 	}
 
 	public void setFilled(Boolean isFilled) {
@@ -88,11 +89,6 @@ public class Rectangle extends AnimatedShape {
 		} else {
 			super.onCollision(obstacle);
 		}
-	}
-
-	@Override
-	public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
-		super.onMotionEvent(motionEvent, touchPoint);
 	}
 
 	@Override

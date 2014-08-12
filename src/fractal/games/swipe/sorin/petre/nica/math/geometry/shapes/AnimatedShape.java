@@ -3,6 +3,7 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.content.Context;
 import android.graphics.Paint;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
@@ -16,13 +17,13 @@ public abstract class AnimatedShape extends CenteredDrawable {
 
 	protected final Set<AnimatedShape>	obstacles	= new HashSet<AnimatedShape>();
 
-	public AnimatedShape(LayoutProportions layoutProportions, Paint paint) {
-		super(layoutProportions, paint);
+	public AnimatedShape(Context context, LayoutProportions layoutProportions, Paint paint) {
+		super(context, layoutProportions, paint);
 		initState();
 	}
 
-	public AnimatedShape(LayoutProportions layoutProportions) {
-		super(layoutProportions);
+	public AnimatedShape(Context context, LayoutProportions layoutProportions) {
+		super(context, layoutProportions);
 		initState();
 	}
 

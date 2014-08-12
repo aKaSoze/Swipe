@@ -1,6 +1,8 @@
 package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
@@ -10,9 +12,9 @@ public class Painting extends Rectangle {
 
 	protected Bitmap	bitmap;
 
-	public Painting(LayoutProportions layoutProportions, Bitmap bitmap) {
-		super(layoutProportions);
-		this.bitmap = bitmap;
+	public Painting(Context context, LayoutProportions layoutProportions, Integer resourceId) {
+		super(context, layoutProportions);
+		this.bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId);
 	}
 
 	@Override

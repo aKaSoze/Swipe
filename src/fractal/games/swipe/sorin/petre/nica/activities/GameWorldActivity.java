@@ -1,8 +1,6 @@
 package fractal.games.swipe.sorin.petre.nica.activities;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -49,20 +47,19 @@ public class GameWorldActivity extends Activity {
 		propulsionPlatform.properties.add(Property.MOVABLE);
 		propulsionPlatform.addObstacle(hippo);
 
-		Tuple2<Bitmap, Long> slide1 = new Tuple2<Bitmap, Long>(BitmapFactory.decodeResource(getResources(), R.drawable.evil_monkey), 700L);
-		Tuple2<Bitmap, Long> slide2 = new Tuple2<Bitmap, Long>(BitmapFactory.decodeResource(getResources(), R.drawable.monkey_banana), 700L);
-		OscilatingBillboard monkey = new OscilatingBillboard(new LayoutProportions(0.1, 0.08, 0.3, 0.3), new Displacement(300, 0), new Velocity(7, 0), slide1, slide2);
+		Tuple2<Integer, Long> slide1 = new Tuple2<Integer, Long>(R.drawable.evil_monkey, 700L);
+		Tuple2<Integer, Long> slide2 = new Tuple2<Integer, Long>(R.drawable.monkey_banana, 700L);
+		OscilatingBillboard monkey = new OscilatingBillboard(this, new LayoutProportions(0.1, 0.08, 0.3, 0.3), new Displacement(300, 0), new Velocity(7, 0), slide1, slide2);
 		monkey.addObstacle(hippo);
 
-		Sensor circleOfFire = new Sensor(BitmapFactory.decodeResource(getResources(), R.drawable.ring_of_fire), new Rectangle(new LayoutProportions(0.02, 0.01, 0.1, 1.1)), new Rectangle(new LayoutProportions(0.02,
-				0.01, 0.9, 1.4)));
+		Sensor circleOfFire = new Sensor(this, R.drawable.ring_of_fire, new Rectangle(this, new LayoutProportions(0.02, 0.01, 0.1, 1.1)), new Rectangle(this, new LayoutProportions(0.02, 0.01, 0.9, 1.4)));
 		circleOfFire.addObstacle(hippo);
 
-		final Painting box = new Painting(new LayoutProportions(0.1, 0.08, 0.5, 0.9), BitmapFactory.decodeResource(getResources(), R.drawable.reflector_1));
+		final Painting box = new Painting(this, new LayoutProportions(0.1, 0.08, 0.5, 0.9), R.drawable.reflector_1);
 		box.properties.add(Property.MOVABLE);
 		box.addObstacle(hippo);
 
-		RammedPainting boxFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.0, 0.9), BitmapFactory.decodeResource(getResources(), R.drawable.reflector_1));
+		RammedPainting boxFactory = new RammedPainting(this, new LayoutProportions(0.1, 0.08, 0.0, 0.9), R.drawable.reflector_1);
 		boxFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
 			@Override
 			public void onPaintingCreated(Painting painting) {

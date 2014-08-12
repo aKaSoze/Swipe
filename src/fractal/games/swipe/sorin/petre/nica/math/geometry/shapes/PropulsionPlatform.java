@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
@@ -50,7 +49,7 @@ public class PropulsionPlatform extends Painting {
 	private final Context			context;
 
 	public PropulsionPlatform(Context context, LayoutProportions layoutProportions, AnimatedShape projectile) {
-		super(layoutProportions, BitmapFactory.decodeResource(context.getResources(), R.drawable.beam));
+		super(context, layoutProportions, R.drawable.beam);
 		this.context = context;
 		this.boingSoundPlayer = MediaPlayer.create(context, R.raw.boing);
 		this.projectile = projectile;
