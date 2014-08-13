@@ -27,7 +27,7 @@ public class PropulsionPlatform extends Painting {
 		void onCollison();
 	}
 
-	private static final Double		ELASTICITY_COEFICIENT	= 18.0;
+	private static final Double		ELASTICITY_COEFICIENT	= 19.0;
 
 	private Double					maxSpringDisplacement;
 
@@ -57,7 +57,7 @@ public class PropulsionPlatform extends Painting {
 		projectile.addObstacle(this);
 		projectile.velocity = new Velocity(0.0, 0.0, LengthUnit.PIXEL, TimeUnit.SECOND);
 		projectile.acceleration = new Acceleration(0.0, 0.0, LengthUnit.METER, TimeUnit.SECOND);
-		paint.setStrokeWidth(3);
+		paint.setStrokeWidth(1);
 	}
 
 	@Override

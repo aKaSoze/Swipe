@@ -41,7 +41,7 @@ public class GameWorldActivity extends Activity {
 
 		final Hippo hippo = new Hippo(this, new LayoutProportions(0.19, 0.14, 0.3, 0.8));
 
-		PropulsionPlatform propulsionPlatform = new PropulsionPlatform(this, new LayoutProportions(0.25, 0.01, 0.3, 0.7), hippo);
+		PropulsionPlatform propulsionPlatform = new PropulsionPlatform(this, new LayoutProportions(0.25, 0.025, 0.3, 0.7), hippo);
 		propulsionPlatform.properties.add(Property.MOVABLE);
 		propulsionPlatform.addObstacle(hippo);
 
