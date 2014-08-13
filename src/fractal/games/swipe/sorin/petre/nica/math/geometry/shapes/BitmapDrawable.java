@@ -2,6 +2,7 @@ package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
 import java.util.Set;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Camera;
 import android.graphics.Canvas;
@@ -79,8 +80,8 @@ public class BitmapDrawable extends CenteredDrawable {
 
 	private Set<Tile>		tiles;
 
-	public BitmapDrawable(LayoutProportions layoutProportions, Displacement cornerToCorner, Bitmap bitmap) {
-		super(layoutProportions);
+	public BitmapDrawable(Context context, LayoutProportions layoutProportions, Displacement cornerToCorner, Bitmap bitmap) {
+		super(context, layoutProportions);
 		this.cornerToCorner = cornerToCorner;
 		this.bitmap = Bitmap.createScaledBitmap(bitmap, cornerToCorner.x.intValue(), cornerToCorner.y.intValue(), true);
 		drawState = DrawState.Stable;

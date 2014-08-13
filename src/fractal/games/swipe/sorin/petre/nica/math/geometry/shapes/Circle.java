@@ -1,5 +1,6 @@
 package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
@@ -15,18 +16,18 @@ public class Circle extends AnimatedShape {
 
 	private Boolean				isFilled				= false;
 
-	public Circle(LayoutProportions layoutProportions, Double radius, Paint paint) {
-		super(layoutProportions, paint);
+	public Circle(Context context, LayoutProportions layoutProportions, Double radius, Paint paint) {
+		super(context, layoutProportions, paint);
 		this.radius = radius;
 	}
 
-	public Circle(LayoutProportions layoutProportions, Double radius) {
-		super(layoutProportions);
+	public Circle(Context context, LayoutProportions layoutProportions, Double radius) {
+		super(context, layoutProportions);
 		this.radius = radius;
 	}
 
-	public Circle(LayoutProportions layoutProportions, Integer radius) {
-		this(layoutProportions, radius.doubleValue());
+	public Circle(Context context, LayoutProportions layoutProportions, Integer radius) {
+		this(context, layoutProportions, radius.doubleValue());
 	}
 
 	public Boolean isFilled() {

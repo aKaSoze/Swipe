@@ -1,6 +1,6 @@
 package fractal.games.swipe.sorin.petre.nica.math.geometry.shapes;
 
-import android.graphics.Bitmap;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
@@ -14,8 +14,11 @@ public class RammedPainting extends Painting {
 
 	public PaintingCreatedHandler	paintingCreatedHandler;
 
-	public RammedPainting(LayoutProportions layoutProportions, Bitmap bitmap) {
-		super(layoutProportions, bitmap);
+	private final Integer			resourceId;
+
+	public RammedPainting(Context context, LayoutProportions layoutProportions, Integer resourceId) {
+		super(context, layoutProportions, resourceId);
+		this.resourceId = resourceId;
 	}
 
 	@Override
@@ -30,7 +33,7 @@ public class RammedPainting extends Painting {
 		if (touchPoint.distanceTo(center) < VECINITY_DISTANCE) {
 			switch (motionEvent.getActionMasked()) {
 			case MotionEvent.ACTION_DOWN:
-				Painting painting = new Painting(layoutProportions, bitmap);
+				Painting painting = new Painting(context, layoutProportions, resourceId);
 				painting.properties.add(Property.MOVABLE);
 				paintingCreatedHandler.onPaintingCreated(painting);
 				break;
