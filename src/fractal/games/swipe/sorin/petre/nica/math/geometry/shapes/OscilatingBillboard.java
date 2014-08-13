@@ -34,4 +34,8 @@ public class OscilatingBillboard extends Billboard {
 		originalCenter.makeEqualTo(center);
 	}
 
+	@Override
+	public void onCollision(AnimatedShape obstacle) {
+	}
+
 }

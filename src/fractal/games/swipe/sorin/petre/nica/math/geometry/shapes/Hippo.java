@@ -9,4 +9,20 @@ public class Hippo extends Painting {
 	public Hippo(Context context, LayoutProportions layoutProportions) {
 		super(context, layoutProportions, R.drawable.hippo_wacky);
 	}
+
+	@Override
+	public void updateState(Long elapsedTime) {
+		super.updateState(elapsedTime);
+		if (getBounds() != null) {
+			if (crossedLeftSideBoundry()) {
+				moveToLeftSideBoundry();
+				reverseVelocityAlongX();
+			}
+			if (crossedRightSideBoundry()) {
+				moveToRightSideBoundry();
+				reverseVelocityAlongX();
+			}
+		}
+	}
+
 }

@@ -55,18 +55,6 @@ public class Rectangle extends AnimatedShape {
 	@Override
 	public void updateState(Long elapsedTime) {
 		super.updateState(elapsedTime);
-
-		if (getBounds() != null) {
-			if (crossedLeftSideBoundry()) {
-				moveToLeftSideBoundry();
-				reverseVelocityAlongX();
-			}
-			if (crossedRightSideBoundry()) {
-				moveToRightSideBoundry();
-				reverseVelocityAlongX();
-			}
-		}
-
 		if (!velocity.isZero()) {
 			AnimatedShape colidedObstacle = checkPossibleOverlap();
 			if (colidedObstacle != null) {
@@ -119,7 +107,7 @@ public class Rectangle extends AnimatedShape {
 		return dx < 0 && dy < 0;
 	}
 
-	private Boolean touchesOnVerticalSide(Rectangle other) {
+	protected Boolean touchesOnVerticalSide(Rectangle other) {
 		return Math.abs(center.x - other.center.x) - (evalHalfWidth() + other.evalHalfWidth()) == 0;
 	}
 
@@ -144,23 +132,23 @@ public class Rectangle extends AnimatedShape {
 		center.add(escapeDisplacement);
 	}
 
-	private void moveToLeftSideBoundry() {
+	protected void moveToLeftSideBoundry() {
 		center.setComponents(evalHalfWidth(), center.y);
 	}
 
-	private Boolean crossedLeftSideBoundry() {
+	protected Boolean crossedLeftSideBoundry() {
 		return center.x - evalHalfWidth() < 0;
 	}
 
-	private void moveToRightSideBoundry() {
+	protected void moveToRightSideBoundry() {
 		center.setComponents(getBounds().right - evalHalfWidth(), center.y);
 	}
 
-	private Boolean crossedRightSideBoundry() {
+	protected Boolean crossedRightSideBoundry() {
 		return center.x + evalHalfWidth() > getBounds().right;
 	}
 
-	private void reverseVelocityAlongX() {
+	protected void reverseVelocityAlongX() {
 		velocity.reverseX();
 		velocity.divideXByScalar(COLLISION_SPEED_LOSS);
 	}

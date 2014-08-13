@@ -37,29 +37,34 @@ public class GameWorldActivity extends Activity {
 
 		final GameView gameView = new GameView(this);
 
-		final Hippo hippo = new Hippo(this, new LayoutProportions(0.19, 0.14, 0.3, 0.8));
+		final Hippo hippo = new Hippo(this, new LayoutProportions(0.19, 0.14, 0.3, 1.78));
+		hippo.acceleration.y = -9.8;
 
 		PropulsionPlatform propulsionPlatform = new PropulsionPlatform(this, new LayoutProportions(0.25, 0.01, 0.3, 0.7), hippo);
-		propulsionPlatform.properties.add(Property.MOVABLE);
 		propulsionPlatform.addObstacle(hippo);
 
-		PropulsionPlatform propulsionPlatform2 = new PropulsionPlatform(this, new LayoutProportions(0.25, 0.01, 0.3, 1.5), hippo);
-		propulsionPlatform.properties.add(Property.MOVABLE);
+		PropulsionPlatform propulsionPlatform2 = new PropulsionPlatform(this, new LayoutProportions(0.25, 0.01, 0.8, 1.2), hippo);
+		propulsionPlatform.addObstacle(hippo);
+
+		PropulsionPlatform propulsionPlatform3 = new PropulsionPlatform(this, new LayoutProportions(0.25, 0.01, 0.4, 1.7), hippo);
+		propulsionPlatform.addObstacle(hippo);
+
+		PropulsionPlatform propulsionPlatform4 = new PropulsionPlatform(this, new LayoutProportions(0.25, 0.01, 0.5, 2.2), hippo);
 		propulsionPlatform.addObstacle(hippo);
 
 		Tuple2<Integer, Long> slide1 = new Tuple2<Integer, Long>(R.drawable.evil_monkey, 700L);
 		Tuple2<Integer, Long> slide2 = new Tuple2<Integer, Long>(R.drawable.monkey_banana, 700L);
-		OscilatingBillboard monkey = new OscilatingBillboard(this, new LayoutProportions(0.1, 0.08, 0.3, 0.3), new Displacement(300, 0), new Velocity(7, 0), slide1, slide2);
+		OscilatingBillboard monkey = new OscilatingBillboard(this, new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(7, 0), slide1, slide2);
 		monkey.addObstacle(hippo);
 
-		Sensor circleOfFire = new Sensor(this, R.drawable.ring_of_fire, new Rectangle(this, new LayoutProportions(0.02, 0.01, 0.1, 1.1)), new Rectangle(this, new LayoutProportions(0.02, 0.01, 0.9, 1.4)));
+		Sensor circleOfFire = new Sensor(this, R.drawable.ring_of_fire, new Rectangle(this, new LayoutProportions(0.02, 0.01, 0.98, 1.9)), new Rectangle(this, new LayoutProportions(0.02, 0.01, 0.8, 2.1)));
 		circleOfFire.addObstacle(hippo);
 
-		final Painting box = new Painting(this, new LayoutProportions(0.1, 0.08, 0.5, 0.9), R.drawable.reflector_1);
+		final Painting box = new Painting(this, new LayoutProportions(0.1, 0.08, 0.5, 1.5), R.drawable.reflector_1);
 		box.properties.add(Property.MOVABLE);
 		box.addObstacle(hippo);
 
-		RammedPainting boxFactory = new RammedPainting(this, new LayoutProportions(0.1, 0.08, 0.0, 0.9), R.drawable.reflector_1);
+		RammedPainting boxFactory = new RammedPainting(this, new LayoutProportions(0.05, 0.08, 0.1, 0.9), R.drawable.reflector_1);
 		boxFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
 			@Override
 			public void onPaintingCreated(Painting painting) {
@@ -71,8 +76,10 @@ public class GameWorldActivity extends Activity {
 		gameView.addWorldObject(hippo);
 		gameView.addWorldObject(propulsionPlatform);
 		// gameView.addWorldObject(propulsionPlatform2);
+		// gameView.addWorldObject(propulsionPlatform3);
+		// gameView.addWorldObject(propulsionPlatform4);
 		gameView.addWorldObject(box);
-		gameView.addWorldObject(boxFactory);
+		// gameView.addWorldObject(boxFactory);
 		gameView.addWorldObject(monkey);
 		gameView.addWorldObject(circleOfFire);
 		gameView.followedObject = hippo;

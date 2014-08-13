@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.MotionEvent;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement.Semiplane;
@@ -43,17 +42,15 @@ public class Sensor extends Rectangle {
 	public void updateState(Long elapsedTime) {
 		super.updateState(elapsedTime);
 
-		for (AnimatedShape obstacle : obstacles) {
-			if (obstacle.intersects(this)) {
+		for (AnimatedShape obstacle : firstSupport.obstacles) {
+			if (!closeByObstacles.containsKey(obstacle) && obstacle.intersects(this)) {
 				closeByObstacles.put(obstacle, diagonal.sideOfPoint(obstacle.center));
-				Log.i("sensor", "obstacle is in sensor proximity on semiplane" + diagonal.sideOfPoint(obstacle.center));
 			} else {
-				if (closeByObstacles.containsKey(obstacle)) {
+				if (closeByObstacles.containsKey(obstacle) && !obstacle.intersects(this)) {
 					if (diagonal.sideOfPoint(obstacle.center) != closeByObstacles.get(obstacle) && obstaclePassedHandler != null) {
 						obstaclePassedHandler.onObstaclePassed(obstacle);
 					}
 					closeByObstacles.remove(obstacle);
-					Log.i("sensor", "obstacle exited sensor proximity on semiplane" + diagonal.sideOfPoint(obstacle.center));
 				}
 			}
 		}
@@ -63,7 +60,6 @@ public class Sensor extends Rectangle {
 	public void addObstacle(AnimatedShape obstacle) {
 		firstSupport.addObstacle(obstacle);
 		secondSupport.addObstacle(obstacle);
-		obstacles.add(obstacle);
 	}
 
 	@Override

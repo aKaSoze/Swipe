@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import fractal.games.swipe.R;
-import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.swipe.sorin.petre.nica.physics.units.LengthUnit;
@@ -26,11 +25,11 @@ public class PropulsionPlatform extends Painting {
 		void onCollison();
 	}
 
-	private static final Double		ELASTICITY_COEFICIENT	= 18.0;
+	private static final Double		ELASTICITY_COEFICIENT	= 17.8;
 
 	private Double					maxSpringDisplacement;
 
-	private Displacement			strecthPoint			= new Displacement(0.0, 0.0);
+	private Displacement			strecthPoint			= new Displacement();
 
 	private Status					status					= Status.STANDING;
 
@@ -40,7 +39,7 @@ public class PropulsionPlatform extends Painting {
 
 	private Velocity				springVelocity			= new Velocity(0.0, 0.0, LengthUnit.PIXEL, TimeUnit.SECOND);
 
-	public final AnimatedShape		projectile;
+	public final Rectangle			projectile;
 
 	public MediaPlayer				boingSoundPlayer;
 
@@ -48,14 +47,12 @@ public class PropulsionPlatform extends Painting {
 
 	private final Context			context;
 
-	public PropulsionPlatform(Context context, LayoutProportions layoutProportions, AnimatedShape projectile) {
+	public PropulsionPlatform(Context context, LayoutProportions layoutProportions, Rectangle projectile) {
 		super(context, layoutProportions, R.drawable.beam);
 		this.context = context;
 		this.boingSoundPlayer = MediaPlayer.create(context, R.raw.boing);
 		this.projectile = projectile;
 		projectile.addObstacle(this);
-		projectile.velocity = new Velocity(0.0, 0.0, LengthUnit.PIXEL, TimeUnit.SECOND);
-		projectile.acceleration = new Acceleration(0.0, 0.0, LengthUnit.METER, TimeUnit.SECOND);
 		paint.setStrokeWidth(3);
 	}
 
@@ -78,11 +75,13 @@ public class PropulsionPlatform extends Painting {
 		this.elapsedTime = elapsedTime;
 		if (status == Status.RELEASED) {
 			if (strecthPoint.isZero()) {
-				projectile.velocity.setComponents(springVelocity.x / 4, springVelocity.y / 4);
-				projectile.acceleration.y = -9.8;
+				if (touchesOnVerticalSide(projectile)) {
+					projectile.velocity.setComponents(springVelocity.x / 4, springVelocity.y / 4);
+					projectile.acceleration.y = -9.8;
+					boingSoundPlayer.start();
+				}
 				springVelocity.neutralize();
 				status = Status.STANDING;
-				boingSoundPlayer.start();
 			} else {
 				Long elapsedStrecthingTime = elapsedTime - strecthingTime;
 				strecthingTime = elapsedTime;
@@ -102,6 +101,8 @@ public class PropulsionPlatform extends Painting {
 		if (obstacle.velocity.magnitude() < 20) {
 			obstacle.acceleration.neutralize();
 			obstacle.velocity.neutralize();
+			obstacle.center.x = center.x;
+			obstacle.center.y = center.y + evalHalfHeight() + obstacle.evalHalfHeight();
 		}
 		for (CollisionHandler collisonHandler : collisionHandlers) {
 			collisonHandler.onCollison();
@@ -144,7 +145,6 @@ public class PropulsionPlatform extends Painting {
 		super.onBoundsChange(bounds);
 		strecthPoint.applyPoint = center;
 		maxSpringDisplacement = evalWidth();
-		projectile.center.setComponents(center.x, center.y + projectile.evalHalfHeight() + evalHalfHeight());
 	}
 
 	private void handleStandingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
@@ -152,9 +152,6 @@ public class PropulsionPlatform extends Painting {
 		case MotionEvent.ACTION_DOWN:
 			if (touchPoint.distanceTo(center) < VECINITY_DISTANCE) {
 				status = Status.STRECTHING;
-				projectile.velocity.neutralize();
-				projectile.acceleration.neutralize();
-				projectile.center.setComponents(center.x, center.y + projectile.evalHalfHeight() + evalHalfHeight());
 				strecthPoint.makeEqualTo(touchPoint.subtractionVector(center));
 			}
 			break;
