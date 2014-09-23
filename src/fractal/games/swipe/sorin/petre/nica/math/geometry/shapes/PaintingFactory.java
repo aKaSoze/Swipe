@@ -19,7 +19,7 @@ public class PaintingFactory extends Painting {
 	public void draw(Canvas canvas) {
 		super.draw(canvas);
 		Displacement drawCenter = evalDrawCenter();
-		canvas.drawRect(drawCenter.x.floatValue() - (evalHalfWidth().floatValue()), drawCenter.y.floatValue() - (evalHalfHeight().floatValue()), drawCenter.x.floatValue() + (evalHalfWidth().floatValue()),
-				drawCenter.y.floatValue() + (evalHalfHeight().floatValue()), paint);
+		canvas.drawRect(drawCenter.x.floatValue() - evalHalfWidth().floatValue(), drawCenter.y.floatValue() - evalHalfHeight().floatValue(), drawCenter.x.floatValue() + evalHalfWidth().floatValue(),
+				drawCenter.y.floatValue() + evalHalfHeight().floatValue(), paint);
 	}
 }
