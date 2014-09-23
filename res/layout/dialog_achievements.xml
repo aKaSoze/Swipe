@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="30dp"
+    android:layout_marginRight="30dp"
+    android:background="@drawable/panel_choose1_hover"
+    android:orientation="vertical" >
+
+    <com.indyvision.fractal_circus.views.custom.CustomTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@android:color/transparent"
+        android:gravity="center_horizontal"
+        android:text="Scores"
+        android:textColor="#014170"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <com.indyvision.fractal_circus.views.custom.CustomButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@android:color/transparent"
+        android:drawableLeft="@drawable/sel_btn_achievements"
+        android:drawablePadding="8dp"
+        android:text="Achievements"
+        android:textColor="@color/sel_text_color_button"
+        android:textSize="24sp" />
+
+    <com.indyvision.fractal_circus.views.custom.CustomButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/transparent"
+        android:drawableLeft="@drawable/sel_btn_leaderboards"
+        android:drawablePadding="8dp"
+        android:text="Hall of Fame"
+        android:textColor="@color/sel_text_color_button"
+        android:textSize="24sp" />
+
+</LinearLayout>
