@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg" >
+
+    <com.indyvision.fractal_circus.views.custom.CustomTextView
+        android:id="@+id/title_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="CIRCUS"
+        android:textColor="#0000FF"
+        android:textSize="46sp"
+        android:textStyle="bold" />
+
+    <com.indyvision.fractal_circus.views.custom.CustomButton
+        android:id="@+id/play_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@android:color/transparent"
+        android:text="PLAY"
+        android:textColor="@color/sel_text_color_button"
+        android:textSize="34sp"
+        android:textStyle="bold" />
+
+    <com.indyvision.fractal_circus.views.custom.CustomButton
+        android:id="@+id/settings_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/play_button"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@android:color/transparent"
+        android:text="Settings"
+        android:textColor="@color/sel_text_color_button"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <com.indyvision.fractal_circus.views.custom.CustomButton
+        android:id="@+id/achievements_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_button"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@android:color/transparent"
+        android:text="Scores"
+        android:textColor="@color/sel_text_color_button"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <com.indyvision.fractal_circus.views.custom.CustomButton
+        android:id="@+id/feedback_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/achievements_button"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@android:color/transparent"
+        android:text="Feedback"
+        android:textColor="@color/sel_text_color_button"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+    
+    <com.indyvision.fractal_circus.views.custom.CustomButton
+        android:id="@+id/share_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/feedback_button"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="@android:color/transparent"
+        android:text="Share or buy"
+        android:textColor="@color/sel_text_color_button"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>
