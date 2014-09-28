@@ -2,8 +2,12 @@ package fractal.games.swipe.sorin.petre.nica.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import fractal.games.swipe.R;
 import fractal.games.swipe.sorin.petre.nica.collections.Tuple2;
@@ -18,12 +22,14 @@ import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.RammedPainting;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Rectangle;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Sensor;
 import fractal.games.swipe.sorin.petre.nica.math.geometry.shapes.Sensor.ObstaclePassedHandler;
+import fractal.games.swipe.sorin.petre.nica.persistence.JsonSerializer;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.swipe.sorin.petre.nica.physics.units.LengthUnit;
 import fractal.games.swipe.sorin.petre.nica.physics.units.TimeUnit;
 import fractal.games.swipe.sorin.petre.nica.views.GameView;
+import fractal.games.swipe.sorin.petre.nica.views.GameView.World;
 import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 import fractal.games.swipe.sorin.petre.nica.views.Score;
 
@@ -35,7 +41,9 @@ public class GameWorldActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        LinearLayout layout = new LinearLayout(this);
+        final JsonSerializer jsonSerializer = new JsonSerializer(this);
+
+        final LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
         final GameView gameView = new GameView(this);
@@ -77,21 +85,49 @@ public class GameWorldActivity extends Activity {
             public void onPaintingCreated(Painting painting) {
                 painting.addObstacle(hippo);
                 gameView.addWorldObject(painting);
+                Log.i("new reflector", jsonSerializer.jsonForm(painting));
             }
         };
 
         gameView.addWorldObject(hippo);
         gameView.addWorldObject(propulsionPlatform);
-        gameView.addWorldObject(propulsionPlatform2);
-        gameView.addWorldObject(propulsionPlatform3);
-        gameView.addWorldObject(propulsionPlatform4);
-        gameView.addWorldObject(box);
-        gameView.addWorldObject(boxFactory);
-        gameView.addWorldObject(monkey);
-        gameView.addWorldObject(monkey2);
-        gameView.addWorldObject(circleOfFire);
-        gameView.followedObject = hippo;
+//        gameView.addWorldObject(propulsionPlatform2);
+//        gameView.addWorldObject(propulsionPlatform3);
+//        gameView.addWorldObject(propulsionPlatform4);
+//        gameView.addWorldObject(box);
+//        gameView.addWorldObject(boxFactory);
+//        gameView.addWorldObject(monkey);
+//        gameView.addWorldObject(monkey2);
+//        gameView.addWorldObject(circleOfFire);
+        gameView.getWorld().followedObject = hippo;
 
+        LinearLayout menu = new LinearLayout(this);
+        menu.setOrientation(LinearLayout.HORIZONTAL);
+        Button saveButton = new Button(this);
+        saveButton.setText("save world");
+        menu.addView(saveButton);
+
+        Button loadButton = new Button(this);
+        loadButton.setText("load world");
+        menu.addView(loadButton);
+
+        final String[] worlds = new String[3];
+
+        saveButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                worlds[0] = jsonSerializer.jsonForm(gameView.getWorld());
+                Log.i("world", worlds[0]);
+            }
+        });
+
+        loadButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameView.loadWorld(jsonSerializer.fromJson(worlds[0], World.class));
+            }
+        });
+
+        layout.addView(menu);
         layout.addView(gameView);
 
         final Score score = new Score(new LayoutProportions(0.0, 0.04, 0.03, 0.04), getAssets());

@@ -8,18 +8,22 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.view.MotionEvent;
+
+import com.google.gson.annotations.Expose;
+
 import fractal.games.swipe.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.swipe.sorin.petre.nica.views.LayoutProportions;
 
 public class Rectangle extends AnimatedShape {
 
-    private static final double        ROUNDING_ERROR       = 0.0001;
+    private static final double                  ROUNDING_ERROR       = 0.0001;
 
-    private static final double        COLLISION_SPEED_LOSS = 2.0;
+    private static final double                  COLLISION_SPEED_LOSS = 2.0;
 
-    private Boolean                    isFilled             = false;
+    @Expose
+    private Boolean                              isFilled             = false;
 
-    public final Set<DoubleTapHandler> doubleTapHandlers    = new HashSet<DoubleTapHandler>();
+    public transient final Set<DoubleTapHandler> doubleTapHandlers    = new HashSet<DoubleTapHandler>();
 
     public interface DoubleTapHandler {
         void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint);
@@ -31,6 +35,10 @@ public class Rectangle extends AnimatedShape {
 
     public Rectangle(Context context, LayoutProportions layoutProportions) {
         super(context, layoutProportions);
+    }
+
+    public Rectangle() {
+        this(null, null);
     }
 
     public void setFilled(Boolean isFilled) {
