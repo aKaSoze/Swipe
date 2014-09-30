@@ -1,9 +1,5 @@
 package fractal.games.circus.sorin.petre.nica.views;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,14 +11,12 @@ import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-
-import com.google.gson.annotations.Expose;
-
+import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Painting;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Rectangle;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
+import fractal.games.circus.sorin.petre.nica.persistence.GameWorld;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
-import fractal.games.swipe.R;
 
 public class GameView extends AutoUpdatableView {
 
@@ -50,34 +44,28 @@ public class GameView extends AutoUpdatableView {
 
 	private Displacement		realTouchPoint			= new Displacement();
 
-	private World				world					= new World();
+	private GameWorld			world					= new GameWorld();
 
 	private Long				elapsedTime				= 0L;
 
 	private Long				lastUpdateTime			= null;
 
-	public static class World {
-		@Expose
-		public Painting				followedObject;
-
-		@Expose
-		public final Set<Painting>	centeredDrawables	= new CopyOnWriteArraySet<Painting>();
-	}
-
 	public GameView(Context context) {
 		super(context);
 	}
 
-	public void loadWorld(World world) {
+	public void loadWorld(GameWorld world) {
 		this.world = world;
-		for (Rectangle rectangle : world.centeredDrawables) {
-			rectangle.context = getContext();
-			rectangle.setBounds(getLeft(), getTop(), getRight(), getBottom());
-			rectangle.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+
+		for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
+			Log.i("class", centeredDrawable.getClass().toString());
+			centeredDrawable.context = getContext();
+			centeredDrawable.setBounds(getLeft(), getTop(), getRight(), getBottom());
+			centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
 		}
 	}
 
-	public World getWorld() {
+	public GameWorld getWorld() {
 		return world;
 	}
 
@@ -85,8 +73,7 @@ public class GameView extends AutoUpdatableView {
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
 		if (changed) {
-			world.followedObject.setBounds(left, top, right, bottom);
-			for (CenteredDrawable drawable : world.centeredDrawables) {
+			for (CenteredDrawable drawable : world.getAllObjects()) {
 				drawable.setBounds(left, top, right, bottom);
 				drawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
 			}
@@ -94,20 +81,26 @@ public class GameView extends AutoUpdatableView {
 			if (score != null) {
 				score.setBounds(left, top, right, bottom);
 			}
+			if (inGameTimer != null) {
+				inGameTimer.setBounds(left, top, right, bottom);
+			}
 			Log.i("GameView", "layout changed");
 		}
 	}
 
-	public void addWorldObject(Painting drawable) {
-		drawable.setBounds(getLeft(), getTop(), getRight(), getBottom());
-		drawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
-		world.centeredDrawables.add(drawable);
+	public void addWorldObject(Painting painting) {
+		painting.setBounds(getLeft(), getTop(), getRight(), getBottom());
+		painting.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+
+		if (painting instanceof PropulsionPlatform) {
+			world.platforms.add((PropulsionPlatform) painting);
+		}
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		realTouchPoint.setComponents(Double.valueOf(event.getX()), coordinateTransaltion.y - event.getY());
-		for (CenteredDrawable centeredDrawable : world.centeredDrawables) {
+		for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
 			centeredDrawable.onMotionEvent(event, realTouchPoint);
 		}
 		return true;
@@ -116,7 +109,7 @@ public class GameView extends AutoUpdatableView {
 	private CenteredDrawable evaluateTargetShape(Displacement touchPoint) {
 		CenteredDrawable closestShape = null;
 		double smallestDistance = 60;
-		for (CenteredDrawable centeredDrawable : world.centeredDrawables) {
+		for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
 			double distanceToTouchPoint = centeredDrawable.center.distanceTo(touchPoint);
 			if (distanceToTouchPoint < smallestDistance) {
 				smallestDistance = distanceToTouchPoint;
@@ -132,7 +125,7 @@ public class GameView extends AutoUpdatableView {
 	}
 
 	public void updateWorld(Long elapsedTime) {
-		for (CenteredDrawable movableShape : world.centeredDrawables) {
+		for (CenteredDrawable movableShape : world.getAllObjects()) {
 			movableShape.updateState(elapsedTime);
 		}
 	}
@@ -183,9 +176,9 @@ public class GameView extends AutoUpdatableView {
 
 	@Override
 	protected void drawSurface(Canvas canvas) {
-		coordinateTransaltion.setComponents(Double.valueOf(getLeft()), (getHeight() / 2) + world.followedObject.center.y);
+		coordinateTransaltion.setComponents(Double.valueOf(getLeft()), (getHeight() / 2) + world.hippo.center.y);
 		canvas.drawBitmap(backGround_drwbl, 0, 0, DEFAULT_PAINT);
-		for (CenteredDrawable centeredDrawable : world.centeredDrawables) {
+		for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
 			centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
 			centeredDrawable.draw(canvas);
 		}
@@ -193,7 +186,7 @@ public class GameView extends AutoUpdatableView {
 			score.draw(canvas);
 		}
 		if (inGameTimer != null) {
-			inGameTimer.points = TimeUnit.SECONDS.convert(elapsedTime, TimeUnit.MILLISECONDS);
+			inGameTimer.points = (long) CenteredDrawable.instances.size();
 			inGameTimer.draw(canvas);
 		}
 	}

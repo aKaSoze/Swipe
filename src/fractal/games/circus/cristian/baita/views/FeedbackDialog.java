@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
-import fractal.games.swipe.R;
+import fractal.games.circus.R;
 
 public class FeedbackDialog extends Dialog {
 	private Context	context;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fractal.games.swipe"
+    package="fractal.games.circus"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="fractal.games.circus.sorin.petre.nica.activities.GameWorldActivityy"
+            android:name="fractal.games.circus.sorin.petre.nica.activities.GameWorldActivity"
             android:label="@string/title_activity_game_world" >
         </activity>
     </application>

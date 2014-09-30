@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg" >
 
-    <com.indyvision.fractal_circus.views.custom.CustomTextView
+    <fractal.games.circus.cristian.baita.views.custom.CustomTextView
         android:id="@+id/title_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         android:textSize="46sp"
         android:textStyle="bold" />
 
-    <com.indyvision.fractal_circus.views.custom.CustomButton
+    <fractal.games.circus.cristian.baita.views.custom.CustomButton
         android:id="@+id/play_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
         android:textSize="34sp"
         android:textStyle="bold" />
 
-    <com.indyvision.fractal_circus.views.custom.CustomButton
+    <fractal.games.circus.cristian.baita.views.custom.CustomButton
         android:id="@+id/settings_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
         android:textSize="26sp"
         android:textStyle="bold" />
 
-    <com.indyvision.fractal_circus.views.custom.CustomButton
+    <fractal.games.circus.cristian.baita.views.custom.CustomButton
         android:id="@+id/achievements_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
         android:textSize="26sp"
         android:textStyle="bold" />
 
-    <com.indyvision.fractal_circus.views.custom.CustomButton
+    <fractal.games.circus.cristian.baita.views.custom.CustomButton
         android:id="@+id/feedback_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
         android:textSize="26sp"
         android:textStyle="bold" />
     
-    <com.indyvision.fractal_circus.views.custom.CustomButton
+    <fractal.games.circus.cristian.baita.views.custom.CustomButton
         android:id="@+id/share_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

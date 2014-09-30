@@ -9,18 +9,20 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.collections.Tuple2;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.AnimatedShape;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable.Property;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Hippo;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscilatingBillboard;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Painting;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform.CollisionHandler;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedPainting;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Rectangle;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable.Property;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform.CollisionHandler;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor.ObstaclePassedHandler;
+import fractal.games.circus.sorin.petre.nica.persistence.GameWorld;
 import fractal.games.circus.sorin.petre.nica.persistence.JsonSerializer;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
@@ -30,8 +32,6 @@ import fractal.games.circus.sorin.petre.nica.physics.units.TimeUnit;
 import fractal.games.circus.sorin.petre.nica.views.GameView;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 import fractal.games.circus.sorin.petre.nica.views.Score;
-import fractal.games.circus.sorin.petre.nica.views.GameView.World;
-import fractal.games.swipe.R;
 
 public class GameWorldActivity extends Activity {
 
@@ -94,12 +94,12 @@ public class GameWorldActivity extends Activity {
 		// gameView.addWorldObject(propulsionPlatform2);
 		// gameView.addWorldObject(propulsionPlatform3);
 		// gameView.addWorldObject(propulsionPlatform4);
-		// gameView.addWorldObject(box);
-		// gameView.addWorldObject(boxFactory);
+		gameView.addWorldObject(box);
+		gameView.addWorldObject(boxFactory);
 		// gameView.addWorldObject(monkey);
 		// gameView.addWorldObject(monkey2);
 		// gameView.addWorldObject(circleOfFire);
-		gameView.getWorld().followedObject = hippo;
+		gameView.getWorld().hippo = hippo;
 
 		LinearLayout menu = new LinearLayout(this);
 		menu.setOrientation(LinearLayout.HORIZONTAL);
@@ -112,7 +112,7 @@ public class GameWorldActivity extends Activity {
 		menu.addView(loadButton);
 
 		Button pauseButton = new Button(this);
-		pauseButton.setText("pause/resume");
+		pauseButton.setText("p/r");
 		menu.addView(pauseButton);
 
 		final String[] worlds = new String[3];
@@ -128,7 +128,7 @@ public class GameWorldActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				gameView.suspend();
-				gameView.loadWorld(jsonSerializer.fromJson(worlds[0], World.class));
+				gameView.loadWorld(jsonSerializer.fromJson(worlds[0], GameWorld.class));
 				gameView.resume();
 			}
 		});

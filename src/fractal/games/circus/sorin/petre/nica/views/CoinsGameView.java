@@ -13,10 +13,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
+import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.ValueCircle;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
-import fractal.games.swipe.R;
 
 public class CoinsGameView extends AutoUpdatableView {
 

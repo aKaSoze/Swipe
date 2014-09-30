@@ -2,6 +2,7 @@ package fractal.games.circus.sorin.petre.nica.math.geometry.shapes;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -22,144 +23,152 @@ import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
 public abstract class CenteredDrawable extends Drawable {
 
-    private static final Paint DEFAULT_PAINT;
-    static {
-        DEFAULT_PAINT = new Paint();
-        DEFAULT_PAINT.setColor(Color.WHITE);
-        DEFAULT_PAINT.setStyle(Style.STROKE);
-        DEFAULT_PAINT.setStrokeWidth(4);
-    }
+	public static final WeakHashMap<CenteredDrawable, Object>	instances		= new WeakHashMap<CenteredDrawable, Object>();
 
-    public enum Property {
-        MOVABLE, CLONEABLE;
-    }
+	public static final Displacement							ORIGIN_CENTER	= new Displacement(0, 0);
 
-    private static final Long            DOUBLE_TAP_TIME   = 300L;
-    protected static final Double        VECINITY_DISTANCE = 50.0;
+	private static final Paint									DEFAULT_PAINT;
+	static {
+		DEFAULT_PAINT = new Paint();
+		DEFAULT_PAINT.setColor(Color.WHITE);
+		DEFAULT_PAINT.setStyle(Style.STROKE);
+		DEFAULT_PAINT.setStrokeWidth(4);
+	}
 
-    public transient Context             context;
+	public enum Property {
+		MOVABLE, CLONEABLE;
+	}
 
-    public transient final Set<Property> properties        = new HashSet<Property>();
+	private static final Long				DOUBLE_TAP_TIME		= 300L;
+	protected static final Double			VECINITY_DISTANCE	= 50.0;
 
-    @Expose
-    public Displacement                  center            = new Displacement(0, 0);
+	public transient Context				context;
 
-    @Expose
-    private Displacement                 drawCenter        = new Displacement(0, 0);
+	public transient final Set<Property>	properties			= new HashSet<Property>();
 
-    @Expose
-    public Displacement                  drawTranslation   = new Displacement(0, 0);
+	@Expose
+	public Displacement						center				= ORIGIN_CENTER;
 
-    @Expose
-    public LayoutProportions             layoutProportions;
+	@Expose
+	private Displacement					drawCenter			= new Displacement(0, 0);
 
-    protected transient final Paint      paint;
+	@Expose
+	public Displacement						drawTranslation		= new Displacement(0, 0);
 
-    private transient Long               lastTapTime       = 0L;
+	@Expose
+	public LayoutProportions				layoutProportions;
 
-    protected transient Long             lastUpdateTime;
+	protected transient final Paint			paint;
 
-    protected transient Long             timeIncrement     = 0L;
+	private transient Long					lastTapTime			= 0L;
 
-    public CenteredDrawable(Context context, LayoutProportions layoutProportions, Paint paint) {
-        this.context = context;
-        this.paint = new Paint();
-        this.layoutProportions = layoutProportions;
-        this.paint.setColor(paint.getColor());
-        this.paint.setStyle(paint.getStyle());
-        this.paint.setStrokeWidth(paint.getStrokeWidth());
-        this.paint.setAntiAlias(true);
-        this.paint.setDither(true);
-    }
+	protected transient Long				lastUpdateTime;
 
-    public CenteredDrawable(Context context, LayoutProportions layoutProportions) {
-        this(context, layoutProportions, DEFAULT_PAINT);
-    }
+	protected transient Long				timeIncrement		= 0L;
 
-    public abstract void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint);
+	public CenteredDrawable(Context context, LayoutProportions layoutProportions, Paint paint) {
+		super();
+		instances.put(this, null);
+		this.context = context;
+		this.paint = new Paint();
+		this.layoutProportions = layoutProportions;
+		this.paint.setColor(paint.getColor());
+		this.paint.setStyle(paint.getStyle());
+		this.paint.setStrokeWidth(paint.getStrokeWidth());
+		this.paint.setAntiAlias(true);
+		this.paint.setDither(true);
+	}
 
-    public abstract void onMove(Displacement translation);
+	public CenteredDrawable(Context context, LayoutProportions layoutProportions) {
+		this(context, layoutProportions, DEFAULT_PAINT);
+	}
 
-    public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
-        if (touchPoint.distanceTo(center) < VECINITY_DISTANCE) {
-            switch (motionEvent.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                Long now = System.currentTimeMillis();
-                Long tapTime = now - lastTapTime;
-                lastTapTime = now;
-                if (tapTime < DOUBLE_TAP_TIME) {
-                    onDoubleTap(motionEvent, touchPoint);
-                }
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (properties.contains(Property.MOVABLE)) {
-                    Displacement translation = touchPoint.subtractionVector(center);
-                    center.makeEqualTo(touchPoint);
-                    onMove(translation);
-                }
-                break;
-            }
-        }
-    }
+	public abstract void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint);
 
-    public void updateState(Long elapsedTime) {
-        if (lastUpdateTime != null) {
-            timeIncrement = elapsedTime - lastUpdateTime;
-        }
-        lastUpdateTime = elapsedTime;
-    }
+	public abstract void onMove(Displacement translation);
 
-    @Override
-    public int getOpacity() {
-        return PixelFormat.OPAQUE;
-    }
+	public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
+		if (touchPoint.distanceTo(center) < VECINITY_DISTANCE) {
+			switch (motionEvent.getActionMasked()) {
+			case MotionEvent.ACTION_DOWN:
+				Long now = System.currentTimeMillis();
+				Long tapTime = now - lastTapTime;
+				lastTapTime = now;
+				if (tapTime < DOUBLE_TAP_TIME) {
+					onDoubleTap(motionEvent, touchPoint);
+				}
+				break;
+			case MotionEvent.ACTION_MOVE:
+				if (properties.contains(Property.MOVABLE)) {
+					Displacement translation = touchPoint.subtractionVector(center);
+					center.makeEqualTo(touchPoint);
+					onMove(translation);
+				}
+				break;
+			}
+		}
+	}
 
-    @Override
-    public void setAlpha(int alpha) {
-        paint.setAlpha(alpha % 256);
-    }
+	public void updateState(Long elapsedTime) {
+		if (lastUpdateTime != null) {
+			timeIncrement = elapsedTime - lastUpdateTime;
+		}
+		lastUpdateTime = elapsedTime;
+	}
 
-    @Override
-    public void setColorFilter(ColorFilter cf) {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public int getOpacity() {
+		return PixelFormat.OPAQUE;
+	}
 
-    @Override
-    protected void onBoundsChange(Rect bounds) {
-        super.onBoundsChange(bounds);
-        Double x = layoutProportions.xRatio * (bounds.right - bounds.left);
-        Double y = layoutProportions.yRatio * (bounds.bottom - bounds.top);
-        center.setComponents(x, y);
-    }
+	@Override
+	public void setAlpha(int alpha) {
+		paint.setAlpha(alpha % 256);
+	}
 
-    protected Displacement evalDrawCenter() {
-        drawCenter.setComponents(center.x + drawTranslation.x, drawTranslation.y - center.y);
-        return drawCenter;
-    }
+	@Override
+	public void setColorFilter(ColorFilter cf) {
+		// TODO Auto-generated method stub
+	}
 
-    protected Double evalWidth() {
-        return layoutProportions.widthRatio * (getBounds().right - getBounds().left);
-    }
+	@Override
+	protected void onBoundsChange(Rect bounds) {
+		super.onBoundsChange(bounds);
+		if (center == ORIGIN_CENTER) {
+			Double x = layoutProportions.xRatio * (bounds.right - bounds.left);
+			Double y = layoutProportions.yRatio * (bounds.bottom - bounds.top);
+			center = new Displacement(x, y);
+		}
+	}
 
-    protected Double evalHalfWidth() {
-        return evalWidth() / 2.0;
-    }
+	protected Displacement evalDrawCenter() {
+		drawCenter.setComponents(center.x + drawTranslation.x, drawTranslation.y - center.y);
+		return drawCenter;
+	}
 
-    protected Double evalHeight() {
-        return layoutProportions.heightRatio * (getBounds().bottom - getBounds().top);
-    }
+	protected Double evalWidth() {
+		return layoutProportions.widthRatio * (getBounds().right - getBounds().left);
+	}
 
-    protected Double evalHalfHeight() {
-        return evalHeight() / 2.0;
-    }
+	protected Double evalHalfWidth() {
+		return evalWidth() / 2.0;
+	}
 
-    protected void drawVector(Vector2D<?> vector, Canvas canvas) {
-        float strecthPointOriginX = vector.applyPoint.x.floatValue();
-        float strecthPointOriginY = drawTranslation.y.floatValue() - vector.applyPoint.y.floatValue();
+	protected Double evalHeight() {
+		return layoutProportions.heightRatio * (getBounds().bottom - getBounds().top);
+	}
 
-        float strecthPointX = vector.applyPoint.x.floatValue() + vector.x.floatValue();
-        float strecthPointY = drawTranslation.y.floatValue() - vector.applyPoint.y.floatValue() - vector.y.floatValue();
+	protected Double evalHalfHeight() {
+		return evalHeight() / 2.0;
+	}
 
-        canvas.drawLine(strecthPointOriginX, strecthPointOriginY, strecthPointX, strecthPointY, paint);
-    }
+	protected void drawVector(Vector2D<?> vector, Canvas canvas) {
+		float strecthPointOriginX = vector.applyPoint.x.floatValue();
+		float strecthPointOriginY = drawTranslation.y.floatValue() - vector.applyPoint.y.floatValue();
+
+		float strecthPointX = vector.applyPoint.x.floatValue() + vector.x.floatValue();
+		float strecthPointY = drawTranslation.y.floatValue() - vector.applyPoint.y.floatValue() - vector.y.floatValue();
+
+		canvas.drawLine(strecthPointOriginX, strecthPointOriginY, strecthPointX, strecthPointY, paint);
+	}
 }
