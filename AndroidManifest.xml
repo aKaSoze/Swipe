@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.indyvision.fractal_circus.activities.MenuActivity"
+            android:name="fractal.games.circus.cristian.baita.activities.MenuActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="fractal.games.swipe.sorin.petre.nica.activities.GameWorldActivity"
+            android:name="fractal.games.circus.sorin.petre.nica.activities.GameWorldActivityy"
             android:label="@string/title_activity_game_world" >
         </activity>
     </application>
