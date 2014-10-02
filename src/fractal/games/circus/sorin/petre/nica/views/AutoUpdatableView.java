@@ -49,19 +49,23 @@ public abstract class AutoUpdatableView extends SurfaceView implements SurfaceHo
 	}
 
 	protected void suspend() {
-		try {
-			thread.join();
-			running = false;
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
+		if (running) {
+			try {
+				thread.join();
+				running = false;
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
 	protected void resume() {
-		thread = new Thread(behavior());
-		thread.setName(logTag);
-		thread.start();
-		running = true;
+		if (!running) {
+			thread = new Thread(behavior());
+			thread.setName(logTag);
+			thread.start();
+			running = true;
+		}
 	}
 
 	protected abstract Runnable behavior();

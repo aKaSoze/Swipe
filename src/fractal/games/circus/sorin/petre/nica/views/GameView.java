@@ -14,7 +14,6 @@ import android.view.SurfaceHolder;
 import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Painting;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.persistence.GameWorld;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 
@@ -55,14 +54,14 @@ public class GameView extends AutoUpdatableView {
 	}
 
 	public void loadWorld(GameWorld world) {
+		suspend();
 		this.world = world;
-
 		for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
-			Log.i("class", centeredDrawable.getClass().toString());
 			centeredDrawable.context = getContext();
 			centeredDrawable.setBounds(getLeft(), getTop(), getRight(), getBottom());
 			centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
 		}
+		resume();
 	}
 
 	public GameWorld getWorld() {
@@ -91,10 +90,7 @@ public class GameView extends AutoUpdatableView {
 	public void addWorldObject(Painting painting) {
 		painting.setBounds(getLeft(), getTop(), getRight(), getBottom());
 		painting.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
-
-		if (painting instanceof PropulsionPlatform) {
-			world.platforms.add((PropulsionPlatform) painting);
-		}
+		world.addWorldObject(painting);
 	}
 
 	@Override
