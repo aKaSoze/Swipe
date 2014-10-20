@@ -13,7 +13,7 @@ import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlat
 public class GameWorld {
 
 	@Expose
-	private Hippo					hippo;
+	public Hippo					hippo;
 
 	@Expose
 	private Set<PropulsionPlatform>	platforms	= new CopyOnWriteArraySet<PropulsionPlatform>();
