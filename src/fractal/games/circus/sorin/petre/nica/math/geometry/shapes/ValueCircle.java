@@ -1,6 +1,5 @@
 package fractal.games.circus.sorin.petre.nica.math.geometry.shapes;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
@@ -14,8 +13,8 @@ public class ValueCircle extends BitmapDrawable {
 
 	public Boolean		isDestroyed	= false;
 
-	public ValueCircle(Context context, LayoutProportions layoutProportions, Displacement cornerToCorner, Bitmap bitmap, Long value) {
-		super(context, layoutProportions, cornerToCorner, bitmap);
+	public ValueCircle(LayoutProportions layoutProportions, Displacement cornerToCorner, Bitmap bitmap, Long value) {
+		super(layoutProportions, cornerToCorner, bitmap);
 		this.value = value;
 	}
 

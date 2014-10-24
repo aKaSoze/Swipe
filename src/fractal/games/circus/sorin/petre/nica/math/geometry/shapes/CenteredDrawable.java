@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -42,8 +41,6 @@ public abstract class CenteredDrawable extends Drawable {
 	private static final Long				DOUBLE_TAP_TIME		= 300L;
 	protected static final Double			VECINITY_DISTANCE	= 50.0;
 
-	public transient Context				context;
-
 	public transient final Set<Property>	properties			= new HashSet<Property>();
 
 	@Expose
@@ -66,12 +63,11 @@ public abstract class CenteredDrawable extends Drawable {
 
 	protected transient Long				timeIncrement		= 0L;
 
-	public CenteredDrawable(Context context, LayoutProportions layoutProportions, Paint paint) {
+	public CenteredDrawable(LayoutProportions layoutProportions, Paint paint) {
 		super();
 		instances.put(this, null);
-		this.context = context;
-		this.paint = new Paint();
 		this.layoutProportions = layoutProportions;
+		this.paint = new Paint();
 		this.paint.setColor(paint.getColor());
 		this.paint.setStyle(paint.getStyle());
 		this.paint.setStrokeWidth(paint.getStrokeWidth());
@@ -79,9 +75,11 @@ public abstract class CenteredDrawable extends Drawable {
 		this.paint.setDither(true);
 	}
 
-	public CenteredDrawable(Context context, LayoutProportions layoutProportions) {
-		this(context, layoutProportions, DEFAULT_PAINT);
+	public CenteredDrawable(LayoutProportions layoutProportions) {
+		this(layoutProportions, DEFAULT_PAINT);
 	}
+
+	public abstract void init();
 
 	public abstract void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint);
 

@@ -3,7 +3,6 @@ package fractal.games.circus.sorin.petre.nica.math.geometry.shapes;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import android.content.Context;
 import android.graphics.Paint;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
@@ -17,13 +16,13 @@ public abstract class AnimatedShape extends CenteredDrawable {
 
 	protected final Set<AnimatedShape>	obstacles	= new CopyOnWriteArraySet<AnimatedShape>();
 
-	public AnimatedShape(Context context, LayoutProportions layoutProportions, Paint paint) {
-		super(context, layoutProportions, paint);
+	public AnimatedShape(LayoutProportions layoutProportions, Paint paint) {
+		super(layoutProportions, paint);
 		initState();
 	}
 
-	public AnimatedShape(Context context, LayoutProportions layoutProportions) {
-		super(context, layoutProportions);
+	public AnimatedShape(LayoutProportions layoutProportions) {
+		super(layoutProportions);
 		initState();
 	}
 

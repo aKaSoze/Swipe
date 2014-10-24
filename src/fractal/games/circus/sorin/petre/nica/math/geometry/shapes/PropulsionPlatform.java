@@ -3,7 +3,6 @@ package fractal.games.circus.sorin.petre.nica.math.geometry.shapes;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
@@ -25,6 +24,10 @@ public class PropulsionPlatform extends Painting {
 		void onCollison();
 	}
 
+	public interface ImpactHandler {
+		void onImpact(PropulsionPlatform propulsionPlatform);
+	}
+
 	private static final Double		ELASTICITY_COEFICIENT	= 17.8;
 	private static final Integer	PROJECTILE_MIN_SPEED	= 35;
 
@@ -40,37 +43,25 @@ public class PropulsionPlatform extends Painting {
 
 	private Velocity				springVelocity			= new Velocity(0.0, 0.0, LengthUnit.PIXEL, TimeUnit.SECOND);
 
-	public Rectangle				projectile;
-
 	public MediaPlayer				boingSoundPlayer;
 
 	public Set<CollisionHandler>	collisionHandlers		= new HashSet<PropulsionPlatform.CollisionHandler>();
+
+	public Set<ImpactHandler>		impactHandlers			= new HashSet<PropulsionPlatform.ImpactHandler>();
 
 	public PropulsionPlatform() {
 		super();
 	}
 
-	public PropulsionPlatform(Context context, LayoutProportions layoutProportions, Rectangle projectile) {
-		super(context, layoutProportions, R.drawable.beam);
-		this.context = context;
-		this.boingSoundPlayer = MediaPlayer.create(context, R.raw.boing);
-		this.projectile = projectile;
-		projectile.addObstacle(this);
-		paint.setStrokeWidth(1);
+	public PropulsionPlatform(LayoutProportions layoutProportions) {
+		super(layoutProportions, R.drawable.beam);
+		init();
 	}
 
 	@Override
-	public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
-		switch (status) {
-		case STANDING:
-			handleStandingMotionEvent(motionEvent, touchPoint);
-			break;
-		case STRECTHING:
-			handleStrecthingMotionEvent(motionEvent, touchPoint);
-			break;
-		default:
-			break;
-		}
+	public void init() {
+		super.init();
+		paint.setStrokeWidth(1);
 	}
 
 	@Override
@@ -78,10 +69,8 @@ public class PropulsionPlatform extends Painting {
 		this.elapsedTime = elapsedTime;
 		if (status == Status.RELEASED) {
 			if (strecthPoint.isZero()) {
-				if (projectile.velocity.isZero() && touchesOnHorizontalSide(projectile)) {
-					projectile.velocity.setComponents(springVelocity.x / 4, springVelocity.y / 4);
-					projectile.acceleration.y = -9.8;
-					boingSoundPlayer.start();
+				for (ImpactHandler impactHandler : impactHandlers) {
+					impactHandler.onImpact(this);
 				}
 				springVelocity.neutralize();
 				status = Status.STANDING;
@@ -100,6 +89,20 @@ public class PropulsionPlatform extends Painting {
 	}
 
 	@Override
+	public void onMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
+		switch (status) {
+		case STANDING:
+			handleStandingMotionEvent(motionEvent, touchPoint);
+			break;
+		case STRECTHING:
+			handleStrecthingMotionEvent(motionEvent, touchPoint);
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
 	public void onCollision(AnimatedShape obstacle) {
 		if (obstacle.velocity.magnitude() < PROJECTILE_MIN_SPEED) {
 			obstacle.acceleration.neutralize();
@@ -112,18 +115,11 @@ public class PropulsionPlatform extends Painting {
 		}
 	}
 
-	public PropulsionPlatform clonePropulsionPlatform() {
-		PropulsionPlatform newPropulsionPlatform = new PropulsionPlatform(context, layoutProportions, projectile);
-		newPropulsionPlatform.properties.addAll(properties);
-		return newPropulsionPlatform;
-	}
-
 	@Override
 	public void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint) {
 		if (properties.contains(Property.CLONEABLE)) {
 			PropulsionPlatform newPropulsionPlatform = clonePropulsionPlatform();
 			newPropulsionPlatform.properties.addAll(properties);
-			projectile.addObstacle(newPropulsionPlatform);
 		}
 	}
 
@@ -141,6 +137,12 @@ public class PropulsionPlatform extends Painting {
 		canvas.drawCircle(strecthPointX, strecthPointY, 10, paint);
 		canvas.drawLine(strecthPointX, strecthPointY, evalLeftTopCorner().x.floatValue(), drawTranslation.y.floatValue() - evalLeftTopCorner().y.floatValue(), paint);
 		canvas.drawLine(strecthPointX, strecthPointY, evalRightTopCorner().x.floatValue(), drawTranslation.y.floatValue() - evalRightTopCorner().y.floatValue(), paint);
+	}
+
+	public PropulsionPlatform clonePropulsionPlatform() {
+		PropulsionPlatform newPropulsionPlatform = new PropulsionPlatform(layoutProportions);
+		newPropulsionPlatform.properties.addAll(properties);
+		return newPropulsionPlatform;
 	}
 
 	@Override
@@ -186,6 +188,10 @@ public class PropulsionPlatform extends Painting {
 			strecthPoint.makeEqualTo(rawStrecthPoint);
 			break;
 		}
+	}
+
+	public Velocity getSpringVelocity() {
+		return new Velocity(springVelocity.x, springVelocity.y, LengthUnit.PIXEL, TimeUnit.SECOND);
 	}
 
 }

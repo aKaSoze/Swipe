@@ -1,37 +1,27 @@
 package fractal.games.circus.sorin.petre.nica.math.geometry.shapes;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.util.Log;
 
 import com.google.gson.annotations.Expose;
 
 import fractal.games.circus.R;
+import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
 public class Painting extends Rectangle {
 
-	private transient Bitmap	bitmap;
-
 	@Expose
-	private Integer				bitmapResourceId;
+	protected Integer	bitmapResourceId;
 
 	public Painting() {
 		super();
 	}
 
-	public Painting(Context context, LayoutProportions layoutProportions, Integer bitmapResourceId) {
-		this(context, layoutProportions, BitmapFactory.decodeResource(context.getResources(), bitmapResourceId));
+	public Painting(LayoutProportions layoutProportions, Integer bitmapResourceId) {
+		super(layoutProportions);
 		this.bitmapResourceId = bitmapResourceId;
-	}
-
-	public Painting(Context context, LayoutProportions layoutProportions, Bitmap bitmap) {
-		super(context, layoutProportions);
-		this.bitmap = bitmap;
 	}
 
 	@Override
@@ -40,23 +30,12 @@ public class Painting extends Rectangle {
 		canvas.drawBitmap(getBitmap(), drawCenter.x.floatValue() - (evalHalfWidth().floatValue()), drawCenter.y.floatValue() - (evalHalfHeight().floatValue()), paint);
 	}
 
-	@Override
-	protected void onBoundsChange(Rect bounds) {
-		Log.i("painting", "bounds changed mf");
-		super.onBoundsChange(bounds);
-		bitmap = Bitmap.createScaledBitmap(getBitmap(), evalWidth().intValue(), evalHeight().intValue(), true);
-		Log.i("width - height", evalWidth().intValue() + " - " + evalHeight().intValue());
-	}
-
 	protected Bitmap getBitmap() {
-		if (bitmap == null) {
-			bitmap = BitmapFactory.decodeResource(context.getResources(), bitmapResourceId == null ? R.drawable.evil_monkey : bitmapResourceId);
+		Integer bitmapResourceId = this.bitmapResourceId == null ? R.drawable.evil_monkey : this.bitmapResourceId;
+		if (layoutProportions == null) {
+			return MediaStore.getBitmap(bitmapResourceId);
+		} else {
+			return MediaStore.getScaledBitmap(bitmapResourceId, evalWidth().intValue(), evalHeight().intValue());
 		}
-		return bitmap;
 	}
-
-	protected void setBitmap(Bitmap bitmap) {
-		this.bitmap = bitmap;
-	}
-
 }

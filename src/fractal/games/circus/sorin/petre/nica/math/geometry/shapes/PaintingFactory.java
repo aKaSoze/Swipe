@@ -1,6 +1,5 @@
 package fractal.games.circus.sorin.petre.nica.math.geometry.shapes;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
@@ -11,8 +10,8 @@ public class PaintingFactory extends Painting {
 		void onNewPainting(Painting newPainting);
 	}
 
-	public PaintingFactory(Context context, LayoutProportions layoutProportions, Integer resourceId) {
-		super(context, layoutProportions, resourceId);
+	public PaintingFactory(LayoutProportions layoutProportions, Integer resourceId) {
+		super(layoutProportions, resourceId);
 	}
 
 	@Override

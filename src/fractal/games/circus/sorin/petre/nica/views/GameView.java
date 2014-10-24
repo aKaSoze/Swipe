@@ -57,7 +57,7 @@ public class GameView extends AutoUpdatableView {
 		suspend();
 		this.world = world;
 		for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
-			centeredDrawable.context = getContext();
+			centeredDrawable.init();
 			centeredDrawable.setBounds(getLeft(), getTop(), getRight(), getBottom());
 			centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
 		}
@@ -172,7 +172,7 @@ public class GameView extends AutoUpdatableView {
 
 	@Override
 	protected void drawSurface(Canvas canvas) {
-		coordinateTransaltion.setComponents(Double.valueOf(getLeft()), (getHeight() / 2) + world.hippo.center.y);
+		coordinateTransaltion.setComponents(Double.valueOf(getLeft()), (getHeight() / 2) + world.getHippo().center.y);
 		canvas.drawBitmap(backGround_drwbl, 0, 0, DEFAULT_PAINT);
 		for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
 			centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
