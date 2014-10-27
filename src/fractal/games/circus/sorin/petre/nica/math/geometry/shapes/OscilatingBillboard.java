@@ -12,9 +12,13 @@ import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 public class OscilatingBillboard extends Billboard {
 
 	@Expose
-	private final Displacement	displacement;
+	private Displacement		displacement;
 
 	private final Displacement	originalCenter	= new Displacement();
+
+	public OscilatingBillboard() {
+		super();
+	}
 
 	@SafeVarargs
 	public OscilatingBillboard(LayoutProportions layoutProportions, Displacement displacement, Velocity velocity, Tuple2<Integer, Long>... slides) {

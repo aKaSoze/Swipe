@@ -6,6 +6,9 @@ import java.util.Map;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.MotionEvent;
+
+import com.google.gson.annotations.Expose;
+
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement.Semiplane;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
@@ -16,15 +19,22 @@ public class Sensor extends Painting {
 		void onObstaclePassed(AnimatedShape obstacle);
 	}
 
-	private final Rectangle						firstSupport;
+	@Expose
+	private Rectangle							firstSupport;
 
-	private final Rectangle						secondSupport;
+	@Expose
+	private Rectangle							secondSupport;
 
+	@Expose
 	private Displacement						diagonal;
 
 	public ObstaclePassedHandler				obstaclePassedHandler;
 
 	private final Map<AnimatedShape, Semiplane>	closeByObstacles	= new HashMap<AnimatedShape, Semiplane>();
+
+	public Sensor() {
+		super();
+	}
 
 	public Sensor(Integer resourceId, Rectangle firstSupport, Rectangle secondSupport) {
 		super(new LayoutProportions(firstSupport.layoutProportions, secondSupport.layoutProportions), resourceId);
@@ -41,7 +51,7 @@ public class Sensor extends Painting {
 				closeByObstacles.put(obstacle, diagonal.sideOfPoint(obstacle.center));
 			} else {
 				if (closeByObstacles.containsKey(obstacle) && !obstacle.intersects(this)) {
-					if (diagonal.sideOfPoint(obstacle.center) != closeByObstacles.get(obstacle) && obstaclePassedHandler != null) {
+					if (obstaclePassedHandler != null && diagonal.sideOfPoint(obstacle.center) != closeByObstacles.get(obstacle)) {
 						obstaclePassedHandler.onObstaclePassed(obstacle);
 					}
 					closeByObstacles.remove(obstacle);

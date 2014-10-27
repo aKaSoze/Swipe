@@ -10,8 +10,6 @@ import android.view.MotionEvent;
 import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
-import fractal.games.circus.sorin.petre.nica.physics.units.LengthUnit;
-import fractal.games.circus.sorin.petre.nica.physics.units.TimeUnit;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
 public class PropulsionPlatform extends Painting {
@@ -28,8 +26,8 @@ public class PropulsionPlatform extends Painting {
 		void onImpact(PropulsionPlatform propulsionPlatform);
 	}
 
-	private static final Double		ELASTICITY_COEFICIENT	= 17.8;
-	private static final Integer	PROJECTILE_MIN_SPEED	= 35;
+	private static final Double		ELASTICITY_COEFICIENT	= 0.02;
+	private static final Double		PROJECTILE_MIN_SPEED	= 0.035;
 
 	private Double					maxSpringDisplacement;
 
@@ -41,7 +39,7 @@ public class PropulsionPlatform extends Painting {
 
 	private Long					elapsedTime;
 
-	private Velocity				springVelocity			= new Velocity(0.0, 0.0, LengthUnit.PIXEL, TimeUnit.SECOND);
+	private Velocity				springVelocity			= new Velocity(0.0, 0.0);
 
 	public MediaPlayer				boingSoundPlayer;
 
@@ -191,7 +189,7 @@ public class PropulsionPlatform extends Painting {
 	}
 
 	public Velocity getSpringVelocity() {
-		return new Velocity(springVelocity.x, springVelocity.y, LengthUnit.PIXEL, TimeUnit.SECOND);
+		return new Velocity(springVelocity.x, springVelocity.y);
 	}
 
 }

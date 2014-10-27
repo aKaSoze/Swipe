@@ -2,7 +2,7 @@ package fractal.games.circus.sorin.petre.nica.physics.kinematics;
 
 import android.view.MotionEvent;
 import fractal.games.circus.sorin.petre.nica.math.objects.Vector2D;
-import fractal.games.circus.sorin.petre.nica.physics.units.LengthUnit;
+import fractal.games.circus.sorin.petre.nica.physics.units.FundamentalMeasure;
 
 public class Displacement extends Vector2D<Displacement> {
 
@@ -10,16 +10,12 @@ public class Displacement extends Vector2D<Displacement> {
 		First, Second, Intersection;
 	}
 
-	public Displacement(Double sx, Double sy, LengthUnit lengthUnit) {
-		super(sx, sy, lengthUnit);
-	}
-
-	public Displacement(Float sx, Float sy, LengthUnit lengthUnit) {
-		this(sx.doubleValue(), sy.doubleValue(), lengthUnit);
-	}
-
 	public Displacement(Double sx, Double sy) {
-		this(sx, sy, LengthUnit.PIXEL);
+		super(sx, sy, FundamentalMeasure.Length.unitSymbol);
+	}
+
+	public Displacement(Float sx, Float sy) {
+		this(sx.doubleValue(), sy.doubleValue());
 	}
 
 	public Displacement(Long sx, Long sy) {
@@ -30,30 +26,20 @@ public class Displacement extends Vector2D<Displacement> {
 		this(sx.doubleValue(), sy.doubleValue());
 	}
 
-	public Displacement(Float sx, Float sy) {
-		this(sx.doubleValue(), sy.doubleValue());
-	}
-
 	public Displacement() {
 		this(0.0, 0.0);
 	}
 
 	public Displacement additionVector(Displacement subtrahend) {
-		Double magnitudeOrderTransformation = getMeasureUnit().evaluateMagnitudeOrderTransformation(subtrahend.getMeasureUnit());
-		Double x = this.x + (subtrahend.x * magnitudeOrderTransformation);
-		Double y = this.y + (subtrahend.y * magnitudeOrderTransformation);
-		return new Displacement(x, y, getMeasureUnit().lengthComponent);
+		return new Displacement(x + subtrahend.x, y + subtrahend.y);
 	}
 
 	public Displacement subtractionVector(Displacement subtrahend) {
-		Double magnitudeOrderTransformation = getMeasureUnit().evaluateMagnitudeOrderTransformation(subtrahend.getMeasureUnit());
-		Double x = this.x - (subtrahend.x * magnitudeOrderTransformation);
-		Double y = this.y - (subtrahend.y * magnitudeOrderTransformation);
-		return new Displacement(x, y, getMeasureUnit().lengthComponent);
+		return new Displacement(x - subtrahend.x, y - subtrahend.y);
 	}
 
 	public Displacement perpendicularVector() {
-		return new Displacement(y, -x, getMeasureUnit().lengthComponent);
+		return new Displacement(y, -x);
 	}
 
 	public Double distanceTo(Displacement otherVector) {

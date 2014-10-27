@@ -6,7 +6,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import com.google.gson.annotations.Expose;
 
 import fractal.games.circus.R;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Hippo;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscilatingBillboard;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Painting;
@@ -18,32 +17,34 @@ import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
 
 public class GameWorld {
 
+	public static final Double			GRAVITATIONAL_ACCELERATION	= -0.0003;
+
 	@Expose
 	private Hippo						hippo;
 
 	@Expose
-	private Set<PropulsionPlatform>		platforms				= new CopyOnWriteArraySet<PropulsionPlatform>();
+	private Set<PropulsionPlatform>		platforms					= new CopyOnWriteArraySet<PropulsionPlatform>();
 
 	@Expose
-	private Set<Sensor>					sensors					= new CopyOnWriteArraySet<Sensor>();
+	private Set<Sensor>					sensors						= new CopyOnWriteArraySet<Sensor>();
 
 	@Expose
-	private Set<OscilatingBillboard>	oscilatingBillboards	= new CopyOnWriteArraySet<OscilatingBillboard>();
+	private Set<OscilatingBillboard>	oscilatingBillboards		= new CopyOnWriteArraySet<OscilatingBillboard>();
 
 	@Expose
-	private Set<Painting>				paintings				= new CopyOnWriteArraySet<Painting>();
+	private Set<Painting>				paintings					= new CopyOnWriteArraySet<Painting>();
 
-	private ImpactHandler				impactHandler			= new ImpactHandler() {
-																	@Override
-																	public void onImpact(PropulsionPlatform propulsionPlatform) {
-																		if (hippo.velocity.isZero() && propulsionPlatform.touchesOnHorizontalSide(hippo)) {
-																			Velocity springVelocity = propulsionPlatform.getSpringVelocity();
-																			hippo.velocity.setComponents(springVelocity.x / 4, springVelocity.y / 4);
-																			hippo.acceleration.y = -9.8;
-																			MediaStore.getSound(R.raw.boing).start();
+	private ImpactHandler				impactHandler				= new ImpactHandler() {
+																		@Override
+																		public void onImpact(PropulsionPlatform propulsionPlatform) {
+																			if (hippo.velocity.isZero() && propulsionPlatform.touchesOnHorizontalSide(hippo)) {
+																				Velocity springVelocity = propulsionPlatform.getSpringVelocity();
+																				hippo.velocity.setComponents(springVelocity.x / 4, springVelocity.y / 4);
+																				hippo.acceleration.y = GRAVITATIONAL_ACCELERATION;
+																				MediaStore.getSound(R.raw.boing).start();
+																			}
 																		}
-																	}
-																};
+																	};
 
 	public void addWorldObject(Painting painting) {
 		if (painting instanceof PropulsionPlatform) {
@@ -75,17 +76,26 @@ public class GameWorld {
 		}
 	}
 
-	public Set<CenteredDrawable> getAllObjects() {
-		Set<CenteredDrawable> objects = new CopyOnWriteArraySet<CenteredDrawable>(platforms);
-		objects.addAll(sensors);
-		objects.addAll(oscilatingBillboards);
-		objects.addAll(paintings);
+	public Set<Painting> getAllObjects() {
+		Set<Painting> objects = new CopyOnWriteArraySet<Painting>();
 		objects.add(hippo);
+		objects.addAll(platforms);
+		objects.addAll(sensors);
+		// objects.addAll(oscilatingBillboards);
+		objects.addAll(paintings);
 		return objects;
 	}
 
 	public Hippo getHippo() {
 		return hippo;
+	}
+
+	public void clear() {
+		hippo = null;
+		platforms.clear();
+		sensors.clear();
+		oscilatingBillboards.clear();
+		paintings.clear();
 	}
 
 }

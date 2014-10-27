@@ -55,11 +55,12 @@ public class GameView extends AutoUpdatableView {
 
 	public void loadWorld(GameWorld world) {
 		suspend();
-		this.world = world;
-		for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
-			centeredDrawable.init();
-			centeredDrawable.setBounds(getLeft(), getTop(), getRight(), getBottom());
-			centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+		this.world.clear();
+		for (Painting painting : world.getAllObjects()) {
+			painting.init();
+			painting.setBounds(getLeft(), getTop(), getRight(), getBottom());
+			painting.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+			this.world.addWorldObject(painting);
 		}
 		resume();
 	}

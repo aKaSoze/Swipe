@@ -28,8 +28,6 @@ import fractal.games.circus.sorin.petre.nica.persistence.JsonSerializer;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
-import fractal.games.circus.sorin.petre.nica.physics.units.LengthUnit;
-import fractal.games.circus.sorin.petre.nica.physics.units.TimeUnit;
 import fractal.games.circus.sorin.petre.nica.views.GameView;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 import fractal.games.circus.sorin.petre.nica.views.Score;
@@ -52,8 +50,8 @@ public class GameWorldActivity extends Activity {
 		final GameView gameView = new GameView(this);
 
 		final Hippo hippo = new Hippo(new LayoutProportions(0.19, 0.14, 0.3, 1.0));
-		hippo.acceleration = new Acceleration(0.0, -9.8, LengthUnit.METER, TimeUnit.SECOND);
-		hippo.velocity = new Velocity(0.0, 0.0, LengthUnit.PIXEL, TimeUnit.SECOND);
+		hippo.acceleration = new Acceleration(0.0, GameWorld.GRAVITATIONAL_ACCELERATION);
+		hippo.velocity = new Velocity(0.0, 0.0);
 
 		PropulsionPlatform propulsionPlatform = new PropulsionPlatform(new LayoutProportions(0.25, 0.025, 0.3, 0.7));
 

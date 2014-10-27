@@ -4,14 +4,19 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import android.graphics.Paint;
+
+import com.google.gson.annotations.Expose;
+
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
 public abstract class AnimatedShape extends CenteredDrawable {
 
+	@Expose
 	public Acceleration					acceleration;
 
+	@Expose
 	public Velocity						velocity;
 
 	protected final Set<AnimatedShape>	obstacles	= new CopyOnWriteArraySet<AnimatedShape>();
@@ -42,8 +47,10 @@ public abstract class AnimatedShape extends CenteredDrawable {
 	}
 
 	public void addObstacle(AnimatedShape obstacle) {
-		obstacles.add(obstacle);
-		obstacle.obstacles.add(this);
+		if (this != obstacle) {
+			obstacles.add(obstacle);
+			obstacle.obstacles.add(this);
+		}
 	}
 
 	protected AnimatedShape checkPossibleOverlap() {

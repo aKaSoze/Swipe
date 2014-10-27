@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import com.google.gson.annotations.Expose;
 
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
-import fractal.games.circus.sorin.petre.nica.physics.units.Unit;
 
 public class Vector2D<V extends Vector2D<V>> {
 
@@ -16,16 +15,17 @@ public class Vector2D<V extends Vector2D<V>> {
 
 	public Displacement	applyPoint;
 
-	private Unit<?>		measureUnit;
+	@Expose
+	public String		measureUnit;
 
-	public Vector2D(Double x, Double y, Unit<?> measureUnit) {
+	public Vector2D(Double x, Double y, String measureUnit) {
 		this.x = x;
 		this.y = y;
 		this.measureUnit = measureUnit;
 	}
 
 	public Vector2D(Double x, Double y) {
-		this(x, y, Unit.ADIMENSIONAL);
+		this(x, y, "");
 	}
 
 	public Vector2D(Integer x, Integer y) {
@@ -47,24 +47,6 @@ public class Vector2D<V extends Vector2D<V>> {
 
 	public void setComponents(Integer x, Integer y) {
 		setComponents(x.doubleValue(), y.doubleValue());
-	}
-
-	public Unit<?> getMeasureUnit() {
-		return measureUnit;
-	}
-
-	public void setMeasureUnit(Unit<?> measureUnit) {
-		if (measureUnit.equals(this.measureUnit)) {
-			return;
-		}
-
-		if (this.measureUnit != null) {
-			Double magnitudeOrderTransformation = measureUnit.evaluateMagnitudeOrderTransformation(this.measureUnit);
-			x *= magnitudeOrderTransformation;
-			y *= magnitudeOrderTransformation;
-		}
-
-		this.measureUnit = measureUnit;
 	}
 
 	public Double magnitude() {
@@ -103,25 +85,21 @@ public class Vector2D<V extends Vector2D<V>> {
 	}
 
 	public void add(V augend) {
-		Double magnitudeOrderTransformation = measureUnit.evaluateMagnitudeOrderTransformation(augend.getMeasureUnit());
-		x += augend.x * magnitudeOrderTransformation;
-		y += augend.y * magnitudeOrderTransformation;
+		x += augend.x;
+		y += augend.y;
 	}
 
 	public void subtract(V subtrahend) {
-		Double magnitudeOrderTransformation = measureUnit.evaluateMagnitudeOrderTransformation(subtrahend.getMeasureUnit());
-		x -= subtrahend.x * magnitudeOrderTransformation;
-		y -= subtrahend.y * magnitudeOrderTransformation;
+		x -= subtrahend.x;
+		y -= subtrahend.y;
 	}
 
 	public Double scalarMultiply(V multiplicand) {
-		Double magnitudeOrderTransformation = measureUnit.evaluateMagnitudeOrderTransformation(multiplicand.getMeasureUnit());
-		return (x * multiplicand.x * magnitudeOrderTransformation) + (y * multiplicand.y * magnitudeOrderTransformation);
+		return (x * multiplicand.x) + (y * multiplicand.y);
 	}
 
 	public Double crossMultiply(V otherVector) {
-		Double magnitudeOrderTransformation = measureUnit.evaluateMagnitudeOrderTransformation(otherVector.getMeasureUnit());
-		return (x * (otherVector.y * magnitudeOrderTransformation)) - (y * (otherVector.x * magnitudeOrderTransformation));
+		return (x * otherVector.y) - (y * otherVector.x);
 	}
 
 	public void makeEqualTo(V otherVector) {
@@ -178,7 +156,7 @@ public class Vector2D<V extends Vector2D<V>> {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " [" + x + "i + " + y + "j], " + magnitude() + " " + measureUnit.symbol;
+		return getClass().getSimpleName() + " [" + x + "i + " + y + "j], " + magnitude() + " " + measureUnit;
 	}
 
 }
