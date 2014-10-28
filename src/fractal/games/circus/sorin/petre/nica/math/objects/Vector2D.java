@@ -136,7 +136,7 @@ public class Vector2D<V extends Vector2D<V>> {
 	@SuppressWarnings("unchecked")
 	public V cloneVector() {
 		try {
-			V clone = (V) getClass().getConstructor(Double.class, Double.class, measureUnit.getClass()).newInstance(x, y, measureUnit);
+			V clone = (V) getClass().getConstructor(Double.class, Double.class).newInstance(x, y);
 			if (applyPoint != null) {
 				clone.applyPoint = applyPoint.cloneVector();
 			}

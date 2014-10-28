@@ -125,16 +125,16 @@ public class PropulsionPlatform extends Painting {
 	public void draw(Canvas canvas) {
 		super.draw(canvas);
 
-		float strecthPointOriginX = strecthPoint.applyPoint.x.floatValue();
-		float strecthPointOriginY = drawTranslation.y.floatValue() - strecthPoint.applyPoint.y.floatValue();
+		float strecthPointOriginX = getDrawX(strecthPoint.applyPoint.x).floatValue();
+		float strecthPointOriginY = getDrawY(strecthPoint.applyPoint.y).floatValue();
 
-		float strecthPointX = strecthPoint.applyPoint.x.floatValue() + strecthPoint.x.floatValue();
-		float strecthPointY = drawTranslation.y.floatValue() - strecthPoint.applyPoint.y.floatValue() - strecthPoint.y.floatValue();
+		float strecthPointX = getDrawX(strecthPoint.applyPoint.x + strecthPoint.x).floatValue();
+		float strecthPointY = getDrawY(strecthPoint.applyPoint.y + strecthPoint.y).floatValue();
 
 		canvas.drawLine(strecthPointOriginX, strecthPointOriginY, strecthPointX, strecthPointY, paint);
 		canvas.drawCircle(strecthPointX, strecthPointY, 10, paint);
-		canvas.drawLine(strecthPointX, strecthPointY, evalLeftTopCorner().x.floatValue(), drawTranslation.y.floatValue() - evalLeftTopCorner().y.floatValue(), paint);
-		canvas.drawLine(strecthPointX, strecthPointY, evalRightTopCorner().x.floatValue(), drawTranslation.y.floatValue() - evalRightTopCorner().y.floatValue(), paint);
+		canvas.drawLine(strecthPointX, strecthPointY, evalLeftTopCorner().x.floatValue(), getDrawY(evalLeftTopCorner().y).floatValue(), paint);
+		canvas.drawLine(strecthPointX, strecthPointY, evalRightTopCorner().x.floatValue(), getDrawY(evalRightTopCorner().y).floatValue(), paint);
 	}
 
 	public PropulsionPlatform clonePropulsionPlatform() {

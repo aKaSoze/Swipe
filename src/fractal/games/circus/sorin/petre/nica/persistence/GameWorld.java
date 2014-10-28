@@ -81,7 +81,7 @@ public class GameWorld {
 		objects.add(hippo);
 		objects.addAll(platforms);
 		objects.addAll(sensors);
-		// objects.addAll(oscilatingBillboards);
+		objects.addAll(oscilatingBillboards);
 		objects.addAll(paintings);
 		return objects;
 	}

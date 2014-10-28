@@ -34,6 +34,7 @@ public class RammedPainting extends Painting {
 			switch (motionEvent.getActionMasked()) {
 			case MotionEvent.ACTION_DOWN:
 				Painting painting = new Painting(layoutProportions, bitmapResourceId);
+				painting.center = center.cloneVector();
 				painting.properties.add(Property.MOVABLE);
 				paintingCreatedHandler.onPaintingCreated(painting);
 				break;

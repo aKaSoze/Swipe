@@ -1,14 +1,22 @@
 package fractal.games.circus.sorin.petre.nica.collections;
 
+import com.google.gson.annotations.Expose;
+
 public class Tuple2<T1, T2> {
 
-	public final T1	t1;
-	public final T2	t2;
+	@Expose
+	public T1	t1;
+
+	@Expose
+	public T2	t2;
 
 	public Tuple2(T1 t1, T2 t2) {
-		super();
 		this.t1 = t1;
 		this.t2 = t2;
+	}
+
+	public Tuple2() {
+		this(null, null);
 	}
 
 	@Override

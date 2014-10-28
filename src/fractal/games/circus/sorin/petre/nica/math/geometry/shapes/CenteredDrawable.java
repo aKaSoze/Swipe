@@ -38,30 +38,31 @@ public abstract class CenteredDrawable extends Drawable {
 		MOVABLE, CLONEABLE;
 	}
 
-	private static final Long				DOUBLE_TAP_TIME		= 300L;
-	protected static final Double			VECINITY_DISTANCE	= 50.0;
-
-	public transient final Set<Property>	properties			= new HashSet<Property>();
+	private static final Long		DOUBLE_TAP_TIME		= 300L;
+	protected static final Double	VECINITY_DISTANCE	= 50.0;
 
 	@Expose
-	public Displacement						center				= ORIGIN_CENTER;
+	public Set<Property>			properties			= new HashSet<Property>();
 
 	@Expose
-	private Displacement					drawCenter			= new Displacement(0, 0);
+	public Displacement				center				= ORIGIN_CENTER;
 
 	@Expose
-	public Displacement						drawTranslation		= new Displacement(0, 0);
+	private Displacement			drawCenter			= new Displacement(0, 0);
 
 	@Expose
-	public LayoutProportions				layoutProportions;
+	public Displacement				drawTranslation		= new Displacement(0, 0);
 
-	protected transient final Paint			paint;
+	@Expose
+	public LayoutProportions		layoutProportions;
 
-	private transient Long					lastTapTime			= 0L;
+	protected transient final Paint	paint;
 
-	protected transient Long				lastUpdateTime;
+	private transient Long			lastTapTime			= 0L;
 
-	protected transient Long				timeIncrement		= 0L;
+	protected transient Long		lastUpdateTime;
+
+	protected transient Long		timeIncrement		= 0L;
 
 	public CenteredDrawable(LayoutProportions layoutProportions, Paint paint) {
 		super();
@@ -135,12 +136,22 @@ public abstract class CenteredDrawable extends Drawable {
 		if (center == ORIGIN_CENTER) {
 			Double x = layoutProportions.xRatio * (bounds.right - bounds.left);
 			Double y = layoutProportions.yRatio * (bounds.bottom - bounds.top);
-			center = new Displacement(x, y);
+			center = evalOriginalCenter(bounds);
 		}
 	}
 
+	public Displacement evalOriginalCenter() {
+		return evalOriginalCenter(getBounds());
+	}
+
+	private Displacement evalOriginalCenter(Rect bounds) {
+		Double x = layoutProportions.xRatio * (bounds.right - bounds.left);
+		Double y = layoutProportions.yRatio * (bounds.bottom - bounds.top);
+		return new Displacement(x, y);
+	}
+
 	protected Displacement evalDrawCenter() {
-		drawCenter.setComponents(center.x + drawTranslation.x, drawTranslation.y - center.y);
+		drawCenter.setComponents(getDrawX(center.x), getDrawY(center.y));
 		return drawCenter;
 	}
 
@@ -158,6 +169,26 @@ public abstract class CenteredDrawable extends Drawable {
 
 	protected Double evalHalfHeight() {
 		return evalHeight() / 2.0;
+	}
+
+	protected Displacement getDrawLocation(Displacement realLocation) {
+		return new Displacement(getBounds().left + realLocation.x + drawTranslation.x, getBounds().bottom - (realLocation.y + drawTranslation.y));
+	}
+
+	protected Double getRealX(Double drawX) {
+		return drawX - getBounds().left - drawTranslation.x;
+	}
+
+	protected Double getRealY(Double drawY) {
+		return getBounds().bottom - (drawY + drawTranslation.y);
+	}
+
+	protected Double getDrawX(Double realX) {
+		return getBounds().left + realX + drawTranslation.x;
+	}
+
+	protected Double getDrawY(Double realY) {
+		return getBounds().bottom - (realY + drawTranslation.y);
 	}
 
 	protected void drawVector(Vector2D<?> vector, Canvas canvas) {

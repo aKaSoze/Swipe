@@ -63,10 +63,10 @@ public class GameWorldActivity extends Activity {
 
 		Tuple2<Integer, Long> slide1 = new Tuple2<Integer, Long>(R.drawable.evil_monkey, 700L);
 		Tuple2<Integer, Long> slide2 = new Tuple2<Integer, Long>(R.drawable.monkey_banana, 700L);
-		OscilatingBillboard monkey = new OscilatingBillboard(new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(7, 0), slide1, slide2);
+		OscilatingBillboard monkey = new OscilatingBillboard(new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(0.3, 0.0), slide1, slide2);
 		monkey.addObstacle(hippo);
 
-		OscilatingBillboard monkey2 = new OscilatingBillboard(new LayoutProportions(0.1, 0.08, 0.1, 1.05), new Displacement(600, 0), new Velocity(4, 0), slide1, slide2);
+		OscilatingBillboard monkey2 = new OscilatingBillboard(new LayoutProportions(0.1, 0.08, 0.1, 1.05), new Displacement(600, 0), new Velocity(0.1, 0.0), slide1, slide2);
 		monkey2.addObstacle(hippo);
 
 		Sensor circleOfFire = new Sensor(R.drawable.ring_of_fire, new Rectangle(new LayoutProportions(0.02, 0.01, 0.82, 1.87)), new Rectangle(new LayoutProportions(0.02, 0.01, 0.6, 2.1)));
@@ -76,13 +76,11 @@ public class GameWorldActivity extends Activity {
 		box.properties.add(Property.MOVABLE);
 		box.addObstacle(hippo);
 
-		RammedPainting boxFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.05, 0.9), R.drawable.reflector_1);
+		RammedPainting boxFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.05, 0.5), R.drawable.reflector_1);
 		boxFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
 			@Override
 			public void onPaintingCreated(Painting painting) {
-				painting.addObstacle(hippo);
 				gameView.addWorldObject(painting);
-				Log.i("new reflector", jsonSerializer.jsonForm(painting));
 			}
 		};
 
@@ -92,7 +90,6 @@ public class GameWorldActivity extends Activity {
 		gameView.addWorldObject(propulsionPlatform3);
 		gameView.addWorldObject(propulsionPlatform4);
 		gameView.addWorldObject(box);
-		gameView.addWorldObject(boxFactory);
 		gameView.addWorldObject(monkey);
 		gameView.addWorldObject(monkey2);
 		gameView.addWorldObject(circleOfFire);
@@ -141,10 +138,12 @@ public class GameWorldActivity extends Activity {
 		layout.addView(gameView);
 
 		final Score score = new Score(new LayoutProportions(0.0, 0.04, 0.03, 0.04), getAssets());
-		gameView.score = score;
+		gameView.hud.score = score;
 
 		final Score inGameTimer = new Score(new LayoutProportions(0.0, 0.04, 0.7, 0.04), getAssets());
-		gameView.inGameTimer = inGameTimer;
+		gameView.hud.inGameTimer = inGameTimer;
+
+		gameView.hud.rammedPaintings.add(boxFactory);
 
 		propulsionPlatform.collisionHandlers.add(new CollisionHandler() {
 			@Override
