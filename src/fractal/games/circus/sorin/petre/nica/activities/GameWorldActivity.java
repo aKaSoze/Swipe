@@ -84,6 +84,14 @@ public class GameWorldActivity extends Activity {
 			}
 		};
 
+		RammedPainting platformsFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.05, 0.5), R.drawable.beam);
+		boxFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
+			@Override
+			public void onPaintingCreated(Painting painting) {
+				gameView.addWorldObject(painting);
+			}
+		};
+
 		gameView.addWorldObject(hippo);
 		gameView.addWorldObject(propulsionPlatform);
 		gameView.addWorldObject(propulsionPlatform2);
@@ -108,6 +116,10 @@ public class GameWorldActivity extends Activity {
 		Button pauseButton = new Button(this);
 		pauseButton.setText("p/r");
 		menu.addView(pauseButton);
+
+		Button editButton = new Button(this);
+		editButton.setText("edit/play");
+		menu.addView(editButton);
 
 		final String[] worlds = new String[3];
 
@@ -134,6 +146,13 @@ public class GameWorldActivity extends Activity {
 			}
 		});
 
+		editButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				gameView.isOnEditMode = !gameView.isOnEditMode;
+			}
+		});
+
 		layout.addView(menu);
 		layout.addView(gameView);
 
@@ -144,6 +163,7 @@ public class GameWorldActivity extends Activity {
 		gameView.hud.inGameTimer = inGameTimer;
 
 		gameView.hud.rammedPaintings.add(boxFactory);
+		gameView.hud.rammedPaintings.add(platformsFactory);
 
 		propulsionPlatform.collisionHandlers.add(new CollisionHandler() {
 			@Override

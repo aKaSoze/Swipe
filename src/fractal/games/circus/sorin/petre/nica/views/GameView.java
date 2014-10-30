@@ -51,6 +51,8 @@ public class GameView extends AutoUpdatableView {
 
 	private Long				lastUpdateTime			= null;
 
+	public Boolean				isOnEditMode			= false;
+
 	public static class Hud {
 		public Score				score;
 
@@ -195,12 +197,16 @@ public class GameView extends AutoUpdatableView {
 			centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
 			centeredDrawable.draw(canvas);
 		}
-		for (RammedPainting rammedPainting : hud.rammedPaintings) {
-			rammedPainting.center = rammedPainting.evalOriginalCenter();
-			rammedPainting.center.y -= coordinateTransaltion.y;
-			rammedPainting.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
-			rammedPainting.draw(canvas);
+
+		if (isOnEditMode) {
+			for (RammedPainting rammedPainting : hud.rammedPaintings) {
+				rammedPainting.center = rammedPainting.evalOriginalCenter();
+				rammedPainting.center.y -= coordinateTransaltion.y;
+				rammedPainting.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+				rammedPainting.draw(canvas);
+			}
 		}
+
 		if (hud.score != null) {
 			hud.score.draw(canvas);
 		}
