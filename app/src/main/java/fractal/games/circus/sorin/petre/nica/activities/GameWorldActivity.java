@@ -14,7 +14,7 @@ import fractal.games.circus.sorin.petre.nica.collections.Tuple2;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.AnimatedShape;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable.Property;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Hippo;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscilatingBillboard;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Painting;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform.CollisionHandler;
@@ -55,19 +55,10 @@ public class GameWorldActivity extends Activity {
 
 		PropulsionPlatform propulsionPlatform = new PropulsionPlatform(new LayoutProportions(0.25, 0.025, 0.3, 0.7));
 
-		PropulsionPlatform propulsionPlatform2 = new PropulsionPlatform(new LayoutProportions(0.25, 0.025, 0.8, 1.2));
-
-		PropulsionPlatform propulsionPlatform3 = new PropulsionPlatform(new LayoutProportions(0.25, 0.025, 0.4, 1.7));
-
-		PropulsionPlatform propulsionPlatform4 = new PropulsionPlatform(new LayoutProportions(0.25, 0.025, 0.5, 2.2));
-
 		Tuple2<Integer, Long> slide1 = new Tuple2<Integer, Long>(R.drawable.evil_monkey, 700L);
 		Tuple2<Integer, Long> slide2 = new Tuple2<Integer, Long>(R.drawable.monkey_banana, 700L);
-		OscilatingBillboard monkey = new OscilatingBillboard(new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(0.3, 0.0), slide1, slide2);
+		OscillatingBillboard monkey = new OscillatingBillboard(new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(0.3, 0.0), slide1, slide2);
 		monkey.addObstacle(hippo);
-
-		OscilatingBillboard monkey2 = new OscilatingBillboard(new LayoutProportions(0.1, 0.08, 0.1, 1.05), new Displacement(600, 0), new Velocity(0.1, 0.0), slide1, slide2);
-		monkey2.addObstacle(hippo);
 
 		Sensor circleOfFire = new Sensor(R.drawable.ring_of_fire, new Rectangle(new LayoutProportions(0.02, 0.01, 0.82, 1.87)), new Rectangle(new LayoutProportions(0.02, 0.01, 0.6, 2.1)));
 		circleOfFire.addObstacle(hippo);
@@ -76,7 +67,7 @@ public class GameWorldActivity extends Activity {
 		box.properties.add(Property.MOVABLE);
 		box.addObstacle(hippo);
 
-		RammedPainting boxFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.05, 0.5), R.drawable.reflector_1);
+		RammedPainting boxFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.4, 0.18), R.drawable.reflector_1);
 		boxFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
 			@Override
 			public void onPaintingCreated(Painting painting) {
@@ -84,22 +75,38 @@ public class GameWorldActivity extends Activity {
 			}
 		};
 
-		RammedPainting platformsFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.05, 0.5), R.drawable.beam);
-		boxFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
+		RammedPainting platformsFactory = new RammedPainting(new LayoutProportions(0.25, 0.025, 0.6, 0.18), R.drawable.beam);
+        platformsFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
 			@Override
 			public void onPaintingCreated(Painting painting) {
 				gameView.addWorldObject(painting);
 			}
 		};
+        platformsFactory.paintingConstructor = new RammedPainting.PaintingConstructor() {
+            @Override
+            public Painting construct() {
+                return new PropulsionPlatform();
+            }
+        };
+
+        RammedPainting circlesFactory = new RammedPainting(new LayoutProportions(0.25, 0.025, 0.6, 0.18), R.drawable.ring_of_fire);
+        circlesFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
+            @Override
+            public void onPaintingCreated(Painting painting) {
+                gameView.addWorldObject(painting);
+            }
+        };
+        circlesFactory.paintingConstructor = new RammedPainting.PaintingConstructor() {
+            @Override
+            public Painting construct() {
+                return new Sensor(R.drawable.ring_of_fire, new Rectangle(new LayoutProportions(0.02, 0.01, 0.82, 1.87)), new Rectangle(new LayoutProportions(0.02, 0.01, 0.6, 2.1)));
+            }
+        };
 
 		gameView.addWorldObject(hippo);
 		gameView.addWorldObject(propulsionPlatform);
-		gameView.addWorldObject(propulsionPlatform2);
-		gameView.addWorldObject(propulsionPlatform3);
-		gameView.addWorldObject(propulsionPlatform4);
 		gameView.addWorldObject(box);
 		gameView.addWorldObject(monkey);
-		gameView.addWorldObject(monkey2);
 		gameView.addWorldObject(circleOfFire);
 		gameView.getWorld().addWorldObject(hippo);
 
@@ -149,7 +156,7 @@ public class GameWorldActivity extends Activity {
 		editButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				gameView.isOnEditMode = !gameView.isOnEditMode;
+				gameView.setIsOnEditMode(!gameView.getIsOnEditMode());
 			}
 		});
 
@@ -163,7 +170,7 @@ public class GameWorldActivity extends Activity {
 		gameView.hud.inGameTimer = inGameTimer;
 
 		gameView.hud.rammedPaintings.add(boxFactory);
-		gameView.hud.rammedPaintings.add(platformsFactory);
+		gameView.hud.rammedPaintings.add(circlesFactory);
 
 		propulsionPlatform.collisionHandlers.add(new CollisionHandler() {
 			@Override

@@ -7,7 +7,7 @@ import com.google.gson.annotations.Expose;
 
 import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Hippo;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscilatingBillboard;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Painting;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform.ImpactHandler;
@@ -29,7 +29,7 @@ public class GameWorld {
 	private Set<Sensor>					sensors						= new CopyOnWriteArraySet<Sensor>();
 
 	@Expose
-	private Set<OscilatingBillboard>	oscilatingBillboards		= new CopyOnWriteArraySet<OscilatingBillboard>();
+	private Set<OscillatingBillboard> oscillatingBillboards = new CopyOnWriteArraySet<OscillatingBillboard>();
 
 	@Expose
 	private Set<Painting>				paintings					= new CopyOnWriteArraySet<Painting>();
@@ -64,10 +64,10 @@ public class GameWorld {
 			Sensor sensor = (Sensor) painting;
 			sensor.addObstacle(hippo);
 			sensors.add(sensor);
-		} else if (painting instanceof OscilatingBillboard) {
-			OscilatingBillboard oscilatingBillboard = (OscilatingBillboard) painting;
-			oscilatingBillboard.addObstacle(hippo);
-			oscilatingBillboards.add(oscilatingBillboard);
+		} else if (painting instanceof OscillatingBillboard) {
+			OscillatingBillboard oscillatingBillboard = (OscillatingBillboard) painting;
+			oscillatingBillboard.addObstacle(hippo);
+			oscillatingBillboards.add(oscillatingBillboard);
 		} else {
 			paintings.add(painting);
 			if (hippo != null) {
@@ -81,7 +81,7 @@ public class GameWorld {
 		objects.add(hippo);
 		objects.addAll(platforms);
 		objects.addAll(sensors);
-		objects.addAll(oscilatingBillboards);
+		objects.addAll(oscillatingBillboards);
 		objects.addAll(paintings);
 		return objects;
 	}
@@ -94,7 +94,7 @@ public class GameWorld {
 		hippo = null;
 		platforms.clear();
 		sensors.clear();
-		oscilatingBillboards.clear();
+		oscillatingBillboards.clear();
 		paintings.clear();
 	}
 

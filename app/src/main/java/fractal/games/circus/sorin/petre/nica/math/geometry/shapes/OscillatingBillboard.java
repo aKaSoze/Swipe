@@ -9,19 +9,19 @@ import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
-public class OscilatingBillboard extends Billboard {
+public class OscillatingBillboard extends Billboard {
 
 	@Expose
 	private Displacement		displacement;
 
 	private final Displacement	originalCenter	= new Displacement();
 
-	public OscilatingBillboard() {
+	public OscillatingBillboard() {
 		super();
 	}
 
 	@SafeVarargs
-	public OscilatingBillboard(LayoutProportions layoutProportions, Displacement displacement, Velocity velocity, Tuple2<Integer, Long>... slides) {
+	public OscillatingBillboard(LayoutProportions layoutProportions, Displacement displacement, Velocity velocity, Tuple2<Integer, Long>... slides) {
 		super(layoutProportions, slides);
 		this.displacement = displacement;
 		this.velocity = velocity;
