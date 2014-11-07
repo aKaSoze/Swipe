@@ -9,6 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
 import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.collections.Tuple2;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.AnimatedShape;
@@ -34,54 +35,50 @@ import fractal.games.circus.sorin.petre.nica.views.Score;
 
 public class GameWorldActivity extends Activity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		MediaStore.context = this;
+        MediaStore.context = this;
 
-		final JsonSerializer jsonSerializer = new JsonSerializer(this);
+        final JsonSerializer jsonSerializer = new JsonSerializer(this);
 
-		final LinearLayout layout = new LinearLayout(this);
-		layout.setOrientation(LinearLayout.VERTICAL);
+        final LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
 
-		final GameView gameView = new GameView(this);
+        final GameView gameView = new GameView(this);
 
-		final Hippo hippo = new Hippo(new LayoutProportions(0.19, 0.14, 0.3, 1.0));
-		hippo.acceleration = new Acceleration(0.0, GameWorld.GRAVITATIONAL_ACCELERATION);
-		hippo.velocity = new Velocity(0.0, 0.0);
+        final Hippo hippo = new Hippo(new LayoutProportions(0.19, 0.14, 0.3, 1.0));
+        hippo.acceleration = new Acceleration(0.0, GameWorld.GRAVITATIONAL_ACCELERATION);
+        hippo.velocity = new Velocity(0.0, 0.0);
 
-		PropulsionPlatform propulsionPlatform = new PropulsionPlatform(new LayoutProportions(0.25, 0.025, 0.3, 0.7));
+        PropulsionPlatform propulsionPlatform = new PropulsionPlatform(new LayoutProportions(0.25, 0.025, 0.3, 0.7));
 
-		Tuple2<Integer, Long> slide1 = new Tuple2<Integer, Long>(R.drawable.evil_monkey, 700L);
-		Tuple2<Integer, Long> slide2 = new Tuple2<Integer, Long>(R.drawable.monkey_banana, 700L);
-		OscillatingBillboard monkey = new OscillatingBillboard(new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(0.3, 0.0), slide1, slide2);
-		monkey.addObstacle(hippo);
+        Tuple2<Integer, Long> slide1 = new Tuple2<Integer, Long>(R.drawable.evil_monkey, 700L);
+        Tuple2<Integer, Long> slide2 = new Tuple2<Integer, Long>(R.drawable.monkey_banana, 700L);
+        OscillatingBillboard monkey = new OscillatingBillboard(new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(0.3, 0.0), slide1, slide2);
+        monkey.addObstacle(hippo);
 
-		Sensor circleOfFire = new Sensor(R.drawable.ring_of_fire, new Rectangle(new LayoutProportions(0.02, 0.01, 0.82, 1.87)), new Rectangle(new LayoutProportions(0.02, 0.01, 0.6, 2.1)));
-		circleOfFire.addObstacle(hippo);
+        Sensor circleOfFire = new Sensor(new LayoutProportions(0.2, 0.16, 0.5, 1.0), R.drawable.ring_of_fire);
+        circleOfFire.addObstacle(hippo);
 
-		final Painting box = new Painting(new LayoutProportions(0.1, 0.08, 0.5, 1.5), R.drawable.reflector_1);
-		box.properties.add(Property.MOVABLE);
-		box.addObstacle(hippo);
+        RammedPainting boxFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.4, 0.18), R.drawable.reflector_1);
+        boxFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
+            @Override
+            public void onPaintingCreated(Painting painting) {
+                gameView.addWorldObject(painting);
+            }
+        };
 
-		RammedPainting boxFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.4, 0.18), R.drawable.reflector_1);
-		boxFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
-			@Override
-			public void onPaintingCreated(Painting painting) {
-				gameView.addWorldObject(painting);
-			}
-		};
-
-		RammedPainting platformsFactory = new RammedPainting(new LayoutProportions(0.25, 0.025, 0.6, 0.18), R.drawable.beam);
+        RammedPainting platformsFactory = new RammedPainting(new LayoutProportions(0.25, 0.025, 0.6, 0.18), R.drawable.beam);
         platformsFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
-			@Override
-			public void onPaintingCreated(Painting painting) {
-				gameView.addWorldObject(painting);
-			}
-		};
+            @Override
+            public void onPaintingCreated(Painting painting) {
+                gameView.addWorldObject(painting);
+            }
+        };
         platformsFactory.paintingConstructor = new RammedPainting.PaintingConstructor() {
             @Override
             public Painting construct() {
@@ -89,7 +86,7 @@ public class GameWorldActivity extends Activity {
             }
         };
 
-        RammedPainting circlesFactory = new RammedPainting(new LayoutProportions(0.25, 0.025, 0.6, 0.18), R.drawable.ring_of_fire);
+        RammedPainting circlesFactory = new RammedPainting(new LayoutProportions(0.2, 0.16, 0.8, 0.18), R.drawable.ring_of_fire);
         circlesFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
             @Override
             public void onPaintingCreated(Painting painting) {
@@ -99,93 +96,93 @@ public class GameWorldActivity extends Activity {
         circlesFactory.paintingConstructor = new RammedPainting.PaintingConstructor() {
             @Override
             public Painting construct() {
-                return new Sensor(R.drawable.ring_of_fire, new Rectangle(new LayoutProportions(0.02, 0.01, 0.82, 1.87)), new Rectangle(new LayoutProportions(0.02, 0.01, 0.6, 2.1)));
+                return new Sensor(new LayoutProportions(0.2, 0.16, 0.8, 0.18), R.drawable.ring_of_fire);
             }
         };
 
-		gameView.addWorldObject(hippo);
-		gameView.addWorldObject(propulsionPlatform);
-		gameView.addWorldObject(box);
-		gameView.addWorldObject(monkey);
-		gameView.addWorldObject(circleOfFire);
-		gameView.getWorld().addWorldObject(hippo);
+        gameView.addWorldObject(hippo);
+        gameView.addWorldObject(propulsionPlatform);
+        gameView.addWorldObject(monkey);
+        gameView.addWorldObject(circleOfFire);
+        gameView.getWorld().addWorldObject(hippo);
 
-		LinearLayout menu = new LinearLayout(this);
-		menu.setOrientation(LinearLayout.HORIZONTAL);
-		Button saveButton = new Button(this);
-		saveButton.setText("save world");
-		menu.addView(saveButton);
+        LinearLayout menu = new LinearLayout(this);
+        menu.setOrientation(LinearLayout.HORIZONTAL);
+        Button saveButton = new Button(this);
+        saveButton.setText("save world");
+        menu.addView(saveButton);
 
-		Button loadButton = new Button(this);
-		loadButton.setText("load world");
-		menu.addView(loadButton);
+        Button loadButton = new Button(this);
+        loadButton.setText("load world");
+        menu.addView(loadButton);
 
-		Button pauseButton = new Button(this);
-		pauseButton.setText("p/r");
-		menu.addView(pauseButton);
+        Button pauseButton = new Button(this);
+        pauseButton.setText("p/r");
+        menu.addView(pauseButton);
 
-		Button editButton = new Button(this);
-		editButton.setText("edit/play");
-		menu.addView(editButton);
+        Button editButton = new Button(this);
+        editButton.setText("edit/play");
+        menu.addView(editButton);
 
-		final String[] worlds = new String[3];
+        final String[] worlds = new String[3];
 
-		saveButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				worlds[0] = jsonSerializer.jsonForm(gameView.getWorld());
-				Log.i("world", worlds[0]);
-			}
-		});
+        saveButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                worlds[0] = jsonSerializer.jsonForm(gameView.getWorld());
+                Log.i("world", worlds[0]);
+            }
+        });
 
-		loadButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				gameView.suspend();
-				gameView.loadWorld(jsonSerializer.fromJson(worlds[0], GameWorld.class));
-				gameView.resume();
-			}
-		});
+        loadButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameView.suspend();
+                gameView.loadWorld(jsonSerializer.fromJson(worlds[0], GameWorld.class));
+                gameView.resume();
+            }
+        });
 
-		pauseButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				gameView.switchPauseState();
-			}
-		});
+        pauseButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameView.switchPauseState();
+            }
+        });
 
-		editButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				gameView.setIsOnEditMode(!gameView.getIsOnEditMode());
-			}
-		});
+        editButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameView.setIsOnEditMode(!gameView.getIsOnEditMode());
+            }
+        });
 
-		layout.addView(menu);
-		layout.addView(gameView);
+        layout.addView(menu);
+        layout.addView(gameView);
 
-		final Score score = new Score(new LayoutProportions(0.0, 0.04, 0.03, 0.04), getAssets());
-		gameView.hud.score = score;
+        final Score score = new Score(new LayoutProportions(0.0, 0.04, 0.03, 0.04), getAssets());
+        gameView.hud.score = score;
 
-		final Score inGameTimer = new Score(new LayoutProportions(0.0, 0.04, 0.7, 0.04), getAssets());
-		gameView.hud.inGameTimer = inGameTimer;
+        final Score inGameTimer = new Score(new LayoutProportions(0.0, 0.04, 0.7, 0.04), getAssets());
+        gameView.hud.inGameTimer = inGameTimer;
 
-		gameView.hud.rammedPaintings.add(boxFactory);
-		gameView.hud.rammedPaintings.add(circlesFactory);
+        gameView.hud.rammedPaintings.add(boxFactory);
+        gameView.hud.rammedPaintings.add(platformsFactory);
+        gameView.hud.rammedPaintings.add(circlesFactory);
 
-		propulsionPlatform.collisionHandlers.add(new CollisionHandler() {
-			@Override
-			public void onCollison() {
-				score.addPoints(100L);
-			}
-		});
+        propulsionPlatform.collisionHandlers.add(new CollisionHandler() {
+            @Override
+            public void onCollison() {
+                score.addPoints(100L);
+            }
+        });
 
-		circleOfFire.obstaclePassedHandler = new ObstaclePassedHandler() {
-			@Override
-			public void onObstaclePassed(AnimatedShape obstacle) {
-				score.addPoints(1133L);
-			}
-		};
+        circleOfFire.obstaclePassedHandler = new ObstaclePassedHandler() {
+            @Override
+            public void onObstaclePassed(AnimatedShape obstacle) {
+                score.addPoints(1133L);
+            }
+        };
 
-		setContentView(layout);
-	}
+        setContentView(layout);
+    }
 }
