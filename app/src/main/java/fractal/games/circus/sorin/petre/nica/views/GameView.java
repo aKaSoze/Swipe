@@ -33,33 +33,20 @@ public class GameView extends AutoUpdatableView {
         DEFAULT_PAINT.setStrokeWidth(4);
     }
 
-    private Bitmap backGround_drwbl;
-
+    private Bitmap           backGround_drwbl;
     private CenteredDrawable selectedShape;
+    private MediaPlayer      soundTrackPlayer;
 
-    private Boolean isOkToRunGameLoop = false;
-
-    private MediaPlayer soundTrackPlayer;
-
-    private Displacement coordinateTransaltion = new Displacement();
-
-    private Displacement realTouchPoint = new Displacement();
-
-    private GameWorld world = new GameWorld();
-
-    public Hud hud = new Hud();
-
-    private Long elapsedTime = 0L;
-
-    private Long lastUpdateTime = null;
-
-    private Boolean isOnEditMode = false;
+    private Boolean      isOkToRunGameLoop     = false;
+    public  Displacement coordinateTranslation = new Displacement();
+    private Displacement realTouchPoint        = new Displacement();
+    private GameWorld    world                 = new GameWorld();
+    public  Hud          hud                   = new Hud();
+    private Long         elapsedTime           = 0L;
+    private Long         lastUpdateTime        = null;
+    private Boolean      isOnEditMode          = false;
 
     public static class Hud {
-        public Score score;
-
-        public Score inGameTimer;
-
         public Set<RammedPainting> rammedPaintings = new HashSet<RammedPainting>();
     }
 
@@ -90,7 +77,7 @@ public class GameView extends AutoUpdatableView {
         for (Painting painting : world.getAllObjects()) {
             painting.init();
             painting.setBounds(getLeft(), getTop(), getRight(), getBottom());
-            painting.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+            painting.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
             this.world.addWorldObject(painting);
         }
         resume();
@@ -108,29 +95,29 @@ public class GameView extends AutoUpdatableView {
 
             for (CenteredDrawable drawable : world.getAllObjects()) {
                 drawable.setBounds(left, top, right, bottom);
-                drawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+                drawable.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
             }
             for (RammedPainting rammedPainting : hud.rammedPaintings) {
                 rammedPainting.setBounds(left, top, right, bottom);
             }
-            if (hud.score != null) {
-                hud.score.setBounds(left, top, right, bottom);
+            if (world.score != null) {
+                world.score.setBounds(left, top, right, bottom);
             }
-            if (hud.inGameTimer != null) {
-                hud.inGameTimer.setBounds(left, top, right, bottom);
+            if (world.inGameTimer != null) {
+                world.inGameTimer.setBounds(left, top, right, bottom);
             }
         }
     }
 
     public void addWorldObject(Painting painting) {
         painting.setBounds(getLeft(), getTop(), getRight(), getBottom());
-        painting.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+        painting.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
         world.addWorldObject(painting);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        realTouchPoint.setComponents(event.getX() - getLeft() - coordinateTransaltion.x, getBottom() - (event.getY() + coordinateTransaltion.y));
+        realTouchPoint.setComponents(event.getX() - getLeft() - coordinateTranslation.x, (getBottom() - getTop()) - (event.getY() + coordinateTranslation.y));
         for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
             centeredDrawable.onMotionEvent(event, realTouchPoint);
         }
@@ -210,28 +197,35 @@ public class GameView extends AutoUpdatableView {
 
     @Override
     protected void drawSurface(Canvas canvas) {
-        coordinateTransaltion.setComponents(0.0, (getHeight() / 2) - world.getHippo().center.y);
+        coordinateTranslation.setComponents(0.0, (getHeight() / 2) - world.getHippo().center.y);
         canvas.drawBitmap(backGround_drwbl, 0, 0, DEFAULT_PAINT);
         for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
-            centeredDrawable.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+            centeredDrawable.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
             centeredDrawable.draw(canvas);
         }
 
         if (isOnEditMode) {
             for (RammedPainting rammedPainting : hud.rammedPaintings) {
                 rammedPainting.center = rammedPainting.evalOriginalCenter();
-                rammedPainting.center.y -= coordinateTransaltion.y;
-                rammedPainting.drawTranslation.setComponents(coordinateTransaltion.x, coordinateTransaltion.y);
+                rammedPainting.center.y -= coordinateTranslation.y;
+                rammedPainting.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
                 rammedPainting.draw(canvas);
             }
         }
 
-        if (hud.score != null) {
-            hud.score.draw(canvas);
+        if (world.score != null) {
+            world.score.draw(canvas);
         }
-        if (hud.inGameTimer != null) {
-            hud.inGameTimer.points = (long) CenteredDrawable.instances.size();
-            hud.inGameTimer.draw(canvas);
+        if (world.inGameTimer != null) {
+            world.inGameTimer.points = (long) CenteredDrawable.instances.size();
+            world.inGameTimer.draw(canvas);
         }
+
+        Paint paint = new Paint();
+        paint.setStrokeWidth(3);
+        paint.setColor(Color.BLACK);
+
+        canvas.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2, paint);
+        canvas.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight(), paint);
     }
 }

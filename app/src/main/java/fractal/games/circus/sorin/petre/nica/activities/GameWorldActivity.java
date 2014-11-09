@@ -12,17 +12,13 @@ import android.widget.LinearLayout;
 
 import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.collections.Tuple2;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.AnimatedShape;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable.Property;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Hippo;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Painting;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform.CollisionHandler;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedPainting;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Rectangle;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor.ObstaclePassedHandler;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.persistence.GameWorld;
 import fractal.games.circus.sorin.petre.nica.persistence.JsonSerializer;
@@ -61,10 +57,7 @@ public class GameWorldActivity extends Activity {
         OscillatingBillboard monkey = new OscillatingBillboard(new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(0.3, 0.0), slide1, slide2);
         monkey.addObstacle(hippo);
 
-        Sensor circleOfFire = new Sensor(new LayoutProportions(0.2, 0.16, 0.5, 1.0), R.drawable.ring_of_fire);
-        circleOfFire.addObstacle(hippo);
-
-        RammedPainting boxFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.4, 0.18), R.drawable.reflector_1);
+        RammedPainting boxFactory = new RammedPainting(new LayoutProportions(0.1, 0.08, 0.2, 0.22), R.drawable.reflector_1);
         boxFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
             @Override
             public void onPaintingCreated(Painting painting) {
@@ -72,7 +65,7 @@ public class GameWorldActivity extends Activity {
             }
         };
 
-        RammedPainting platformsFactory = new RammedPainting(new LayoutProportions(0.25, 0.025, 0.6, 0.18), R.drawable.beam);
+        RammedPainting platformsFactory = new RammedPainting(new LayoutProportions(0.25, 0.025, 0.5, 0.22), R.drawable.beam);
         platformsFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
             @Override
             public void onPaintingCreated(Painting painting) {
@@ -86,7 +79,7 @@ public class GameWorldActivity extends Activity {
             }
         };
 
-        RammedPainting circlesFactory = new RammedPainting(new LayoutProportions(0.2, 0.16, 0.8, 0.18), R.drawable.ring_of_fire);
+        RammedPainting circlesFactory = new RammedPainting(new LayoutProportions(0.3, 0.26, 0.8, 0.22), R.drawable.ring_of_fire);
         circlesFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
             @Override
             public void onPaintingCreated(Painting painting) {
@@ -96,24 +89,27 @@ public class GameWorldActivity extends Activity {
         circlesFactory.paintingConstructor = new RammedPainting.PaintingConstructor() {
             @Override
             public Painting construct() {
-                return new Sensor(new LayoutProportions(0.2, 0.16, 0.8, 0.18), R.drawable.ring_of_fire);
+                return new Sensor(new LayoutProportions(0.3, 0.26, 0.8, 0.22), R.drawable.ring_of_fire);
             }
         };
 
         gameView.addWorldObject(hippo);
         gameView.addWorldObject(propulsionPlatform);
         gameView.addWorldObject(monkey);
-        gameView.addWorldObject(circleOfFire);
         gameView.getWorld().addWorldObject(hippo);
 
         LinearLayout menu = new LinearLayout(this);
         menu.setOrientation(LinearLayout.HORIZONTAL);
+
+        LinearLayout navigationMenu = new LinearLayout(this);
+        navigationMenu.setOrientation(LinearLayout.HORIZONTAL);
+
         Button saveButton = new Button(this);
-        saveButton.setText("save world");
+        saveButton.setText("save");
         menu.addView(saveButton);
 
         Button loadButton = new Button(this);
-        loadButton.setText("load world");
+        loadButton.setText("load");
         menu.addView(loadButton);
 
         Button pauseButton = new Button(this);
@@ -123,6 +119,10 @@ public class GameWorldActivity extends Activity {
         Button editButton = new Button(this);
         editButton.setText("edit/play");
         menu.addView(editButton);
+
+        Button upButton = new Button(this);
+        upButton.setText("up");
+        navigationMenu.addView(upButton);
 
         final String[] worlds = new String[3];
 
@@ -136,9 +136,11 @@ public class GameWorldActivity extends Activity {
         loadButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                gameView.suspend();
-                gameView.loadWorld(jsonSerializer.fromJson(worlds[0], GameWorld.class));
-                gameView.resume();
+                if (worlds[0] != null) {
+                    gameView.suspend();
+                    gameView.loadWorld(jsonSerializer.fromJson(worlds[0], GameWorld.class));
+                    gameView.resume();
+                }
             }
         });
 
@@ -156,14 +158,22 @@ public class GameWorldActivity extends Activity {
             }
         });
 
+        upButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameView.coordinateTranslation.x += 1;
+            }
+        });
+
         layout.addView(menu);
+        layout.addView(navigationMenu);
         layout.addView(gameView);
 
         final Score score = new Score(new LayoutProportions(0.0, 0.04, 0.03, 0.04), getAssets());
-        gameView.hud.score = score;
+        gameView.getWorld().score = score;
 
         final Score inGameTimer = new Score(new LayoutProportions(0.0, 0.04, 0.7, 0.04), getAssets());
-        gameView.hud.inGameTimer = inGameTimer;
+        gameView.getWorld().inGameTimer = inGameTimer;
 
         gameView.hud.rammedPaintings.add(boxFactory);
         gameView.hud.rammedPaintings.add(platformsFactory);
@@ -175,13 +185,6 @@ public class GameWorldActivity extends Activity {
                 score.addPoints(100L);
             }
         });
-
-        circleOfFire.obstaclePassedHandler = new ObstaclePassedHandler() {
-            @Override
-            public void onObstaclePassed(AnimatedShape obstacle) {
-                score.addPoints(1133L);
-            }
-        };
 
         setContentView(layout);
     }

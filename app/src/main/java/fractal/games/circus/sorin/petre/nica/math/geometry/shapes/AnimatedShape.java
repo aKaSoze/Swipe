@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import com.google.gson.annotations.Expose;
 
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Acceleration;
+import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
@@ -65,4 +66,6 @@ public abstract class AnimatedShape extends CenteredDrawable {
 	}
 
 	protected abstract Boolean intersects(AnimatedShape obstacle);
+
+    protected abstract Boolean contains(Displacement point);
 }

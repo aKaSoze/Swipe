@@ -32,22 +32,39 @@ public class Sensor extends Painting {
     public void updateState(Long elapsedTime) {
         super.updateState(elapsedTime);
 
+        Displacement firstCorner = evalFirstCorner();
+        Displacement secondCorner = evalSecondCorner();
+        Displacement diagonal = evalDiagonal();
+
         for (AnimatedShape obstacle : obstacles) {
             if (!closeByObstacles.containsKey(obstacle) && obstacle.intersects(this)) {
                 closeByObstacles.put(obstacle, evalDiagonal().sideOfPoint(obstacle.center));
             } else {
                 if (closeByObstacles.containsKey(obstacle) && !obstacle.intersects(this)) {
-                    if (obstaclePassedHandler != null && evalDiagonal().sideOfPoint(obstacle.center) != closeByObstacles.get(obstacle)) {
+                    if (obstaclePassedHandler != null && diagonal.sideOfPoint(obstacle.center) != closeByObstacles.get(obstacle)) {
                         obstaclePassedHandler.onObstaclePassed(obstacle);
                     }
                     closeByObstacles.remove(obstacle);
                 }
+            }
+
+            if(obstacle.contains(firstCorner)) {
+                moveOutsideBoundariesOfObstacle(firstCorner);
+                obstacle.velocity.reverse();
+            }
+
+            if(obstacle.contains(secondCorner)) {
+                moveOutsideBoundariesOfObstacle(secondCorner);
+                obstacle.velocity.reverse();
             }
         }
     }
 
     @Override
     public void addObstacle(AnimatedShape obstacle) {
+        if (this != obstacle) {
+            obstacles.add(obstacle);
+        }
     }
 
     @Override

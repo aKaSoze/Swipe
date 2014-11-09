@@ -8,6 +8,7 @@ import android.graphics.Paint.Style;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.google.gson.annotations.Expose;
@@ -35,23 +36,20 @@ public abstract class CenteredDrawable extends Drawable {
     }
 
     public enum Property {
-        MOVABLE, CLONEABLE;
+        MOVABLE, CLONEABLE
     }
 
-    private static final Long DOUBLE_TAP_TIME = 300L;
+    private static final   Long   DOUBLE_TAP_TIME   = 300L;
     protected static final Double VECINITY_DISTANCE = 50.0;
 
     @Expose
-    public Set<Property> properties = new HashSet<Property>();
-
+    public  Set<Property> properties      = new HashSet<Property>();
     @Expose
-    public Displacement center = ORIGIN_CENTER;
-
+    public  Displacement  center          = ORIGIN_CENTER;
     @Expose
-    private Displacement drawCenter = new Displacement(0, 0);
-
+    private Displacement  drawCenter      = new Displacement(0, 0);
     @Expose
-    public Displacement drawTranslation = new Displacement(0, 0);
+    public  Displacement  drawTranslation = new Displacement(0, 0);
 
     @Expose
     public LayoutProportions layoutProportions;
@@ -80,7 +78,7 @@ public abstract class CenteredDrawable extends Drawable {
         this(layoutProportions, DEFAULT_PAINT);
     }
 
-    public abstract void init();
+    protected abstract void init();
 
     public abstract void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint);
 
@@ -134,8 +132,6 @@ public abstract class CenteredDrawable extends Drawable {
     protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);
         if (center == ORIGIN_CENTER) {
-            Double x = layoutProportions.xRatio * (bounds.right - bounds.left);
-            Double y = layoutProportions.yRatio * (bounds.bottom - bounds.top);
             center = evalOriginalCenter(bounds);
         }
     }
@@ -164,7 +160,7 @@ public abstract class CenteredDrawable extends Drawable {
     }
 
     protected Double evalHeight() {
-        return layoutProportions.heightRatio * (getBounds().bottom - getBounds().top);
+        return layoutProportions.heightRatio * evalBoundsHeight();
     }
 
     protected Double evalHalfHeight() {
@@ -175,10 +171,18 @@ public abstract class CenteredDrawable extends Drawable {
         if (realLocation == null) {
             return null;
         } else {
-            Displacement drawLocation = new Displacement(getBounds().left + realLocation.x + drawTranslation.x, getBounds().bottom - (realLocation.y + drawTranslation.y));
+            Displacement drawLocation = new Displacement(getBounds().left + realLocation.x + drawTranslation.x, evalBoundsHeight() - (realLocation.y + drawTranslation.y));
             drawLocation.applyPoint = getDrawLocation(realLocation.applyPoint);
             return drawLocation;
         }
+    }
+
+    protected Integer evalBoundsWidth() {
+        return getBounds().right - getBounds().left;
+    }
+
+    protected Integer evalBoundsHeight() {
+        return getBounds().bottom - getBounds().top;
     }
 
     protected Double getRealX(Double drawX) {
@@ -186,7 +190,7 @@ public abstract class CenteredDrawable extends Drawable {
     }
 
     protected Double getRealY(Double drawY) {
-        return getBounds().bottom - (drawY + drawTranslation.y);
+        return evalBoundsHeight() - (drawY + drawTranslation.y);
     }
 
     protected Double getDrawX(Double realX) {
@@ -194,7 +198,7 @@ public abstract class CenteredDrawable extends Drawable {
     }
 
     protected Double getDrawY(Double realY) {
-        return getBounds().bottom - (realY + drawTranslation.y);
+        return evalBoundsHeight() - (realY + drawTranslation.y);
     }
 
     protected void drawVector(Displacement vector, Canvas canvas) {

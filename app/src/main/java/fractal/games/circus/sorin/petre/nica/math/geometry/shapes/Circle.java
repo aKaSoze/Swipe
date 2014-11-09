@@ -52,11 +52,11 @@ public class Circle extends AnimatedShape {
 		super.updateState(elapsedTime);
 
 		if (getBounds() != null) {
-			if (crossedLeftSideBoundry()) {
-				moveToLeftSideBoundry();
+			if (crossedLeftSideBoundary()) {
+				moveToLeftSideBoundary();
 				reverseVelocityAlongX();
 			}
-			if (crossedRightSideBoundry()) {
+			if (crossedRightSideBoundary()) {
 				moveToRightSideBoundry();
 				reverseVelocityAlongX();
 			}
@@ -72,15 +72,15 @@ public class Circle extends AnimatedShape {
 		center = new Displacement(getBounds().right - radius, center.y.doubleValue());
 	}
 
-	private boolean crossedRightSideBoundry() {
+	private boolean crossedRightSideBoundary() {
 		return center.x + radius > getBounds().right;
 	}
 
-	private void moveToLeftSideBoundry() {
+	private void moveToLeftSideBoundary() {
 		center = new Displacement(radius, center.y.doubleValue());
 	}
 
-	private boolean crossedLeftSideBoundry() {
+	private boolean crossedLeftSideBoundary() {
 		return center.x - radius < 0;
 	}
 
@@ -96,7 +96,13 @@ public class Circle extends AnimatedShape {
 		return null;
 	}
 
-	@Override
+    @Override
+    protected Boolean contains(Displacement point) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
 	public void onMove(Displacement translation) {
 		// TODO Auto-generated method stub
 
