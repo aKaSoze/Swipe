@@ -75,8 +75,10 @@ public class Sensor extends Painting {
 
     @Override
     public void draw(Canvas canvas) {
-        Displacement drawCenter = evalDrawCenter();
-        canvas.drawBitmap(getBitmap(), drawCenter.x.floatValue() - (evalHalfWidth().floatValue()), drawCenter.y.floatValue() - (evalHalfHeight().floatValue()), paint);
+        canvas.save();
+        super.draw(canvas);
+        canvas.restore();
+        
         drawPoint(evalFirstCorner(), canvas);
         drawPoint(evalSecondCorner(), canvas);
         drawVector(evalDiagonal(), canvas);

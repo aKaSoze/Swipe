@@ -50,7 +50,7 @@ public class GameWorldActivity extends Activity {
         hippo.acceleration = new Acceleration(0.0, GameWorld.GRAVITATIONAL_ACCELERATION);
         hippo.velocity = new Velocity(0.0, 0.0);
 
-        PropulsionPlatform propulsionPlatform = new PropulsionPlatform(new LayoutProportions(0.25, 0.025, 0.3, 0.7));
+        PropulsionPlatform propulsionPlatform = new PropulsionPlatform(new LayoutProportions(0.25, 0.09, 0.3, 0.7));
 
         Tuple2<Integer, Long> slide1 = new Tuple2<Integer, Long>(R.drawable.evil_monkey, 700L);
         Tuple2<Integer, Long> slide2 = new Tuple2<Integer, Long>(R.drawable.monkey_banana, 700L);
@@ -65,7 +65,7 @@ public class GameWorldActivity extends Activity {
             }
         };
 
-        RammedPainting platformsFactory = new RammedPainting(new LayoutProportions(0.25, 0.025, 0.5, 0.22), R.drawable.beam);
+        RammedPainting platformsFactory = new RammedPainting(new LayoutProportions(0.25, 0.09, 0.5, 0.22), R.drawable.beam);
         platformsFactory.paintingCreatedHandler = new RammedPainting.PaintingCreatedHandler() {
             @Override
             public void onPaintingCreated(Painting painting) {
