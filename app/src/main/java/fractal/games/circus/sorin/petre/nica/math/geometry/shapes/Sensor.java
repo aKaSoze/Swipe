@@ -78,7 +78,7 @@ public class Sensor extends Painting {
         canvas.save();
         super.draw(canvas);
         canvas.restore();
-        
+
         drawPoint(evalFirstCorner(), canvas);
         drawPoint(evalSecondCorner(), canvas);
         drawVector(evalDiagonal(), canvas);
