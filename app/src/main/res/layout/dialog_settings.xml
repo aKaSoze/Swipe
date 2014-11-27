@@ -16,7 +16,7 @@
         android:layout_marginRight="40dp"
         android:background="@android:color/transparent"
         android:text="Settings"
-        android:textSize="32sp"
+        android:textSize="22sp"
         android:textColor="#014170"
         android:textStyle="bold" />
     
@@ -32,7 +32,7 @@
             android:layout_marginRight="20dp"
             android:text="Music"
             android:textColor="#014170"
-            android:textSize="26sp" />
+            android:textSize="12sp" />
 
         <SeekBar
             android:id="@+id/seekBar1"
@@ -55,7 +55,7 @@
             android:layout_marginRight="20dp"
             android:text="Sounds"
             android:textColor="#014170"
-            android:textSize="26sp" />
+            android:textSize="12sp" />
 
         <SeekBar
             android:id="@+id/seekBar2"

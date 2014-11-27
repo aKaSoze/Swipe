@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg" >
+    android:background="@drawable/bg_meniu" >
 
     <fractal.games.circus.cristian.baita.views.custom.CustomTextView
         android:id="@+id/title_textView"
@@ -24,10 +24,10 @@
         android:layout_marginBottom="40dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:background="@android:color/transparent"
-        android:text="PLAY"
+        android:background="@drawable/sel_btn_menu_play"
+        android:text="Let's Bounce"
         android:textColor="@color/sel_text_color_button"
-        android:textSize="34sp"
+        android:textSize="22sp"
         android:textStyle="bold" />
 
     <fractal.games.circus.cristian.baita.views.custom.CustomButton
@@ -38,10 +38,10 @@
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:background="@android:color/transparent"
-        android:text="Settings"
+        android:background="@drawable/sel_btn_menu_options"
+        android:text="Options &amp; More"
         android:textColor="@color/sel_text_color_button"
-        android:textSize="26sp"
+        android:textSize="12sp"
         android:textStyle="bold" />
 
     <fractal.games.circus.cristian.baita.views.custom.CustomButton
@@ -52,37 +52,12 @@
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:background="@android:color/transparent"
-        android:text="Scores"
+        android:background="@drawable/sel_btn_menu_scores"
+        android:text="Highscores"
         android:textColor="@color/sel_text_color_button"
-        android:textSize="26sp"
+        android:textSize="12sp"
         android:textStyle="bold" />
 
-    <fractal.games.circus.cristian.baita.views.custom.CustomButton
-        android:id="@+id/feedback_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/achievements_button"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:background="@android:color/transparent"
-        android:text="Feedback"
-        android:textColor="@color/sel_text_color_button"
-        android:textSize="26sp"
-        android:textStyle="bold" />
     
-    <fractal.games.circus.cristian.baita.views.custom.CustomButton
-        android:id="@+id/share_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/feedback_button"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:background="@android:color/transparent"
-        android:text="Share or buy"
-        android:textColor="@color/sel_text_color_button"
-        android:textSize="26sp"
-        android:textStyle="bold" />
 
 </RelativeLayout>

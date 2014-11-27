@@ -7,9 +7,10 @@ public class FontUtils {
 	private static Typeface mainTf;
 //	"From Cartoon Blocks.ttf"
 //	"SnackerComic_PerosnalUseOnly.ttf"
+//	Tequilla Sunrise.ttf
 	public static void init(Context context)
 	{
-		mainTf = Typeface.createFromAsset(context.getAssets(), "fonts/From Cartoon Blocks.ttf");
+		mainTf = Typeface.createFromAsset(context.getAssets(), "fonts/Tequilla Sunrise.ttf");
 	}
 	
 	public static Typeface getMainFont(){

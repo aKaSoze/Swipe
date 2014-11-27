@@ -17,7 +17,7 @@
         android:gravity="center_horizontal"
         android:text="Scores"
         android:textColor="#014170"
-        android:textSize="32sp"
+        android:textSize="22sp"
         android:textStyle="bold" />
 
     <fractal.games.circus.cristian.baita.views.custom.CustomButton
@@ -30,7 +30,7 @@
         android:drawablePadding="8dp"
         android:text="Achievements"
         android:textColor="@color/sel_text_color_button"
-        android:textSize="24sp" />
+        android:textSize="12sp" />
 
     <fractal.games.circus.cristian.baita.views.custom.CustomButton
         android:layout_width="wrap_content"
@@ -44,6 +44,6 @@
         android:drawablePadding="8dp"
         android:text="Hall of Fame"
         android:textColor="@color/sel_text_color_button"
-        android:textSize="24sp" />
+        android:textSize="12sp" />
 
 </LinearLayout>
