@@ -128,17 +128,21 @@ public class GameWorldActivity extends Activity {
 
         saveButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                worlds[0] = jsonSerializer.jsonForm(gameView.getWorld());
-                Log.i("world", worlds[0]);
+//                worlds[0] = jsonSerializer.jsonForm(gameView.getWorld());
+//                Log.i("world", worlds[0]);
+                jsonSerializer.serialize("circus_world", gameView.getWorld());
             }
         });
 
         loadButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (worlds[0] != null) {
+                if (/*worlds[0] != null*/true) {
                     gameView.suspend();
-                    gameView.loadWorld(jsonSerializer.fromJson(worlds[0], GameWorld.class));
+//                    gameView.loadWorld(jsonSerializer.fromJson(worlds[0], GameWorld.class));
+                    GameWorld gameWorld = jsonSerializer.deserialize("circus_world", GameWorld.class);
+                    Log.i("world", gameWorld.toString());
+                    gameView.loadWorld(gameWorld);
                     gameView.resume();
                 }
             }

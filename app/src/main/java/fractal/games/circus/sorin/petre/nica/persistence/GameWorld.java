@@ -106,4 +106,8 @@ public class GameWorld {
         paintings.clear();
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(getAllObjects().size());
+    }
 }
