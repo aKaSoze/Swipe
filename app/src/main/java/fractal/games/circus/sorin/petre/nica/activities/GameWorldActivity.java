@@ -2,7 +2,6 @@ package fractal.games.circus.sorin.petre.nica.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -22,6 +21,7 @@ import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.persistence.GameWorld;
 import fractal.games.circus.sorin.petre.nica.persistence.JsonSerializer;
+import fractal.games.circus.sorin.petre.nica.persistence.StageLoader;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
@@ -40,6 +40,7 @@ public class GameWorldActivity extends Activity {
         MediaStore.context = this;
 
         final JsonSerializer jsonSerializer = new JsonSerializer(this);
+        final StageLoader stageLoader = new StageLoader(jsonSerializer);
 
         final LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -124,27 +125,39 @@ public class GameWorldActivity extends Activity {
         upButton.setText("up");
         navigationMenu.addView(upButton);
 
-        final String[] worlds = new String[3];
+        Button nextStageButton = new Button(this);
+        nextStageButton.setText(">");
+        navigationMenu.addView(nextStageButton);
+
+        Button previousStageButton = new Button(this);
+        previousStageButton.setText("<");
+        navigationMenu.addView(previousStageButton);
 
         saveButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-//                worlds[0] = jsonSerializer.jsonForm(gameView.getWorld());
-//                Log.i("world", worlds[0]);
-                jsonSerializer.serialize("circus_world", gameView.getWorld());
+                stageLoader.saveCurrentStage(gameView.getWorld());
             }
         });
 
         loadButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (/*worlds[0] != null*/true) {
-                    gameView.suspend();
-//                    gameView.loadWorld(jsonSerializer.fromJson(worlds[0], GameWorld.class));
-                    GameWorld gameWorld = jsonSerializer.deserialize("circus_world", GameWorld.class);
-                    Log.i("world", gameWorld.toString());
-                    gameView.loadWorld(gameWorld);
-                    gameView.resume();
-                }
+                gameView.suspend();
+                gameView.loadWorld(stageLoader.loadCurrentStage());
+                gameView.resume();
+            }
+        });
+
+        nextStageButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                stageLoader.selectNextStage();
+            }
+        });
+
+        previousStageButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stageLoader.selectPreviousStage();
             }
         });
 
