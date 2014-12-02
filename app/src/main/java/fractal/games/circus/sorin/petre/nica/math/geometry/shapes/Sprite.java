@@ -10,16 +10,16 @@ import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
-public class Painting extends Rectangle {
+public class Sprite extends Rectangle {
 
 	@Expose
 	protected Integer	bitmapResourceId;
 
-	public Painting() {
+	public Sprite() {
 		super();
 	}
 
-	public Painting(LayoutProportions layoutProportions, Integer bitmapResourceId) {
+	public Sprite(LayoutProportions layoutProportions, Integer bitmapResourceId) {
 		super(layoutProportions);
 		this.bitmapResourceId = bitmapResourceId;
 	}

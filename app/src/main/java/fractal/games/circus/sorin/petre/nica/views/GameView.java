@@ -16,8 +16,9 @@ import java.util.Set;
 
 import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Painting;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedPainting;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedSprite;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RepeatedSprite;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.persistence.GameWorld;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
@@ -47,7 +48,8 @@ public class GameView extends AutoUpdatableView {
     private Boolean      isOnEditMode          = false;
 
     public static class Hud {
-        public Set<RammedPainting> rammedPaintings = new HashSet<RammedPainting>();
+        public Set<RammedSprite> rammedPaintings = new HashSet<RammedSprite>();
+        public RepeatedSprite    lifes           = new RepeatedSprite(new LayoutProportions(0.09, 0.05, 0.5, 0.98), R.drawable.hippo_wacky);
     }
 
     public GameView(Context context) {
@@ -57,12 +59,12 @@ public class GameView extends AutoUpdatableView {
     public void setIsOnEditMode(Boolean isOnEditMode) {
         this.isOnEditMode = isOnEditMode;
         if (isOnEditMode) {
-            for (Painting painting : world.getAllObjects()) {
-                painting.properties.add(CenteredDrawable.Property.MOVABLE);
+            for (Sprite sprite : world.getAllObjects()) {
+                sprite.properties.add(CenteredDrawable.Property.MOVABLE);
             }
         } else {
-            for (Painting painting : world.getAllObjects()) {
-                painting.properties.remove(CenteredDrawable.Property.MOVABLE);
+            for (Sprite sprite : world.getAllObjects()) {
+                sprite.properties.remove(CenteredDrawable.Property.MOVABLE);
             }
         }
     }
@@ -74,11 +76,11 @@ public class GameView extends AutoUpdatableView {
     public void loadWorld(GameWorld world) {
         suspend();
         this.world.clear();
-        for (Painting painting : world.getAllObjects()) {
-            painting.init();
-            painting.setBounds(getLeft(), getTop(), getRight(), getBottom());
-            painting.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
-            this.world.addWorldObject(painting);
+        for (Sprite sprite : world.getAllObjects()) {
+            sprite.init();
+            sprite.setBounds(getLeft(), getTop(), getRight(), getBottom());
+            sprite.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
+            this.world.addWorldObject(sprite);
         }
         resume();
     }
@@ -97,9 +99,11 @@ public class GameView extends AutoUpdatableView {
                 drawable.setBounds(left, top, right, bottom);
                 drawable.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
             }
-            for (RammedPainting rammedPainting : hud.rammedPaintings) {
+            for (RammedSprite rammedPainting : hud.rammedPaintings) {
                 rammedPainting.setBounds(left, top, right, bottom);
             }
+            hud.lifes.setBounds(left, top, right, bottom);
+
             if (world.score != null) {
                 world.score.setBounds(left, top, right, bottom);
             }
@@ -109,10 +113,10 @@ public class GameView extends AutoUpdatableView {
         }
     }
 
-    public void addWorldObject(Painting painting) {
-        painting.setBounds(getLeft(), getTop(), getRight(), getBottom());
-        painting.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
-        world.addWorldObject(painting);
+    public void addWorldObject(Sprite sprite) {
+        sprite.setBounds(getLeft(), getTop(), getRight(), getBottom());
+        sprite.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
+        world.addWorldObject(sprite);
     }
 
     @Override
@@ -121,7 +125,7 @@ public class GameView extends AutoUpdatableView {
         for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
             centeredDrawable.onMotionEvent(event, realTouchPoint);
         }
-        for (RammedPainting rammedPainting : hud.rammedPaintings) {
+        for (RammedSprite rammedPainting : hud.rammedPaintings) {
             rammedPainting.onMotionEvent(event, realTouchPoint);
         }
         return true;
@@ -205,13 +209,19 @@ public class GameView extends AutoUpdatableView {
         }
 
         if (isOnEditMode) {
-            for (RammedPainting rammedPainting : hud.rammedPaintings) {
+            for (RammedSprite rammedPainting : hud.rammedPaintings) {
                 rammedPainting.center = rammedPainting.evalOriginalCenter();
                 rammedPainting.center.y -= coordinateTranslation.y;
                 rammedPainting.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
                 rammedPainting.draw(canvas);
             }
         }
+
+        hud.lifes.repeatFactor = 4;
+        hud.lifes.center = hud.lifes.evalOriginalCenter();
+        hud.lifes.center.y -= coordinateTranslation.y;
+        hud.lifes.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
+        hud.lifes.draw(canvas);
 
         if (world.score != null) {
             world.score.draw(canvas);
@@ -227,5 +237,9 @@ public class GameView extends AutoUpdatableView {
 
         canvas.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2, paint);
         canvas.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight(), paint);
+
+        paint.setColor(Color.WHITE);
+        Displacement deathLine = world.getHippo().evalDrawLocation(new Displacement(0, -20));
+        canvas.drawLine(0, deathLine.y.floatValue(), getWidth(), deathLine.y.floatValue(), paint);
     }
 }

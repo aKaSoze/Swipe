@@ -6,25 +6,25 @@ import android.view.MotionEvent;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
-public class RammedPainting extends Painting {
+public class RammedSprite extends Sprite {
 
     public interface PaintingCreatedHandler {
-        void onPaintingCreated(Painting painting);
+        void onPaintingCreated(Sprite sprite);
     }
 
     public interface PaintingConstructor {
-        Painting construct();
+        Sprite construct();
     }
 
     public PaintingCreatedHandler paintingCreatedHandler;
 
     public PaintingConstructor paintingConstructor;
 
-    public RammedPainting() {
+    public RammedSprite() {
         super();
     }
 
-    public RammedPainting(LayoutProportions layoutProportions, Integer resourceId) {
+    public RammedSprite(LayoutProportions layoutProportions, Integer resourceId) {
         super(layoutProportions, resourceId);
     }
 
@@ -40,16 +40,16 @@ public class RammedPainting extends Painting {
         if (touchPoint.distanceTo(center) < VECINITY_DISTANCE) {
             switch (motionEvent.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    Painting painting;
+                    Sprite sprite;
                     if (paintingConstructor == null) {
-                        painting = new Painting(layoutProportions, bitmapResourceId);
+                        sprite = new Sprite(layoutProportions, bitmapResourceId);
                     } else {
-                        painting = paintingConstructor.construct();
+                        sprite = paintingConstructor.construct();
                     }
-                    painting.center = center.cloneVector();
-                    painting.layoutProportions = layoutProportions;
-                    painting.properties.add(Property.MOVABLE);
-                    paintingCreatedHandler.onPaintingCreated(painting);
+                    sprite.center = center.cloneVector();
+                    sprite.layoutProportions = layoutProportions;
+                    sprite.properties.add(Property.MOVABLE);
+                    paintingCreatedHandler.onPaintingCreated(sprite);
                     break;
                 case MotionEvent.ACTION_MOVE:
                     break;

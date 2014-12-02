@@ -4,13 +4,13 @@ import android.graphics.Canvas;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
-public class PaintingFactory extends Painting {
+public class SpriteFactory extends Sprite {
 
 	public interface NewPaintingHandler {
-		void onNewPainting(Painting newPainting);
+		void onNewPainting(Sprite newSprite);
 	}
 
-	public PaintingFactory(LayoutProportions layoutProportions, Integer resourceId) {
+	public SpriteFactory(LayoutProportions layoutProportions, Integer resourceId) {
 		super(layoutProportions, resourceId);
 	}
 

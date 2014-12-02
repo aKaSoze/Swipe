@@ -10,7 +10,7 @@ import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement.Semiplane;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
-public class Sensor extends Painting {
+public class Sensor extends Sprite {
 
     public interface ObstaclePassedHandler {
         void onObstaclePassed(AnimatedShape obstacle);

@@ -8,7 +8,6 @@ import android.graphics.Paint.Style;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.google.gson.annotations.Expose;
@@ -167,12 +166,12 @@ public abstract class CenteredDrawable extends Drawable {
         return evalHeight() / 2.0;
     }
 
-    protected Displacement getDrawLocation(Displacement realLocation) {
+    public Displacement evalDrawLocation(Displacement realLocation) {
         if (realLocation == null) {
             return null;
         } else {
             Displacement drawLocation = new Displacement(getBounds().left + realLocation.x + drawTranslation.x, evalBoundsHeight() - (realLocation.y + drawTranslation.y));
-            drawLocation.applyPoint = getDrawLocation(realLocation.applyPoint);
+            drawLocation.applyPoint = evalDrawLocation(realLocation.applyPoint);
             return drawLocation;
         }
     }
@@ -202,8 +201,8 @@ public abstract class CenteredDrawable extends Drawable {
     }
 
     protected void drawVector(Displacement vector, Canvas canvas) {
-        Displacement origin = getDrawLocation(vector.applyPoint);
-        Displacement tip = getDrawLocation(vector.additionVector(vector.applyPoint));
+        Displacement origin = evalDrawLocation(vector.applyPoint);
+        Displacement tip = evalDrawLocation(vector.additionVector(vector.applyPoint));
 
         canvas.drawLine(origin.x.floatValue(), origin.y.floatValue(),
                 tip.x.floatValue(), tip.y.floatValue(), paint);
@@ -212,7 +211,7 @@ public abstract class CenteredDrawable extends Drawable {
     protected void drawPoint(Displacement displacement, Canvas canvas) {
         canvas.save();
         paint.setStyle(Paint.Style.FILL);
-        Displacement drawLocation = getDrawLocation(displacement);
+        Displacement drawLocation = evalDrawLocation(displacement);
         canvas.drawCircle(drawLocation.x.floatValue(), drawLocation.y.floatValue(), 20, paint);
         canvas.restore();
     }

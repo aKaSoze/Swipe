@@ -9,7 +9,7 @@ import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.AnimatedShape;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Hippo;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Painting;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform.ImpactHandler;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
@@ -21,8 +21,8 @@ public class GameWorld {
 
     public static final Double GRAVITATIONAL_ACCELERATION = -0.0005;
 
-    public  Score score;
-    public  Score inGameTimer;
+    public Score score;
+    public Score inGameTimer;
 
     @Expose
     private Hippo hippo;
@@ -34,7 +34,7 @@ public class GameWorld {
     @Expose
     private Set<OscillatingBillboard> oscillatingBillboards = new CopyOnWriteArraySet<OscillatingBillboard>();
     @Expose
-    private Set<Painting>             paintings             = new CopyOnWriteArraySet<Painting>();
+    private Set<Sprite>               sprites               = new CopyOnWriteArraySet<Sprite>();
 
     private ImpactHandler impactHandler = new ImpactHandler() {
         @Override
@@ -48,22 +48,22 @@ public class GameWorld {
         }
     };
 
-    public void addWorldObject(Painting painting) {
-        if (painting instanceof PropulsionPlatform) {
-            PropulsionPlatform platform = (PropulsionPlatform) painting;
+    public void addWorldObject(Sprite sprite) {
+        if (sprite instanceof PropulsionPlatform) {
+            PropulsionPlatform platform = (PropulsionPlatform) sprite;
             platforms.add(platform);
             if (hippo != null) {
                 platform.addObstacle(hippo);
                 platform.impactHandlers.add(impactHandler);
             }
-        } else if (painting instanceof Hippo) {
-            hippo = (Hippo) painting;
+        } else if (sprite instanceof Hippo) {
+            hippo = (Hippo) sprite;
             for (PropulsionPlatform platform : platforms) {
                 platform.addObstacle(hippo);
                 platform.impactHandlers.add(impactHandler);
             }
-        } else if (painting instanceof Sensor) {
-            Sensor sensor = (Sensor) painting;
+        } else if (sprite instanceof Sensor) {
+            Sensor sensor = (Sensor) sprite;
             sensor.addObstacle(hippo);
             sensors.add(sensor);
             sensor.obstaclePassedHandler = new Sensor.ObstaclePassedHandler() {
@@ -72,25 +72,25 @@ public class GameWorld {
                     score.addPoints(1333L);
                 }
             };
-        } else if (painting instanceof OscillatingBillboard) {
-            OscillatingBillboard oscillatingBillboard = (OscillatingBillboard) painting;
+        } else if (sprite instanceof OscillatingBillboard) {
+            OscillatingBillboard oscillatingBillboard = (OscillatingBillboard) sprite;
             oscillatingBillboard.addObstacle(hippo);
             oscillatingBillboards.add(oscillatingBillboard);
         } else {
-            paintings.add(painting);
+            sprites.add(sprite);
             if (hippo != null) {
-                painting.addObstacle(hippo);
+                sprite.addObstacle(hippo);
             }
         }
     }
 
-    public Set<Painting> getAllObjects() {
-        Set<Painting> objects = new CopyOnWriteArraySet<Painting>();
+    public Set<Sprite> getAllObjects() {
+        Set<Sprite> objects = new CopyOnWriteArraySet<Sprite>();
         objects.add(hippo);
         objects.addAll(platforms);
         objects.addAll(sensors);
         objects.addAll(oscillatingBillboards);
-        objects.addAll(paintings);
+        objects.addAll(sprites);
         return objects;
     }
 
@@ -103,7 +103,7 @@ public class GameWorld {
         platforms.clear();
         sensors.clear();
         oscillatingBillboards.clear();
-        paintings.clear();
+        sprites.clear();
     }
 
     @Override

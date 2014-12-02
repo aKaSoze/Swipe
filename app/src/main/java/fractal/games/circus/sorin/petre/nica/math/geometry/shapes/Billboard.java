@@ -6,7 +6,7 @@ import fractal.games.circus.sorin.petre.nica.collections.RollingList;
 import fractal.games.circus.sorin.petre.nica.collections.Tuple2;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
-public class Billboard extends Painting {
+public class Billboard extends Sprite {
 
 	@Expose
 	private RollingList<Tuple2<Integer, Long>>	slides					= new RollingList<Tuple2<Integer, Long>>();

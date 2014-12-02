@@ -13,7 +13,7 @@ import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
-public class PropulsionPlatform extends Painting {
+public class PropulsionPlatform extends Sprite {
 
     private enum Status {
         STANDING, STRECTHING, RELEASED;
