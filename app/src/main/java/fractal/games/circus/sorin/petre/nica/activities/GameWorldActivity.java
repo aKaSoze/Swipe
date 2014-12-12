@@ -108,7 +108,7 @@ public class GameWorldActivity extends Activity {
         saveButton.setText("save");
         menu.addView(saveButton);
 
-        Button loadButton = new Button(this);
+        final Button loadButton = new Button(this);
         loadButton.setText("load");
         menu.addView(loadButton);
 
@@ -124,8 +124,8 @@ public class GameWorldActivity extends Activity {
         upButton.setText("up");
         navigationMenu.addView(upButton);
 
-        Button nextStageButton = new Button(this);
-        nextStageButton.setText(">");
+        final Button nextStageButton = new Button(this);
+        nextStageButton.setText("> " + stageLoader.getStageIndex());
         navigationMenu.addView(nextStageButton);
 
         Button previousStageButton = new Button(this);
@@ -150,6 +150,8 @@ public class GameWorldActivity extends Activity {
         nextStageButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 stageLoader.selectNextStage();
+                nextStageButton.setText("> " + stageLoader.getStageIndex());
+                loadButton.callOnClick();
             }
         });
 
@@ -157,6 +159,8 @@ public class GameWorldActivity extends Activity {
             @Override
             public void onClick(View v) {
                 stageLoader.selectPreviousStage();
+                nextStageButton.setText("> " + stageLoader.getStageIndex());
+                loadButton.callOnClick();
             }
         });
 

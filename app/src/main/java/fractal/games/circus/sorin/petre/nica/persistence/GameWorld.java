@@ -1,5 +1,7 @@
 package fractal.games.circus.sorin.petre.nica.persistence;
 
+import android.util.Log;
+
 import com.google.gson.annotations.Expose;
 
 import java.util.Set;
@@ -9,12 +11,15 @@ import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.AnimatedShape;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Hippo;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RepeatedSprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform.ImpactHandler;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
+import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
+import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 import fractal.games.circus.sorin.petre.nica.views.Score;
 
 public class GameWorld {
@@ -23,6 +28,9 @@ public class GameWorld {
 
     public Score score;
     public Score inGameTimer;
+
+    @Expose
+    public RepeatedSprite lives = new RepeatedSprite(new LayoutProportions(0.09, 0.05, 0.5, 0.98), R.drawable.hippo_wacky);
 
     @Expose
     private Hippo hippo;
@@ -62,6 +70,12 @@ public class GameWorld {
                 platform.addObstacle(hippo);
                 platform.impactHandlers.add(impactHandler);
             }
+            hippo.deathHandler = new Hippo.HippoDeathHandler() {
+                @Override
+                public void onHipposDeath() {
+                    lives.decreaseRepeatFactor();
+                }
+            };
         } else if (sprite instanceof Sensor) {
             Sensor sensor = (Sensor) sprite;
             sensor.addObstacle(hippo);
@@ -104,6 +118,7 @@ public class GameWorld {
         sensors.clear();
         oscillatingBillboards.clear();
         sprites.clear();
+        lives = null;
     }
 
     @Override

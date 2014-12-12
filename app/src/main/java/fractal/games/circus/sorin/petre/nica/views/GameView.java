@@ -49,7 +49,6 @@ public class GameView extends AutoUpdatableView {
 
     public static class Hud {
         public Set<RammedSprite> rammedPaintings = new HashSet<RammedSprite>();
-        public RepeatedSprite    lifes           = new RepeatedSprite(new LayoutProportions(0.09, 0.05, 0.5, 0.98), R.drawable.hippo_wacky);
     }
 
     public GameView(Context context) {
@@ -76,6 +75,11 @@ public class GameView extends AutoUpdatableView {
     public void loadWorld(GameWorld world) {
         suspend();
         this.world.clear();
+
+        world.lives.setBounds(getLeft(), getTop(), getRight(), getBottom());
+        world.lives.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
+        this.world.lives = world.lives;
+
         for (Sprite sprite : world.getAllObjects()) {
             sprite.init();
             sprite.setBounds(getLeft(), getTop(), getRight(), getBottom());
@@ -102,7 +106,7 @@ public class GameView extends AutoUpdatableView {
             for (RammedSprite rammedPainting : hud.rammedPaintings) {
                 rammedPainting.setBounds(left, top, right, bottom);
             }
-            hud.lifes.setBounds(left, top, right, bottom);
+            world.lives.setBounds(left, top, right, bottom);
 
             if (world.score != null) {
                 world.score.setBounds(left, top, right, bottom);
@@ -217,11 +221,10 @@ public class GameView extends AutoUpdatableView {
             }
         }
 
-        hud.lifes.repeatFactor = 4;
-        hud.lifes.center = hud.lifes.evalOriginalCenter();
-        hud.lifes.center.y -= coordinateTranslation.y;
-        hud.lifes.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
-        hud.lifes.draw(canvas);
+        world.lives.center = world.lives.evalOriginalCenter();
+        world.lives.center.y -= coordinateTranslation.y;
+        world.lives.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
+        world.lives.draw(canvas);
 
         if (world.score != null) {
             world.score.draw(canvas);

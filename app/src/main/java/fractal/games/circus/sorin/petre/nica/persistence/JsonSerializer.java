@@ -25,13 +25,11 @@ public class JsonSerializer {
         gsonService = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     }
 
-    public void serialize(String fileName, Object object) {
+    public void serialize(String filePath, Object object) {
         try {
-            File file = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.MEDIA_MOUNTED), "Circus Stages");
-            file.mkdirs();
-            Log.i("json", file.getAbsolutePath() + File.separator + fileName);
-            FileOutputStream outputStream = new FileOutputStream(file.getAbsolutePath() + File.separator + fileName);
+            File file = getFile(filePath);
+            Log.i("json", file.getAbsolutePath());
+            FileOutputStream outputStream = new FileOutputStream(file.getAbsolutePath());
             outputStream.write(gsonService.toJson(object).getBytes());
             outputStream.close();
         } catch (FileNotFoundException e) {
@@ -41,11 +39,10 @@ public class JsonSerializer {
         }
     }
 
-    public <T> T deserialize(String fileName, Class<T> clazz) {
+    public <T> T deserialize(String filePath, Class<T> clazz) {
         try {
-            File file = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.MEDIA_MOUNTED), "Circus Stages");
-            InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file.getAbsolutePath() + File.separator + fileName));
+            File file = getFile(filePath);
+            InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file.getAbsolutePath()));
             T t = gsonService.fromJson(inputStreamReader, clazz);
             inputStreamReader.close();
             return t;
@@ -54,6 +51,11 @@ public class JsonSerializer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private File getFile(String filePath) {
+        return new File(Environment.getExternalStoragePublicDirectory(
+                Environment.MEDIA_MOUNTED), filePath);
     }
 
     public String jsonForm(Object object) {

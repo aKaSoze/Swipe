@@ -28,10 +28,6 @@ public class Rectangle extends AnimatedShape {
 
     public transient final Set<DoubleTapHandler> doubleTapHandlers = new HashSet<DoubleTapHandler>();
 
-    public Rectangle(LayoutProportions layoutProportions, Paint paint) {
-        super(layoutProportions, paint);
-    }
-
     public Rectangle(LayoutProportions layoutProportions) {
         super(layoutProportions);
     }
@@ -69,11 +65,11 @@ public class Rectangle extends AnimatedShape {
     public void updateState(Long elapsedTime) {
         super.updateState(elapsedTime);
         if (!velocity.isZero()) {
-            AnimatedShape colidedObstacle = checkPossibleOverlap();
-            if (colidedObstacle != null) {
-                moveOutsideBoundariesOfObstacle((Rectangle) colidedObstacle);
-                onCollision(colidedObstacle);
-                colidedObstacle.onCollision(this);
+            AnimatedShape collidedObstacle = checkPossibleOverlap();
+            if (collidedObstacle != null) {
+                moveOutsideBoundariesOfObstacle((Rectangle) collidedObstacle);
+                onCollision(collidedObstacle);
+                collidedObstacle.onCollision(this);
             }
         }
     }
@@ -167,19 +163,19 @@ public class Rectangle extends AnimatedShape {
         center.add(evaluateSmallestTouchTranslation(point));
     }
 
-    protected void moveToLeftSideBoundry() {
+    protected void moveToLeftSideBoundary() {
         center.setComponents(evalHalfWidth(), center.y);
     }
 
-    protected Boolean crossedLeftSideBoundry() {
+    protected Boolean crossedLeftSideBoundary() {
         return center.x - evalHalfWidth() < 0;
     }
 
-    protected void moveToRightSideBoundry() {
+    protected void moveToRightSideBoundary() {
         center.setComponents(getBounds().right - evalHalfWidth(), center.y);
     }
 
-    protected Boolean crossedRightSideBoundry() {
+    protected Boolean crossedRightSideBoundary() {
         return center.x + evalHalfWidth() > getBounds().right;
     }
 
