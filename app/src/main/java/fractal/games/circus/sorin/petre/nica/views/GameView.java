@@ -17,7 +17,6 @@ import java.util.Set;
 import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedSprite;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RepeatedSprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.persistence.GameWorld;
@@ -46,6 +45,9 @@ public class GameView extends AutoUpdatableView {
     private Long         elapsedTime           = 0L;
     private Long         lastUpdateTime        = null;
     private Boolean      isOnEditMode          = false;
+
+    public Boolean isSlidingUp   = false;
+    public Boolean isSlidingDown = false;
 
     public static class Hud {
         public Set<RammedSprite> rammedPaintings = new HashSet<RammedSprite>();
@@ -77,14 +79,17 @@ public class GameView extends AutoUpdatableView {
         this.world.clear();
 
         world.lives.setBounds(getLeft(), getTop(), getRight(), getBottom());
-        world.lives.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
         this.world.lives = world.lives;
 
         for (Sprite sprite : world.getAllObjects()) {
             sprite.init();
             sprite.setBounds(getLeft(), getTop(), getRight(), getBottom());
-            sprite.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
             this.world.addWorldObject(sprite);
+            if (isOnEditMode) {
+                sprite.properties.add(CenteredDrawable.Property.MOVABLE);
+            } else {
+                sprite.properties.remove(CenteredDrawable.Property.MOVABLE);
+            }
         }
         resume();
     }
@@ -101,7 +106,6 @@ public class GameView extends AutoUpdatableView {
 
             for (CenteredDrawable drawable : world.getAllObjects()) {
                 drawable.setBounds(left, top, right, bottom);
-                drawable.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
             }
             for (RammedSprite rammedPainting : hud.rammedPaintings) {
                 rammedPainting.setBounds(left, top, right, bottom);
@@ -119,7 +123,6 @@ public class GameView extends AutoUpdatableView {
 
     public void addWorldObject(Sprite sprite) {
         sprite.setBounds(getLeft(), getTop(), getRight(), getBottom());
-        sprite.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
         world.addWorldObject(sprite);
     }
 
@@ -153,12 +156,6 @@ public class GameView extends AutoUpdatableView {
         drawSurface(canvas);
     }
 
-    public void updateWorld(Long elapsedTime) {
-        for (CenteredDrawable movableShape : world.getAllObjects()) {
-            movableShape.updateState(elapsedTime);
-        }
-    }
-
     @Override
     protected Runnable behavior() {
         return new Runnable() {
@@ -170,7 +167,7 @@ public class GameView extends AutoUpdatableView {
                     long now = System.currentTimeMillis();
                     elapsedTime += now - lastUpdateTime;
                     lastUpdateTime = now;
-                    updateWorld(elapsedTime);
+                    world.update(elapsedTime);
                     drawSurface();
                 }
             }
@@ -205,7 +202,17 @@ public class GameView extends AutoUpdatableView {
 
     @Override
     protected void drawSurface(Canvas canvas) {
-        coordinateTranslation.setComponents(0.0, (getHeight() / 2) - world.getHippo().center.y);
+        if (!isOnEditMode) {
+            coordinateTranslation.setComponents(0.0, (getHeight() / 2) - world.getHippo().center.y);
+        } else {
+            if (isSlidingUp) {
+                coordinateTranslation.y -= 6;
+            }
+            if (isSlidingDown) {
+                coordinateTranslation.y += 6;
+            }
+        }
+
         canvas.drawBitmap(backGround_drwbl, 0, 0, DEFAULT_PAINT);
         for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
             centeredDrawable.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);

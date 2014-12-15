@@ -9,6 +9,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.AnimatedShape;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Hippo;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RepeatedSprite;
@@ -95,6 +96,12 @@ public class GameWorld {
             if (hippo != null) {
                 sprite.addObstacle(hippo);
             }
+        }
+    }
+
+    public void update(Long elapsedTime) {
+        for (CenteredDrawable movableShape : getAllObjects()) {
+            movableShape.updateState(elapsedTime);
         }
     }
 

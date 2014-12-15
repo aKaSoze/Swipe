@@ -2,6 +2,7 @@ package fractal.games.circus.sorin.petre.nica.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -47,7 +48,7 @@ public class GameWorldActivity extends Activity {
 
         final GameView gameView = new GameView(this);
 
-        final Hippo hippo = new Hippo(new LayoutProportions(0.19, 0.14, 0.3, 1.0));
+        final Hippo hippo = new Hippo(new LayoutProportions(0.16, 0.14, 0.3, 1.0));
         hippo.acceleration = new Acceleration(0.0, GameWorld.GRAVITATIONAL_ACCELERATION);
         hippo.velocity = new Velocity(0.0, 0.0);
 
@@ -121,8 +122,12 @@ public class GameWorldActivity extends Activity {
         menu.addView(editButton);
 
         Button upButton = new Button(this);
-        upButton.setText("up");
+        upButton.setText("u");
         navigationMenu.addView(upButton);
+
+        Button downButton = new Button(this);
+        downButton.setText("d");
+        navigationMenu.addView(downButton);
 
         final Button nextStageButton = new Button(this);
         nextStageButton.setText("> " + stageLoader.getStageIndex());
@@ -178,10 +183,33 @@ public class GameWorldActivity extends Activity {
             }
         });
 
-        upButton.setOnClickListener(new OnClickListener() {
+        upButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                gameView.coordinateTranslation.x += 1;
+            public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        gameView.isSlidingUp = true;
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        gameView.isSlidingUp = false;
+                        break;
+                }
+                return true;
+            }
+        });
+
+        downButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        gameView.isSlidingDown = true;
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        gameView.isSlidingDown = false;
+                        break;
+                }
+                return true;
             }
         });
 
