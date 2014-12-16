@@ -19,7 +19,9 @@ import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawab
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedSprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
+import fractal.games.circus.sorin.petre.nica.persistence.Game;
 import fractal.games.circus.sorin.petre.nica.persistence.GameWorld;
+import fractal.games.circus.sorin.petre.nica.persistence.Stage;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class GameView extends AutoUpdatableView {
@@ -40,7 +42,7 @@ public class GameView extends AutoUpdatableView {
     private Boolean      isOkToRunGameLoop     = false;
     public  Displacement coordinateTranslation = new Displacement();
     private Displacement realTouchPoint        = new Displacement();
-    private GameWorld    world                 = new GameWorld();
+    private Game         game                  = new Game();
     public  Hud          hud                   = new Hud();
     private Long         elapsedTime           = 0L;
     private Long         lastUpdateTime        = null;
@@ -59,32 +61,24 @@ public class GameView extends AutoUpdatableView {
 
     public void setIsOnEditMode(Boolean isOnEditMode) {
         this.isOnEditMode = isOnEditMode;
-        if (isOnEditMode) {
-            for (Sprite sprite : world.getAllObjects()) {
-                sprite.properties.add(CenteredDrawable.Property.MOVABLE);
-            }
-        } else {
-            for (Sprite sprite : world.getAllObjects()) {
-                sprite.properties.remove(CenteredDrawable.Property.MOVABLE);
-            }
-        }
+        game.setIsOnEditMode(isOnEditMode);
     }
 
     public Boolean getIsOnEditMode() {
         return isOnEditMode;
     }
 
-    public void loadWorld(GameWorld world) {
+    public void loadStage(Stage stage) {
         suspend();
-        this.world.clear();
+        this.game.clear();
 
         world.lives.setBounds(getLeft(), getTop(), getRight(), getBottom());
-        this.world.lives = world.lives;
+        this.game.lives = world.lives;
 
         for (Sprite sprite : world.getAllObjects()) {
             sprite.init();
             sprite.setBounds(getLeft(), getTop(), getRight(), getBottom());
-            this.world.addWorldObject(sprite);
+            this.game.addWorldObject(sprite);
             if (isOnEditMode) {
                 sprite.properties.add(CenteredDrawable.Property.MOVABLE);
             } else {
@@ -94,8 +88,8 @@ public class GameView extends AutoUpdatableView {
         resume();
     }
 
-    public GameWorld getWorld() {
-        return world;
+    public GameWorld getGame() {
+        return game;
     }
 
     @Override
@@ -104,32 +98,32 @@ public class GameView extends AutoUpdatableView {
         if (changed) {
             backGround_drwbl = MediaStore.getScaledBitmap(R.drawable.background, getWidth(), getHeight());
 
-            for (CenteredDrawable drawable : world.getAllObjects()) {
+            for (CenteredDrawable drawable : game.getAllObjects()) {
                 drawable.setBounds(left, top, right, bottom);
             }
             for (RammedSprite rammedPainting : hud.rammedPaintings) {
                 rammedPainting.setBounds(left, top, right, bottom);
             }
-            world.lives.setBounds(left, top, right, bottom);
+            game.lives.setBounds(left, top, right, bottom);
 
-            if (world.score != null) {
-                world.score.setBounds(left, top, right, bottom);
+            if (game.score != null) {
+                game.score.setBounds(left, top, right, bottom);
             }
-            if (world.inGameTimer != null) {
-                world.inGameTimer.setBounds(left, top, right, bottom);
+            if (game.inGameTimer != null) {
+                game.inGameTimer.setBounds(left, top, right, bottom);
             }
         }
     }
 
     public void addWorldObject(Sprite sprite) {
         sprite.setBounds(getLeft(), getTop(), getRight(), getBottom());
-        world.addWorldObject(sprite);
+        game.addWorldObject(sprite);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         realTouchPoint.setComponents(event.getX() - getLeft() - coordinateTranslation.x, (getBottom() - getTop()) - (event.getY() + coordinateTranslation.y));
-        for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
+        for (CenteredDrawable centeredDrawable : game.getAllObjects()) {
             centeredDrawable.onMotionEvent(event, realTouchPoint);
         }
         for (RammedSprite rammedPainting : hud.rammedPaintings) {
@@ -141,7 +135,7 @@ public class GameView extends AutoUpdatableView {
     private CenteredDrawable evaluateTargetShape(Displacement touchPoint) {
         CenteredDrawable closestShape = null;
         double smallestDistance = 60;
-        for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
+        for (CenteredDrawable centeredDrawable : game.getAllObjects()) {
             double distanceToTouchPoint = centeredDrawable.center.distanceTo(touchPoint);
             if (distanceToTouchPoint < smallestDistance) {
                 smallestDistance = distanceToTouchPoint;
@@ -167,7 +161,7 @@ public class GameView extends AutoUpdatableView {
                     long now = System.currentTimeMillis();
                     elapsedTime += now - lastUpdateTime;
                     lastUpdateTime = now;
-                    world.update(elapsedTime);
+                    game.update(elapsedTime);
                     drawSurface();
                 }
             }
@@ -203,7 +197,7 @@ public class GameView extends AutoUpdatableView {
     @Override
     protected void drawSurface(Canvas canvas) {
         if (!isOnEditMode) {
-            coordinateTranslation.setComponents(0.0, (getHeight() / 2) - world.getHippo().center.y);
+            coordinateTranslation.setComponents(0.0, (getHeight() / 2) - game.getHippo().center.y);
         } else {
             if (isSlidingUp) {
                 coordinateTranslation.y -= 6;
@@ -214,7 +208,7 @@ public class GameView extends AutoUpdatableView {
         }
 
         canvas.drawBitmap(backGround_drwbl, 0, 0, DEFAULT_PAINT);
-        for (CenteredDrawable centeredDrawable : world.getAllObjects()) {
+        for (CenteredDrawable centeredDrawable : game.getAllObjects()) {
             centeredDrawable.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
             centeredDrawable.draw(canvas);
         }
@@ -228,17 +222,17 @@ public class GameView extends AutoUpdatableView {
             }
         }
 
-        world.lives.center = world.lives.evalOriginalCenter();
-        world.lives.center.y -= coordinateTranslation.y;
-        world.lives.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
-        world.lives.draw(canvas);
+        game.lives.center = game.lives.evalOriginalCenter();
+        game.lives.center.y -= coordinateTranslation.y;
+        game.lives.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
+        game.lives.draw(canvas);
 
-        if (world.score != null) {
-            world.score.draw(canvas);
+        if (game.score != null) {
+            game.score.draw(canvas);
         }
-        if (world.inGameTimer != null) {
-            world.inGameTimer.points = (long) CenteredDrawable.instances.size();
-            world.inGameTimer.draw(canvas);
+        if (game.inGameTimer != null) {
+            game.inGameTimer.points = (long) CenteredDrawable.instances.size();
+            game.inGameTimer.draw(canvas);
         }
 
         Paint paint = new Paint();
@@ -249,7 +243,7 @@ public class GameView extends AutoUpdatableView {
         canvas.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight(), paint);
 
         paint.setColor(Color.WHITE);
-        Displacement deathLine = world.getHippo().evalDrawLocation(new Displacement(0, -20));
+        Displacement deathLine = game.getHippo().evalDrawLocation(new Displacement(0, -20));
         canvas.drawLine(0, deathLine.y.floatValue(), getWidth(), deathLine.y.floatValue(), paint);
     }
 }

@@ -19,20 +19,20 @@ public class StageLoader {
         this.jsonSerializer = jsonSerializer;
     }
 
-    public GameWorld loadCurrentStage() {
+    public Stage loadCurrentStage() {
         if (stageExists(stageIndex)) {
-            return jsonSerializer.deserialize(evalFilePath(), GameWorld.class);
+            return jsonSerializer.deserialize(evalFilePath(), Stage.class);
         } else {
             selectPreviousStage();
-            GameWorld gameWorld = loadCurrentStage();
+            Stage Stage = loadCurrentStage();
             selectNextStage();
-            saveCurrentStage(gameWorld);
+            saveCurrentStage(Stage);
             return loadCurrentStage();
         }
     }
 
-    public void saveCurrentStage(GameWorld gameWorld) {
-        jsonSerializer.serialize(evalFilePath(), gameWorld);
+    public void saveCurrentStage(Stage Stage) {
+        jsonSerializer.serialize(evalFilePath(), Stage);
     }
 
     private String evalFilePath(Integer stageIndex) {

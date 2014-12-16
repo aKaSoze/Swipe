@@ -139,7 +139,7 @@ public class GameWorldActivity extends Activity {
 
         saveButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                stageLoader.saveCurrentStage(gameView.getWorld());
+                stageLoader.saveCurrentStage(gameView.getGame());
             }
         });
 
@@ -217,11 +217,8 @@ public class GameWorldActivity extends Activity {
         layout.addView(navigationMenu);
         layout.addView(gameView);
 
-        final Score score = new Score(new LayoutProportions(0.0, 0.04, 0.03, 0.04), getAssets());
-        gameView.getWorld().score = score;
-
         final Score inGameTimer = new Score(new LayoutProportions(0.0, 0.04, 0.7, 0.04), getAssets());
-        gameView.getWorld().inGameTimer = inGameTimer;
+        gameView.getGame().inGameTimer = inGameTimer;
 
         gameView.hud.rammedPaintings.add(boxFactory);
         gameView.hud.rammedPaintings.add(platformsFactory);

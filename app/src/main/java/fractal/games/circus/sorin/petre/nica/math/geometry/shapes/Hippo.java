@@ -12,13 +12,7 @@ public class Hippo extends Sprite {
         super();
     }
 
-    public HippoDeathHandler deathHandler;
-
     private Displacement firstPosition;
-
-    public interface HippoDeathHandler {
-        void onHipposDeath();
-    }
 
     public Hippo(LayoutProportions layoutProportions) {
         super(layoutProportions, R.drawable.hippo_wacky);
@@ -37,14 +31,6 @@ public class Hippo extends Sprite {
                 reverseVelocityAlongX();
             }
         }
-
-        if (center.y < -20) {
-            velocity.neutralize();
-            center.makeEqualTo(firstPosition);
-            if (deathHandler != null) {
-                deathHandler.onHipposDeath();
-            }
-        }
     }
 
     @Override
@@ -53,5 +39,9 @@ public class Hippo extends Sprite {
         if (firstPosition == null) {
             firstPosition = center.cloneVector();
         }
+    }
+
+    public Displacement getFirstPosition() {
+        return firstPosition.cloneVector();
     }
 }
