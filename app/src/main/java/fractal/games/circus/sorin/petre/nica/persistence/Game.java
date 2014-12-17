@@ -1,6 +1,10 @@
 package fractal.games.circus.sorin.petre.nica.persistence;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 
 import com.google.gson.annotations.Expose;
 
@@ -12,6 +16,8 @@ import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawab
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RepeatedSprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
+import fractal.games.circus.sorin.petre.nica.media.MediaStore;
+import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 import fractal.games.circus.sorin.petre.nica.views.Score;
 
@@ -20,6 +26,17 @@ import fractal.games.circus.sorin.petre.nica.views.Score;
  */
 public class Game {
 
+    private static final Paint DEFAULT_PAINT;
+
+    static {
+        DEFAULT_PAINT = new Paint();
+        DEFAULT_PAINT.setColor(Color.WHITE);
+        DEFAULT_PAINT.setStyle(Paint.Style.STROKE);
+        DEFAULT_PAINT.setStrokeWidth(4);
+    }
+
+    public Score inGameTimer = new Score(new LayoutProportions(0.0, 0.04, 0.7, 0.04));
+
     @Expose
     private Score score;
 
@@ -27,9 +44,13 @@ public class Game {
     private RepeatedSprite lives;
 
     @Expose
-    private Stage stage;
+    public Stage stage;
 
-    private StageLoader stageLoader;
+    public StageLoader stageLoader;
+
+    private Rect knownBounds;
+
+    private Bitmap backGround_drwbl;
 
     private Game() {
     }
@@ -46,7 +67,7 @@ public class Game {
         public void onCenterChanged(AnimatedShape shape) {
             if (isWinConditionMet()) {
                 stageLoader.selectNextStage();
-                loadCurrentStage();
+                loadCurrentStage(knownBounds);
             }
             if (isLoseConditionMet()) {
                 shape.velocity.neutralize();
@@ -67,28 +88,52 @@ public class Game {
                 return propulsionPlatform.center.y;
             }
         });
-        return stage.getHippo().center.y > maxY + 20;
+        return stage.getHippo().center.y > maxY + 1000;
     }
 
-    private void loadCurrentStage() {
+    public void loadCurrentStage() {
+        loadCurrentStage(knownBounds);
+    }
+
+    private void loadCurrentStage(Rect bounds) {
+        knownBounds = bounds;
         stage = stageLoader.loadCurrentStage();
+        stage.initObjects(bounds);
         stage.getHippo().centerChangedHandler = hippoCenterChangedHandler;
-    }
-
-    public void setIsOnEditMode(Boolean isOnEditMode) {
-        if (isOnEditMode) {
-            for (Sprite sprite : stage.getAllObjects()) {
-                sprite.properties.add(CenteredDrawable.Property.MOVABLE);
-            }
-        } else {
-            for (Sprite sprite : stage.getAllObjects()) {
-                sprite.properties.remove(CenteredDrawable.Property.MOVABLE);
-            }
-        }
     }
 
     public void setStageLoader(StageLoader stageLoader) {
         this.stageLoader = stageLoader;
+    }
+
+    public void loadNextStage(Rect bounds) {
+        stageLoader.selectNextStage();
+        loadCurrentStage(bounds);
+    }
+
+    public void setKnownBounds(Rect knownBounds) {
+        this.knownBounds = knownBounds;
+
+        backGround_drwbl = MediaStore.getScaledBitmap(R.drawable.background, knownBounds.width(), knownBounds.height());
+        for (CenteredDrawable drawable : stage.getAllObjects()) {
+            drawable.setBounds(knownBounds);
+        }
+
+        score.setBounds(knownBounds);
+        lives.setBounds(knownBounds);
+        inGameTimer.setBounds(knownBounds);
+    }
+
+    public void loadPreviousStage(Rect bounds) {
+        stageLoader.selectPreviousStage();
+        loadCurrentStage(bounds);
+    }
+
+    public void addWorldObject(Sprite sprite) {
+        if(knownBounds != null) {
+            sprite.setBounds(knownBounds);
+        }
+        stage.addWorldObject(sprite);
     }
 
     private interface NumericRepresentant<T> {
@@ -97,16 +142,29 @@ public class Game {
 
     private <T> Double max(Set<T> ts, NumericRepresentant<T> numericRepresentant) {
         Double max = Double.MIN_VALUE;
-        for(T t: ts) {
-            if(numericRepresentant.getNumericValue(t) > max) {
+        for (T t : ts) {
+            if (numericRepresentant.getNumericValue(t) > max) {
                 max = numericRepresentant.getNumericValue(t);
             }
         }
         return max;
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, Displacement coordinateTranslation) {
+        canvas.drawBitmap(backGround_drwbl, 0, 0, DEFAULT_PAINT);
+        for (CenteredDrawable centeredDrawable : stage.getAllObjects()) {
+            centeredDrawable.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
+            centeredDrawable.draw(canvas);
+        }
 
+        lives.center = lives.evalOriginalCenter();
+        lives.center.y -= coordinateTranslation.y;
+        lives.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
+        lives.draw(canvas);
+
+        score.draw(canvas);
+        inGameTimer.points = (long) CenteredDrawable.instances.size();
+        inGameTimer.draw(canvas);
     }
 
 }

@@ -1,5 +1,7 @@
 package fractal.games.circus.sorin.petre.nica.persistence;
 
+import android.graphics.Rect;
+
 import com.google.gson.annotations.Expose;
 
 import java.util.Set;
@@ -13,7 +15,9 @@ import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlat
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
+import fractal.games.circus.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
+import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
 /**
  * Created by sorin on 16.12.2014.
@@ -32,6 +36,16 @@ public class Stage {
     private Set<OscillatingBillboard> oscillatingBillboards = new CopyOnWriteArraySet<OscillatingBillboard>();
     @Expose
     private Set<Sprite>               sprites               = new CopyOnWriteArraySet<Sprite>();
+
+    private Boolean isOnEditMode = false;
+
+    public Stage() {
+        hippo = new Hippo(new LayoutProportions(0.16, 0.14, 0.3, 1.0));
+        hippo.acceleration = new Acceleration(0.0, Stage.GRAVITATIONAL_ACCELERATION);
+        hippo.velocity = new Velocity(0.0, 0.0);
+        platforms.add(new PropulsionPlatform(new LayoutProportions(0.25, 0.09, 0.3, 0.7)));
+        initObjects(null);
+    }
 
     private PropulsionPlatform.ImpactHandler impactHandler = new PropulsionPlatform.ImpactHandler() {
         @Override
@@ -95,14 +109,6 @@ public class Stage {
         return hippo;
     }
 
-    public void clear() {
-        hippo = null;
-        platforms.clear();
-        sensors.clear();
-        oscillatingBillboards.clear();
-        sprites.clear();
-    }
-
     public Set<PropulsionPlatform> getPlatforms() {
         return platforms;
     }
@@ -112,4 +118,31 @@ public class Stage {
         return String.valueOf(getAllObjects().size());
     }
 
+    public void initObjects(Rect bounds) {
+        for (Sprite sprite : getAllObjects()) {
+            sprite.init();
+            if (bounds != null) {
+                sprite.setBounds(bounds);
+            }
+            addWorldObject(sprite);
+            if (isOnEditMode) {
+                sprite.properties.add(CenteredDrawable.Property.MOVABLE);
+            } else {
+                sprite.properties.remove(CenteredDrawable.Property.MOVABLE);
+            }
+        }
+    }
+
+    public void setIsOnEditMode(Boolean isOnEditMode) {
+        this.isOnEditMode = isOnEditMode;
+        if (isOnEditMode) {
+            for (Sprite sprite : getAllObjects()) {
+                sprite.properties.add(CenteredDrawable.Property.MOVABLE);
+            }
+        } else {
+            for (Sprite sprite : getAllObjects()) {
+                sprite.properties.remove(CenteredDrawable.Property.MOVABLE);
+            }
+        }
+    }
 }

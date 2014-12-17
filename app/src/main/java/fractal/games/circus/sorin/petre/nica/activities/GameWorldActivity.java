@@ -14,21 +14,20 @@ import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.collections.Tuple2;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Hippo;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedSprite;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform.CollisionHandler;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedSprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
-import fractal.games.circus.sorin.petre.nica.persistence.GameWorld;
+import fractal.games.circus.sorin.petre.nica.persistence.GameLoader;
 import fractal.games.circus.sorin.petre.nica.persistence.JsonSerializer;
+import fractal.games.circus.sorin.petre.nica.persistence.Stage;
 import fractal.games.circus.sorin.petre.nica.persistence.StageLoader;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Acceleration;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.circus.sorin.petre.nica.views.GameView;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
-import fractal.games.circus.sorin.petre.nica.views.Score;
 
 public class GameWorldActivity extends Activity {
 
@@ -39,31 +38,25 @@ public class GameWorldActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         MediaStore.context = this;
+        MediaStore.assetManager = getAssets();
 
         final JsonSerializer jsonSerializer = new JsonSerializer(this);
-        final StageLoader stageLoader = new StageLoader(jsonSerializer);
+        final GameLoader gameLoader = new GameLoader(jsonSerializer);
 
         final LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        final GameView gameView = new GameView(this);
-
-        final Hippo hippo = new Hippo(new LayoutProportions(0.16, 0.14, 0.3, 1.0));
-        hippo.acceleration = new Acceleration(0.0, GameWorld.GRAVITATIONAL_ACCELERATION);
-        hippo.velocity = new Velocity(0.0, 0.0);
-
-        PropulsionPlatform propulsionPlatform = new PropulsionPlatform(new LayoutProportions(0.25, 0.09, 0.3, 0.7));
+        final GameView gameView = new GameView(this, gameLoader.loadGame());
 
         Tuple2<Integer, Long> slide1 = new Tuple2<Integer, Long>(R.drawable.evil_monkey, 700L);
         Tuple2<Integer, Long> slide2 = new Tuple2<Integer, Long>(R.drawable.monkey_banana, 700L);
         OscillatingBillboard monkey = new OscillatingBillboard(new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(0.3, 0.0), slide1, slide2);
-        monkey.addObstacle(hippo);
 
         RammedSprite boxFactory = new RammedSprite(new LayoutProportions(0.1, 0.08, 0.2, 0.22), R.drawable.reflector_1);
         boxFactory.paintingCreatedHandler = new RammedSprite.PaintingCreatedHandler() {
             @Override
             public void onPaintingCreated(Sprite sprite) {
-                gameView.addWorldObject(sprite);
+                gameView.game.addWorldObject(sprite);
             }
         };
 
@@ -71,7 +64,7 @@ public class GameWorldActivity extends Activity {
         platformsFactory.paintingCreatedHandler = new RammedSprite.PaintingCreatedHandler() {
             @Override
             public void onPaintingCreated(Sprite sprite) {
-                gameView.addWorldObject(sprite);
+                gameView.game.addWorldObject(sprite);
             }
         };
         platformsFactory.paintingConstructor = new RammedSprite.PaintingConstructor() {
@@ -85,7 +78,7 @@ public class GameWorldActivity extends Activity {
         circlesFactory.paintingCreatedHandler = new RammedSprite.PaintingCreatedHandler() {
             @Override
             public void onPaintingCreated(Sprite sprite) {
-                gameView.addWorldObject(sprite);
+                gameView.game.addWorldObject(sprite);
             }
         };
         circlesFactory.paintingConstructor = new RammedSprite.PaintingConstructor() {
@@ -95,9 +88,7 @@ public class GameWorldActivity extends Activity {
             }
         };
 
-        gameView.addWorldObject(hippo);
-        gameView.addWorldObject(propulsionPlatform);
-        gameView.addWorldObject(monkey);
+        gameView.game.addWorldObject(monkey);
 
         LinearLayout menu = new LinearLayout(this);
         menu.setOrientation(LinearLayout.HORIZONTAL);
@@ -130,7 +121,7 @@ public class GameWorldActivity extends Activity {
         navigationMenu.addView(downButton);
 
         final Button nextStageButton = new Button(this);
-        nextStageButton.setText("> " + stageLoader.getStageIndex());
+        nextStageButton.setText("> " + gameView.game.stageLoader.getStageIndex());
         navigationMenu.addView(nextStageButton);
 
         Button previousStageButton = new Button(this);
@@ -139,7 +130,7 @@ public class GameWorldActivity extends Activity {
 
         saveButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                stageLoader.saveCurrentStage(gameView.getGame());
+                gameView.game.stageLoader.saveCurrentStage(gameView.game.stage);
             }
         });
 
@@ -147,15 +138,15 @@ public class GameWorldActivity extends Activity {
             @Override
             public void onClick(View v) {
                 gameView.suspend();
-                gameView.loadWorld(stageLoader.loadCurrentStage());
+                gameView.game.loadCurrentStage();
                 gameView.resume();
             }
         });
 
         nextStageButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                stageLoader.selectNextStage();
-                nextStageButton.setText("> " + stageLoader.getStageIndex());
+                gameView.game.stageLoader.selectNextStage();
+                nextStageButton.setText("> " + gameView.game.stageLoader.getStageIndex());
                 loadButton.callOnClick();
             }
         });
@@ -163,8 +154,8 @@ public class GameWorldActivity extends Activity {
         previousStageButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                stageLoader.selectPreviousStage();
-                nextStageButton.setText("> " + stageLoader.getStageIndex());
+                gameView.game.stageLoader.selectPreviousStage();
+                nextStageButton.setText("> " + gameView.game.stageLoader.getStageIndex());
                 loadButton.callOnClick();
             }
         });
@@ -186,7 +177,7 @@ public class GameWorldActivity extends Activity {
         upButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()) {
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         gameView.isSlidingUp = true;
                         break;
@@ -201,7 +192,7 @@ public class GameWorldActivity extends Activity {
         downButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()) {
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         gameView.isSlidingDown = true;
                         break;
@@ -217,19 +208,9 @@ public class GameWorldActivity extends Activity {
         layout.addView(navigationMenu);
         layout.addView(gameView);
 
-        final Score inGameTimer = new Score(new LayoutProportions(0.0, 0.04, 0.7, 0.04), getAssets());
-        gameView.getGame().inGameTimer = inGameTimer;
-
         gameView.hud.rammedPaintings.add(boxFactory);
         gameView.hud.rammedPaintings.add(platformsFactory);
         gameView.hud.rammedPaintings.add(circlesFactory);
-
-        propulsionPlatform.collisionHandlers.add(new CollisionHandler() {
-            @Override
-            public void onCollison() {
-                score.addPoints(100L);
-            }
-        });
 
         setContentView(layout);
     }

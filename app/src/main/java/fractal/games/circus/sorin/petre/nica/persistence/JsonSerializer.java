@@ -28,7 +28,8 @@ public class JsonSerializer {
     public void serialize(String filePath, Object object) {
         try {
             File file = getFile(filePath);
-            Log.i("json", file.getAbsolutePath());
+            file.getParentFile().mkdirs();
+            Log.i("target file", file.getAbsolutePath());
             FileOutputStream outputStream = new FileOutputStream(file.getAbsolutePath());
             outputStream.write(gsonService.toJson(object).getBytes());
             outputStream.close();

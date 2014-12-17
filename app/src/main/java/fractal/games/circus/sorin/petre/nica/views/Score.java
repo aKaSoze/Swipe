@@ -8,18 +8,16 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
+import com.google.gson.annotations.Expose;
+
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 
 public class Score extends Drawable {
 
     private static final String FONT         = "fonts/Blazed.ttf";
-    public static final  double SCALE_FACTOR = 1.159;
-    private LayoutProportions layoutProportions;
+    private static final double SCALE_FACTOR = 1.159;
 
     private static final Paint paint;
-
-    private float x;
-    private float y;
 
     static {
         paint = new Paint();
@@ -28,7 +26,19 @@ public class Score extends Drawable {
         paint.setDither(true);
     }
 
+    @Expose
+    private LayoutProportions layoutProportions;
+    @Expose
+    private float             x;
+    @Expose
+    private float             y;
+
+    @Expose
     public Long points = 0L;
+
+    private Score() {
+        paint.setTypeface(MediaStore.getTypeFace(FONT));
+    }
 
     public Score(LayoutProportions layoutProportions) {
         paint.setTypeface(MediaStore.getTypeFace(FONT));

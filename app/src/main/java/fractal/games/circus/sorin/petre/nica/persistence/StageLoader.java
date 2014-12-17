@@ -9,7 +9,7 @@ import java.io.File;
  */
 public class StageLoader {
 
-    private static final String STAGE_DEFAULT_PREFIX = "Circus Stages" + File.separator + "Stage ";
+    private static final String STAGE_DEFAULT_PREFIX = "Circus" + File.separator + "Stages" + File.separator + "Stage ";
 
     private final JsonSerializer jsonSerializer;
 
@@ -23,11 +23,7 @@ public class StageLoader {
         if (stageExists(stageIndex)) {
             return jsonSerializer.deserialize(evalFilePath(), Stage.class);
         } else {
-            selectPreviousStage();
-            Stage Stage = loadCurrentStage();
-            selectNextStage();
-            saveCurrentStage(Stage);
-            return loadCurrentStage();
+            return new Stage();
         }
     }
 
@@ -48,9 +44,7 @@ public class StageLoader {
     }
 
     public void selectPreviousStage() {
-        if (stageExists(stageIndex - 1)) {
-            stageIndex--;
-        }
+        stageIndex--;
     }
 
     private Boolean stageExists(Integer stageIndex) {
