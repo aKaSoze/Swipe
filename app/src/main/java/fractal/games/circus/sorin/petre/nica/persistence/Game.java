@@ -15,6 +15,7 @@ import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.AnimatedShape;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RepeatedSprite;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
@@ -41,6 +42,9 @@ public class Game {
     private Score score;
 
     @Expose
+    private Score level;
+
+    @Expose
     private RepeatedSprite lives;
 
     @Expose
@@ -50,15 +54,17 @@ public class Game {
 
     private Rect knownBounds;
 
-    private Bitmap backGround_drwbl;
+    private Bitmap backGround;
 
     private Game() {
+        stageLoader = new StageLoader(new JsonSerializer());
     }
 
     public Game(StageLoader stageLoader) {
         this.stageLoader = stageLoader;
-        score = new Score(new LayoutProportions(0.0, 0.04, 0.03, 0.04));
-        lives = new RepeatedSprite(new LayoutProportions(0.09, 0.05, 0.5, 0.98), R.drawable.hippo_wacky);
+        level = new Score("Level", new LayoutProportions(0.0, 0.035, 0.3, 0.025));
+        score = new Score("Score", new LayoutProportions(0.0, 0.035, 0.67, 0.025));
+        lives = new RepeatedSprite(new LayoutProportions(0.07, 0.05, 0.17, 0.98), R.drawable.hippo_wacky);
         loadCurrentStage();
     }
 
@@ -70,12 +76,30 @@ public class Game {
                 loadCurrentStage(knownBounds);
             }
             if (isLoseConditionMet()) {
-                shape.velocity.neutralize();
-                shape.center.makeEqualTo(stage.getHippo().getFirstPosition());
-                lives.decreaseRepeatFactor();
+                loseLife();
             }
         }
     };
+
+    private Sensor.TipHitHandler sensorHitHandler = new Sensor.TipHitHandler() {
+        @Override
+        public void onTipHit() {
+            loseLife();
+        }
+    };
+
+    private Sensor.ObstaclePassedHandler goThroughSensorHandler = new Sensor.ObstaclePassedHandler() {
+        @Override
+        public void onObstaclePassed(AnimatedShape obstacle) {
+            score.points += 500;
+        }
+    };
+
+    private void loseLife() {
+        stage.getHippo().velocity.neutralize();
+        stage.getHippo().center.makeEqualTo(stage.getHippo().getFirstPosition());
+        lives.decreaseRepeatFactor();
+    }
 
     private Boolean isLoseConditionMet() {
         return stage.getHippo().center.y < -20;
@@ -98,12 +122,20 @@ public class Game {
     private void loadCurrentStage(Rect bounds) {
         knownBounds = bounds;
         stage = stageLoader.loadCurrentStage();
-        stage.initObjects(bounds);
-        stage.getHippo().centerChangedHandler = hippoCenterChangedHandler;
+        level.points = stageLoader.stageIndex;
+        onLoad();
     }
 
-    public void setStageLoader(StageLoader stageLoader) {
-        this.stageLoader = stageLoader;
+    public void onLoad() {
+        stage.onLoad(knownBounds);
+        stage.getHippo().centerChangedHandler = hippoCenterChangedHandler;
+
+        for (Sensor sensor : stage.getSensors()) {
+            sensor.tipHitHandler = sensorHitHandler;
+            sensor.obstaclePassedHandler = goThroughSensorHandler;
+        }
+
+        stageLoader.stageIndex = level.getPoints().longValue();
     }
 
     public void loadNextStage(Rect bounds) {
@@ -114,12 +146,13 @@ public class Game {
     public void setKnownBounds(Rect knownBounds) {
         this.knownBounds = knownBounds;
 
-        backGround_drwbl = MediaStore.getScaledBitmap(R.drawable.background, knownBounds.width(), knownBounds.height());
+        backGround = MediaStore.getScaledBitmap(R.drawable.background, knownBounds.width(), knownBounds.height());
         for (CenteredDrawable drawable : stage.getAllObjects()) {
             drawable.setBounds(knownBounds);
         }
 
         score.setBounds(knownBounds);
+        level.setBounds(knownBounds);
         lives.setBounds(knownBounds);
         inGameTimer.setBounds(knownBounds);
     }
@@ -130,7 +163,7 @@ public class Game {
     }
 
     public void addWorldObject(Sprite sprite) {
-        if(knownBounds != null) {
+        if (knownBounds != null) {
             sprite.setBounds(knownBounds);
         }
         stage.addWorldObject(sprite);
@@ -151,7 +184,7 @@ public class Game {
     }
 
     public void draw(Canvas canvas, Displacement coordinateTranslation) {
-        canvas.drawBitmap(backGround_drwbl, 0, 0, DEFAULT_PAINT);
+        canvas.drawBitmap(backGround, 0, 0, DEFAULT_PAINT);
         for (CenteredDrawable centeredDrawable : stage.getAllObjects()) {
             centeredDrawable.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
             centeredDrawable.draw(canvas);
@@ -162,9 +195,10 @@ public class Game {
         lives.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
         lives.draw(canvas);
 
+        level.draw(canvas);
         score.draw(canvas);
         inGameTimer.points = (long) CenteredDrawable.instances.size();
-        inGameTimer.draw(canvas);
+//        inGameTimer.draw(canvas);
     }
 
 }

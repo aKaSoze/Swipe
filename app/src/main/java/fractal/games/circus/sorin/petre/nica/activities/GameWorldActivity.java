@@ -11,25 +11,21 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import fractal.games.circus.R;
-import fractal.games.circus.sorin.petre.nica.collections.Tuple2;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Hippo;
-import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedSprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
+import fractal.games.circus.sorin.petre.nica.persistence.Game;
 import fractal.games.circus.sorin.petre.nica.persistence.GameLoader;
 import fractal.games.circus.sorin.petre.nica.persistence.JsonSerializer;
-import fractal.games.circus.sorin.petre.nica.persistence.Stage;
-import fractal.games.circus.sorin.petre.nica.persistence.StageLoader;
-import fractal.games.circus.sorin.petre.nica.physics.kinematics.Acceleration;
-import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
-import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.circus.sorin.petre.nica.views.GameView;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
 public class GameWorldActivity extends Activity {
+
+    private GameLoader gameLoader;
+    private Game       game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,17 +36,17 @@ public class GameWorldActivity extends Activity {
         MediaStore.context = this;
         MediaStore.assetManager = getAssets();
 
-        final JsonSerializer jsonSerializer = new JsonSerializer(this);
-        final GameLoader gameLoader = new GameLoader(jsonSerializer);
+        gameLoader = new GameLoader();
 
         final LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        final GameView gameView = new GameView(this, gameLoader.loadGame());
+        game = gameLoader.loadGame();
+        final GameView gameView = new GameView(this, game);
 
-        Tuple2<Integer, Long> slide1 = new Tuple2<Integer, Long>(R.drawable.evil_monkey, 700L);
-        Tuple2<Integer, Long> slide2 = new Tuple2<Integer, Long>(R.drawable.monkey_banana, 700L);
-        OscillatingBillboard monkey = new OscillatingBillboard(new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(0.3, 0.0), slide1, slide2);
+//        Tuple2<Integer, Long> slide1 = new Tuple2<Integer, Long>(R.drawable.evil_monkey, 700L);
+//        Tuple2<Integer, Long> slide2 = new Tuple2<Integer, Long>(R.drawable.monkey_banana, 700L);
+//        OscillatingBillboard monkey = new OscillatingBillboard(new LayoutProportions(0.1, 0.08, 0.7, 1.7), new Displacement(200, 0), new Velocity(0.3, 0.0), slide1, slide2);
 
         RammedSprite boxFactory = new RammedSprite(new LayoutProportions(0.1, 0.08, 0.2, 0.22), R.drawable.reflector_1);
         boxFactory.paintingCreatedHandler = new RammedSprite.PaintingCreatedHandler() {
@@ -88,8 +84,6 @@ public class GameWorldActivity extends Activity {
             }
         };
 
-        gameView.game.addWorldObject(monkey);
-
         LinearLayout menu = new LinearLayout(this);
         menu.setOrientation(LinearLayout.HORIZONTAL);
 
@@ -121,7 +115,7 @@ public class GameWorldActivity extends Activity {
         navigationMenu.addView(downButton);
 
         final Button nextStageButton = new Button(this);
-        nextStageButton.setText("> " + gameView.game.stageLoader.getStageIndex());
+        nextStageButton.setText(">");
         navigationMenu.addView(nextStageButton);
 
         Button previousStageButton = new Button(this);
@@ -146,7 +140,6 @@ public class GameWorldActivity extends Activity {
         nextStageButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 gameView.game.stageLoader.selectNextStage();
-                nextStageButton.setText("> " + gameView.game.stageLoader.getStageIndex());
                 loadButton.callOnClick();
             }
         });
@@ -155,7 +148,6 @@ public class GameWorldActivity extends Activity {
             @Override
             public void onClick(View v) {
                 gameView.game.stageLoader.selectPreviousStage();
-                nextStageButton.setText("> " + gameView.game.stageLoader.getStageIndex());
                 loadButton.callOnClick();
             }
         });
@@ -213,5 +205,11 @@ public class GameWorldActivity extends Activity {
         gameView.hud.rammedPaintings.add(circlesFactory);
 
         setContentView(layout);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        gameLoader.saveGame(game);
     }
 }

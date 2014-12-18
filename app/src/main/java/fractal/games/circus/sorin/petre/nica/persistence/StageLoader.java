@@ -13,7 +13,7 @@ public class StageLoader {
 
     private final JsonSerializer jsonSerializer;
 
-    private Integer stageIndex = 0;
+    public Long stageIndex = 0L;
 
     public StageLoader(JsonSerializer jsonSerializer) {
         this.jsonSerializer = jsonSerializer;
@@ -31,7 +31,7 @@ public class StageLoader {
         jsonSerializer.serialize(evalFilePath(), Stage);
     }
 
-    private String evalFilePath(Integer stageIndex) {
+    private String evalFilePath(Long stageIndex) {
         return STAGE_DEFAULT_PREFIX + stageIndex;
     }
 
@@ -47,12 +47,8 @@ public class StageLoader {
         stageIndex--;
     }
 
-    private Boolean stageExists(Integer stageIndex) {
+    private Boolean stageExists(Long stageIndex) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.MEDIA_MOUNTED), evalFilePath(stageIndex));
         return file.isFile();
-    }
-
-    public Integer getStageIndex() {
-        return stageIndex;
     }
 }

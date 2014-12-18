@@ -3,6 +3,8 @@ package fractal.games.circus.sorin.petre.nica.math.geometry.shapes;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,12 +18,20 @@ public class Sensor extends Sprite {
         void onObstaclePassed(AnimatedShape obstacle);
     }
 
+    public interface TipHitHandler {
+        void onTipHit();
+    }
+
+    @Expose
+    private Long orientation = 1L;
+
     public ObstaclePassedHandler obstaclePassedHandler;
+    public TipHitHandler         tipHitHandler;
 
     private final Map<AnimatedShape, Semiplane> closeByObstacles = new HashMap<AnimatedShape, Semiplane>();
 
-    public Sensor() {
-        super();
+    private Sensor() {
+        this(null, null);
     }
 
     public Sensor(LayoutProportions layoutProportions, Integer resourceId) {
@@ -48,14 +58,18 @@ public class Sensor extends Sprite {
                 }
             }
 
-            if(obstacle.contains(firstCorner)) {
+            if (obstacle.contains(firstCorner)) {
                 moveOutsideBoundariesOfObstacle(firstCorner);
-                obstacle.velocity.reverse();
+                if (tipHitHandler != null) {
+                    tipHitHandler.onTipHit();
+                }
             }
 
-            if(obstacle.contains(secondCorner)) {
+            if (obstacle.contains(secondCorner)) {
                 moveOutsideBoundariesOfObstacle(secondCorner);
-                obstacle.velocity.reverse();
+                if (tipHitHandler != null) {
+                    tipHitHandler.onTipHit();
+                }
             }
         }
     }
@@ -69,15 +83,18 @@ public class Sensor extends Sprite {
 
     @Override
     public void onDoubleTap(MotionEvent motionEvent, Displacement touchPoint) {
-        // TODO Auto-generated method stub
+        if (properties.contains(Property.MOVABLE)) {
+            switchSensor();
+        }
+    }
 
+    public void switchSensor() {
+        orientation *= -1;
     }
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.save();
         super.draw(canvas);
-        canvas.restore();
 
         drawPoint(evalFirstCorner(), canvas);
         drawPoint(evalSecondCorner(), canvas);
@@ -85,11 +102,11 @@ public class Sensor extends Sprite {
     }
 
     private Displacement evalFirstCorner() {
-        return new Displacement(center.x - evalHalfWidth(), center.y + evalHalfHeight());
+        return new Displacement(center.x - evalHalfWidth(), center.y + orientation * evalHalfHeight());
     }
 
     private Displacement evalSecondCorner() {
-        return new Displacement(center.x + evalHalfWidth(), center.y - evalHalfHeight());
+        return new Displacement(center.x + evalHalfWidth(), center.y - orientation * evalHalfHeight());
     }
 
     private Displacement evalDiagonal() {

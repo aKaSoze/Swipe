@@ -1,6 +1,5 @@
 package fractal.games.circus.sorin.petre.nica.persistence;
 
-import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -16,12 +15,9 @@ import java.io.InputStreamReader;
 
 public class JsonSerializer {
 
-    private final Context context;
-
     private final Gson gsonService;
 
-    public JsonSerializer(Context context) {
-        this.context = context;
+    public JsonSerializer() {
         gsonService = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     }
 
@@ -29,7 +25,7 @@ public class JsonSerializer {
         try {
             File file = getFile(filePath);
             file.getParentFile().mkdirs();
-            Log.i("target file", file.getAbsolutePath());
+            Log.i(JsonSerializer.class.getSimpleName(), "Persisting to file: " + file.getAbsolutePath());
             FileOutputStream outputStream = new FileOutputStream(file.getAbsolutePath());
             outputStream.write(gsonService.toJson(object).getBytes());
             outputStream.close();

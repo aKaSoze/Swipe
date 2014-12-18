@@ -29,7 +29,7 @@ public abstract class CenteredDrawable extends Drawable {
 
     static {
         DEFAULT_PAINT = new Paint();
-        DEFAULT_PAINT.setColor(Color.WHITE);
+        DEFAULT_PAINT.setColor(Color.CYAN);
         DEFAULT_PAINT.setStyle(Style.STROKE);
         DEFAULT_PAINT.setStrokeWidth(4);
     }

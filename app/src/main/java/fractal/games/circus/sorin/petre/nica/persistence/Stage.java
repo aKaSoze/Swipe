@@ -44,7 +44,7 @@ public class Stage {
         hippo.acceleration = new Acceleration(0.0, Stage.GRAVITATIONAL_ACCELERATION);
         hippo.velocity = new Velocity(0.0, 0.0);
         platforms.add(new PropulsionPlatform(new LayoutProportions(0.25, 0.09, 0.3, 0.7)));
-        initObjects(null);
+        onLoad(null);
     }
 
     private PropulsionPlatform.ImpactHandler impactHandler = new PropulsionPlatform.ImpactHandler() {
@@ -113,12 +113,16 @@ public class Stage {
         return platforms;
     }
 
+    public Set<Sensor> getSensors() {
+        return sensors;
+    }
+
     @Override
     public String toString() {
         return String.valueOf(getAllObjects().size());
     }
 
-    public void initObjects(Rect bounds) {
+    public void onLoad(Rect bounds) {
         for (Sprite sprite : getAllObjects()) {
             sprite.init();
             if (bounds != null) {
