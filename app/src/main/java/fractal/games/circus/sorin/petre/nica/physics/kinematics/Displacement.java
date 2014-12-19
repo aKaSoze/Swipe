@@ -30,8 +30,8 @@ public class Displacement extends Vector2D<Displacement> {
 		this(0.0, 0.0);
 	}
 
-	public Displacement additionVector(Displacement subtrahend) {
-		return new Displacement(x + subtrahend.x, y + subtrahend.y);
+	public Displacement additionVector(Displacement augend) {
+		return new Displacement(x + augend.x, y + augend.y);
 	}
 
 	public Displacement subtractionVector(Displacement subtrahend) {

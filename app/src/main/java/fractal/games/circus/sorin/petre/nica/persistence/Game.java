@@ -115,11 +115,11 @@ public class Game {
         return stage.getHippo().center.y > maxY + 1000;
     }
 
-    public void loadCurrentStage() {
+    private void loadCurrentStage() {
         loadCurrentStage(knownBounds);
     }
 
-    private void loadCurrentStage(Rect bounds) {
+    public void loadCurrentStage(Rect bounds) {
         knownBounds = bounds;
         stage = stageLoader.loadCurrentStage();
         level.points = stageLoader.stageIndex;
@@ -163,10 +163,8 @@ public class Game {
     }
 
     public void addWorldObject(Sprite sprite) {
-        if (knownBounds != null) {
-            sprite.setBounds(knownBounds);
-        }
         stage.addWorldObject(sprite);
+        onLoad();
     }
 
     private interface NumericRepresentant<T> {
@@ -191,8 +189,6 @@ public class Game {
         }
 
         lives.center = lives.evalOriginalCenter();
-        lives.center.y -= coordinateTranslation.y;
-        lives.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
         lives.draw(canvas);
 
         level.draw(canvas);

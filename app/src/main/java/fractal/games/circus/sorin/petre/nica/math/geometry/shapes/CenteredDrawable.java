@@ -42,13 +42,11 @@ public abstract class CenteredDrawable extends Drawable {
     protected static final Double VECINITY_DISTANCE = 50.0;
 
     @Expose
-    public  Set<Property> properties      = new HashSet<Property>();
+    public Set<Property> properties      = new HashSet<Property>();
     @Expose
-    public  Displacement  center          = ORIGIN_CENTER;
+    public Displacement  center          = ORIGIN_CENTER;
     @Expose
-    private Displacement  drawCenter      = new Displacement(0, 0);
-    @Expose
-    public  Displacement  drawTranslation = new Displacement(0, 0);
+    public Displacement  drawTranslation = new Displacement(0, 0);
 
     @Expose
     public LayoutProportions layoutProportions;
@@ -140,14 +138,13 @@ public abstract class CenteredDrawable extends Drawable {
     }
 
     private Displacement evalOriginalCenter(Rect bounds) {
-        Double x = layoutProportions.xRatio * (bounds.right - bounds.left);
-        Double y = layoutProportions.yRatio * (bounds.bottom - bounds.top);
+        Double x = layoutProportions.xRatio * bounds.width();
+        Double y = layoutProportions.yRatio * bounds.height();
         return new Displacement(x, y);
     }
 
     protected Displacement evalDrawCenter() {
-        drawCenter.setComponents(getDrawX(center.x), getDrawY(center.y));
-        return drawCenter;
+        return evalDrawLocation(center);
     }
 
     protected Double evalWidth() {
@@ -159,7 +156,7 @@ public abstract class CenteredDrawable extends Drawable {
     }
 
     protected Double evalHeight() {
-        return layoutProportions.heightRatio * evalBoundsHeight();
+        return layoutProportions.heightRatio * getBounds().height();
     }
 
     protected Double evalHalfHeight() {
@@ -170,34 +167,26 @@ public abstract class CenteredDrawable extends Drawable {
         if (realLocation == null) {
             return null;
         } else {
-            Displacement drawLocation = new Displacement(getBounds().left + realLocation.x + drawTranslation.x, evalBoundsHeight() - (realLocation.y + drawTranslation.y));
+            Displacement drawLocation = new Displacement(evalDrawX(realLocation.x), evalDrawY(realLocation.y));
             drawLocation.applyPoint = evalDrawLocation(realLocation.applyPoint);
             return drawLocation;
         }
     }
 
-    protected Integer evalBoundsWidth() {
-        return getBounds().right - getBounds().left;
+    protected Double evalRealX(Double drawX) {
+        return drawX - drawTranslation.x;
     }
 
-    protected Integer evalBoundsHeight() {
-        return getBounds().bottom - getBounds().top;
+    protected Double evalRealY(Double drawY) {
+        return getBounds().height() - (drawY + drawTranslation.y);
     }
 
-    protected Double getRealX(Double drawX) {
-        return drawX - getBounds().left - drawTranslation.x;
+    protected Double evalDrawX(Double realX) {
+        return realX + drawTranslation.x;
     }
 
-    protected Double getRealY(Double drawY) {
-        return evalBoundsHeight() - (drawY + drawTranslation.y);
-    }
-
-    protected Double getDrawX(Double realX) {
-        return getBounds().left + realX + drawTranslation.x;
-    }
-
-    protected Double getDrawY(Double realY) {
-        return evalBoundsHeight() - (realY + drawTranslation.y);
+    protected Double evalDrawY(Double realY) {
+        return getBounds().height() - (realY + drawTranslation.y);
     }
 
     protected void drawVector(Displacement vector, Canvas canvas) {

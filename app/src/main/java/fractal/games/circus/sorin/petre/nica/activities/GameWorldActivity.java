@@ -18,7 +18,6 @@ import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.persistence.Game;
 import fractal.games.circus.sorin.petre.nica.persistence.GameLoader;
-import fractal.games.circus.sorin.petre.nica.persistence.JsonSerializer;
 import fractal.games.circus.sorin.petre.nica.views.GameView;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
@@ -131,9 +130,7 @@ public class GameWorldActivity extends Activity {
         loadButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                gameView.suspend();
-                gameView.game.loadCurrentStage();
-                gameView.resume();
+                gameView.loadCurrentStage();
             }
         });
 

@@ -10,40 +10,33 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedSprite;
 import fractal.games.circus.sorin.petre.nica.persistence.Game;
-import fractal.games.circus.sorin.petre.nica.persistence.Stage;
+import fractal.games.circus.sorin.petre.nica.persistence.Hud;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 
 public class GameView extends AutoUpdatableView {
 
-    public Game game;
+    public Game   game;
+    public Camera camera;
 
     private CenteredDrawable selectedShape;
     private MediaPlayer      soundTrackPlayer;
 
-    private Boolean      isOkToRunGameLoop     = false;
-    public  Displacement coordinateTranslation = new Displacement();
-    private Displacement realTouchPoint        = new Displacement();
-    public  Hud          hud                   = new Hud();
-    private Long         elapsedTime           = 0L;
-    private Long         lastUpdateTime        = null;
-    private Boolean      isOnEditMode          = false;
+    private Boolean isOkToRunGameLoop = false;
+    public  Hud     hud               = new Hud();
+    private Long    elapsedTime       = 0L;
+    private Long    lastUpdateTime    = null;
+    private Boolean isOnEditMode      = false;
 
     public Boolean isSlidingUp   = false;
     public Boolean isSlidingDown = false;
 
-    public static class Hud {
-        public Set<RammedSprite> rammedPaintings = new HashSet<RammedSprite>();
-    }
-
     public GameView(Context context, Game game) {
         super(context);
         this.game = game;
+        camera = new Camera();
     }
 
     public void setIsOnEditMode(Boolean isOnEditMode) {
@@ -55,15 +48,9 @@ public class GameView extends AutoUpdatableView {
         return isOnEditMode;
     }
 
-    public void loadNextStage() {
+    public void loadCurrentStage() {
         suspend();
-        game.loadNextStage(new Rect(getLeft(), getTop(), getRight(), getBottom()));
-        resume();
-    }
-
-    public void loadPreviousStage() {
-        suspend();
-        game.loadPreviousStage(new Rect(getLeft(), getTop(), getRight(), getBottom()));
+        game.loadCurrentStage(new Rect(getLeft(), getTop(), getRight(), getBottom()));
         resume();
     }
 
@@ -75,13 +62,14 @@ public class GameView extends AutoUpdatableView {
             for (RammedSprite rammedPainting : hud.rammedPaintings) {
                 rammedPainting.setBounds(bounds);
             }
+            camera.knownBounds = bounds;
             game.setKnownBounds(bounds);
         }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        realTouchPoint.setComponents(event.getX() - getLeft() - coordinateTranslation.x, (getBottom() - getTop()) - (event.getY() + coordinateTranslation.y));
+        Displacement realTouchPoint = camera.evalRealLocation(new Displacement(event.getX(), event.getY()));
         for (CenteredDrawable centeredDrawable : game.stage.getAllObjects()) {
             centeredDrawable.onMotionEvent(event, realTouchPoint);
         }
@@ -155,19 +143,21 @@ public class GameView extends AutoUpdatableView {
 
     @Override
     protected void drawSurface(Canvas canvas) {
-        if (!isOnEditMode) {
-            coordinateTranslation.setComponents(0.0, (getHeight() / 2) - game.stage.getHippo().center.y);
-        } else {
+        if (isOnEditMode) {
             if (isSlidingUp) {
-                coordinateTranslation.y -= 6;
+                camera.slideUp();
             }
             if (isSlidingDown) {
-                coordinateTranslation.y += 6;
+                camera.slideDown();
             }
+        } else {
+            camera.centerVerticallyOnObject(game.stage.getHippo());
         }
 
-        game.draw(canvas, coordinateTranslation);
-        drawHud(canvas);
+        game.draw(canvas, camera.coordinateTranslation);
+        if (isOnEditMode) {
+            hud.draw(canvas, camera);
+        }
         drawHelperLines(canvas);
     }
 
@@ -185,14 +175,4 @@ public class GameView extends AutoUpdatableView {
         canvas.drawLine(0, deathLine.y.floatValue(), getWidth(), deathLine.y.floatValue(), paint);
     }
 
-    private void drawHud(Canvas canvas) {
-        if (isOnEditMode) {
-            for (RammedSprite rammedPainting : hud.rammedPaintings) {
-                rammedPainting.center = rammedPainting.evalOriginalCenter();
-                rammedPainting.center.y -= coordinateTranslation.y;
-                rammedPainting.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
-                rammedPainting.draw(canvas);
-            }
-        }
-    }
 }
