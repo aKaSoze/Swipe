@@ -8,4 +8,5 @@ bin/
 Circus.iml
 build/
 local.properties
-.gradle/
+.gradle/*
+
