@@ -184,7 +184,7 @@ public class Game {
     }
 
     public void draw(Canvas canvas, Displacement coordinateTranslation) {
-        canvas.drawBitmap(backGround, 0, 0, DEFAULT_PAINT);
+        canvas.drawBitmap(backGround, 0, -(coordinateTranslation.y.intValue() / 5), DEFAULT_PAINT);
         for (CenteredDrawable centeredDrawable : stage.getAllObjects()) {
             centeredDrawable.drawTranslation.setComponents(coordinateTranslation.x, coordinateTranslation.y);
             centeredDrawable.draw(canvas);

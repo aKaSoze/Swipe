@@ -168,7 +168,7 @@ public class GameView extends AutoUpdatableView {
 
         game.draw(canvas, coordinateTranslation);
         drawHud(canvas);
-        drawHelperLines(canvas);
+//        drawHelperLines(canvas);
     }
 
     private void drawHelperLines(Canvas canvas) {
