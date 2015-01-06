@@ -154,7 +154,7 @@ public class GameView extends AutoUpdatableView {
             camera.centerVerticallyOnObject(game.stage.getHippo());
         }
 
-        game.draw(canvas, camera.coordinateTranslation);
+        game.draw(canvas, camera);
         if (isOnEditMode) {
             hud.draw(canvas, camera);
         }

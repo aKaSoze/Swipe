@@ -1,6 +1,7 @@
 package fractal.games.circus.sorin.petre.nica.activities;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import fractal.games.circus.R;
+import fractal.games.circus.sorin.petre.nica.collections.Tuple2;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RammedSprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
@@ -18,6 +21,7 @@ import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.persistence.Game;
 import fractal.games.circus.sorin.petre.nica.persistence.GameLoader;
+import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.circus.sorin.petre.nica.views.GameView;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
@@ -69,6 +73,20 @@ public class GameWorldActivity extends Activity {
             }
         };
 
+        RammedSprite monkeysFactory = new RammedSprite(new LayoutProportions(0.1, 0.08, 0.0, 0.22), R.drawable.evil_monkey);
+        monkeysFactory.paintingCreatedHandler = new RammedSprite.PaintingCreatedHandler() {
+            @Override
+            public void onPaintingCreated(Sprite sprite) {
+                gameView.game.addWorldObject(sprite);
+            }
+        };
+        monkeysFactory.paintingConstructor = new RammedSprite.PaintingConstructor() {
+            @Override
+            public Sprite construct() {
+                return new OscillatingBillboard(new LayoutProportions(0.1, 0.08, 0.2, 0.22), 500d, new Velocity(0.1, 0d), new Tuple2<Integer, Long>(R.drawable.evil_monkey, 10L), new Tuple2<Integer, Long>(R.drawable.monkey_banana, 10L));
+            }
+        };
+
         RammedSprite circlesFactory = new RammedSprite(new LayoutProportions(0.3, 0.26, 0.8, 0.22), R.drawable.ring_of_fire);
         circlesFactory.paintingCreatedHandler = new RammedSprite.PaintingCreatedHandler() {
             @Override
@@ -82,6 +100,11 @@ public class GameWorldActivity extends Activity {
                 return new Sensor(new LayoutProportions(0.3, 0.26, 0.8, 0.22), R.drawable.ring_of_fire);
             }
         };
+
+        gameView.hud.rammedPaintings.add(boxFactory);
+        gameView.hud.rammedPaintings.add(platformsFactory);
+        gameView.hud.rammedPaintings.add(circlesFactory);
+        gameView.hud.rammedPaintings.add(monkeysFactory);
 
         LinearLayout menu = new LinearLayout(this);
         menu.setOrientation(LinearLayout.HORIZONTAL);
@@ -97,11 +120,11 @@ public class GameWorldActivity extends Activity {
         loadButton.setText("load");
         menu.addView(loadButton);
 
-        Button pauseButton = new Button(this);
+        final Button pauseButton = new Button(this);
         pauseButton.setText("p/r");
         menu.addView(pauseButton);
 
-        Button editButton = new Button(this);
+        final Button editButton = new Button(this);
         editButton.setText("edit/play");
         menu.addView(editButton);
 
@@ -153,6 +176,11 @@ public class GameWorldActivity extends Activity {
             @Override
             public void onClick(View v) {
                 gameView.switchPauseState();
+                if (gameView.isRunning()) {
+                    pauseButton.setBackgroundColor(Color.GREEN);
+                } else {
+                    pauseButton.setBackgroundColor(Color.RED);
+                }
             }
         });
 
@@ -160,6 +188,11 @@ public class GameWorldActivity extends Activity {
             @Override
             public void onClick(View v) {
                 gameView.setIsOnEditMode(!gameView.getIsOnEditMode());
+                if (gameView.getIsOnEditMode()) {
+                    editButton.setBackgroundColor(Color.RED);
+                } else {
+                    editButton.setBackgroundColor(Color.GREEN);
+                }
             }
         });
 
@@ -196,10 +229,6 @@ public class GameWorldActivity extends Activity {
         layout.addView(menu);
         layout.addView(navigationMenu);
         layout.addView(gameView);
-
-        gameView.hud.rammedPaintings.add(boxFactory);
-        gameView.hud.rammedPaintings.add(platformsFactory);
-        gameView.hud.rammedPaintings.add(circlesFactory);
 
         setContentView(layout);
     }

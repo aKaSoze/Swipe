@@ -68,6 +68,10 @@ public abstract class AutoUpdatableView extends SurfaceView implements SurfaceHo
 		}
 	}
 
+    public Boolean isRunning() {
+        return running;
+    }
+
 	protected abstract Runnable behavior();
 
 	protected abstract void drawSurface(Canvas canvas);
