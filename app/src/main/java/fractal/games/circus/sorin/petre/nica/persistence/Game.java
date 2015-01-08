@@ -66,7 +66,7 @@ public class Game {
 
     private void init() {
         Sprite sprite1 = new Sprite(new LayoutProportions(1d, 1d, 0.5, 0.5), R.drawable.background);
-        Sprite sprite2 = new Sprite(new LayoutProportions(1d, 1d, 0.5, 1.5), R.drawable.background);
+        Sprite sprite2 = new Sprite(new LayoutProportions(1d, 1d, 0.5, 1.5), R.drawable.calibrated_background);
         backGround = new Background(sprite1, sprite2);
     }
 

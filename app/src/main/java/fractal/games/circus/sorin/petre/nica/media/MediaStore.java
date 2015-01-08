@@ -39,6 +39,10 @@ public class MediaStore {
         });
     }
 
+    public static Bitmap getScaledBitmap(final Integer bitmapResourceId, final Double width, Double height) {
+        return getScaledBitmap(bitmapResourceId, width.intValue(), height.intValue());
+    }
+
     public static MediaPlayer getSound(final Integer soundId) {
         return loadResource("sound_" + soundId, new ResourceLoader<MediaPlayer>() {
             @Override

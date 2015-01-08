@@ -24,7 +24,7 @@ public class Background {
     public void draw(Canvas canvas, Camera camera) {
         for (Sprite sprite : sprites) {
             sprite.drawTranslation.makeEqualTo(camera.coordinateTranslation);
-            sprite.drawTranslation.divideByScalar(5d);
+            sprite.drawTranslation.divideByScalar(4d);
             sprite.draw(canvas);
         }
     }

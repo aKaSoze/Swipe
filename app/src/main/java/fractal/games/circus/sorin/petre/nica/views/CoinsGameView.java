@@ -34,7 +34,7 @@ public class CoinsGameView extends AutoUpdatableView {
 
 	public CoinsGameView(Context context) {
 		super(context);
-		goldCoin_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.gold_coin);
+		goldCoin_bmp = BitmapFactory.decodeResource(getResources(), R.drawable.evil_monkey);
 	}
 
 	@Override

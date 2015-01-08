@@ -1,14 +1,15 @@
 package fractal.games.circus.sorin.petre.nica.math.geometry.shapes;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.media.MediaPlayer;
 import android.view.MotionEvent;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import fractal.games.circus.R;
+import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
@@ -27,26 +28,19 @@ public class PropulsionPlatform extends Sprite {
         void onImpact(PropulsionPlatform propulsionPlatform);
     }
 
-    private static final Double ELASTICITY_COEFFICIENT = 0.02;
+    private static final Double ELASTICITY_COEFFICIENT = 0.017;
     private static final Double PROJECTILE_MIN_SPEED   = 0.035;
 
+    private Displacement          stretchPoint      = new Displacement();
+    private Velocity              springVelocity    = new Velocity(0.0, 0.0);
+    private Status                status            = Status.STANDING;
+    public  Set<CollisionHandler> collisionHandlers = new HashSet<PropulsionPlatform.CollisionHandler>();
+    public  Set<ImpactHandler>    impactHandlers    = new HashSet<PropulsionPlatform.ImpactHandler>();
+
     private Double maxSpringDisplacement;
-
-    private Displacement stretchPoint = new Displacement();
-
-    private Status status = Status.STANDING;
-
-    private Long stretchingTime;
-
-    private Long elapsedTime;
-
-    private Velocity springVelocity = new Velocity(0.0, 0.0);
-
-    public MediaPlayer boingSoundPlayer;
-
-    public Set<CollisionHandler> collisionHandlers = new HashSet<PropulsionPlatform.CollisionHandler>();
-
-    public Set<ImpactHandler> impactHandlers = new HashSet<PropulsionPlatform.ImpactHandler>();
+    private Long   stretchingTime;
+    private Long   elapsedTime;
+    private Bitmap silverRing;
 
     public PropulsionPlatform() {
         this(null);
@@ -61,6 +55,7 @@ public class PropulsionPlatform extends Sprite {
     public void init() {
         super.init();
         paint.setStrokeWidth(4);
+        stretchPoint.applyPoint = new Displacement();
     }
 
     @Override
@@ -113,8 +108,8 @@ public class PropulsionPlatform extends Sprite {
             obstacle.center.x = center.x;
             obstacle.center.y = center.y + evalHalfHeight() + obstacle.evalHalfHeight();
         }
-        for (CollisionHandler collisonHandler : collisionHandlers) {
-            collisonHandler.onCollision();
+        for (CollisionHandler collisionHandler : collisionHandlers) {
+            collisionHandler.onCollision();
         }
     }
 
@@ -128,16 +123,11 @@ public class PropulsionPlatform extends Sprite {
 
     @Override
     public void draw(Canvas canvas) {
-        super.draw(canvas);
-
         Displacement drawStretchPoint = evalDrawLocation(stretchPoint.evaluateTip());
-        Displacement drawLeftTopCorner = evalDrawLocation(evalLeftTopCorner());
-        Displacement drawRightTopCorner = evalDrawLocation(evalRightTopCorner());
-
+        stretchPoint.applyPoint.makeEqualTo(evalHookPoint());
         drawVector(stretchPoint, canvas);
-        canvas.drawCircle(drawStretchPoint.x.floatValue(), drawStretchPoint.y.floatValue(), 10, paint);
-        canvas.drawLine(drawStretchPoint.x.floatValue(), drawStretchPoint.y.floatValue(), drawLeftTopCorner.x.floatValue(), drawLeftTopCorner.y.floatValue(), paint);
-        canvas.drawLine(drawStretchPoint.x.floatValue(), drawStretchPoint.y.floatValue(), drawRightTopCorner.x.floatValue(), drawRightTopCorner.y.floatValue(), paint);
+        canvas.drawBitmap(silverRing, drawStretchPoint.x.floatValue() - silverRing.getWidth() / 2, drawStretchPoint.y.floatValue() - silverRing.getHeight() / 2, paint);
+        super.draw(canvas);
     }
 
     public PropulsionPlatform clonePropulsionPlatform() {
@@ -149,16 +139,17 @@ public class PropulsionPlatform extends Sprite {
     @Override
     protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);
-        stretchPoint.applyPoint = center;
         maxSpringDisplacement = evalWidth();
+        silverRing = MediaStore.getScaledBitmap(R.drawable.silver_ring, evalWidth() / 4, evalWidth() / 4);
     }
 
     private void handleStandingMotionEvent(MotionEvent motionEvent, Displacement touchPoint) {
         switch (motionEvent.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                if (touchPoint.distanceTo(center) < VECINITY_DISTANCE) {
+                Displacement hookPoint = evalHookPoint();
+                if (touchPoint.distanceTo(hookPoint) < VECINITY_DISTANCE) {
                     status = Status.STRETCHING;
-                    stretchPoint.makeEqualTo(touchPoint.subtractionVector(center));
+                    stretchPoint.makeEqualTo(touchPoint.subtractionVector(hookPoint));
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -179,7 +170,7 @@ public class PropulsionPlatform extends Sprite {
                 springVelocity.setComponents(-stretchPoint.x * ELASTICITY_COEFFICIENT, -stretchPoint.y * ELASTICITY_COEFFICIENT);
                 break;
             case MotionEvent.ACTION_MOVE:
-                Displacement rawStretchPoint = touchPoint.subtractionVector(center);
+                Displacement rawStretchPoint = touchPoint.subtractionVector(evalHookPoint());
                 if (rawStretchPoint.magnitude() > maxSpringDisplacement) {
                     rawStretchPoint.setMagnitude(maxSpringDisplacement);
                 }
@@ -189,6 +180,12 @@ public class PropulsionPlatform extends Sprite {
                 stretchPoint.makeEqualTo(rawStretchPoint);
                 break;
         }
+    }
+
+    private Displacement evalHookPoint() {
+        Displacement hookPoint = new Displacement(center.x, center.y);
+        hookPoint.y -= evalHeight() / 4;
+        return hookPoint;
     }
 
     public Velocity getSpringVelocity() {
