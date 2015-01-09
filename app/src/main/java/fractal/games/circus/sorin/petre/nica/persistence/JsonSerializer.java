@@ -1,5 +1,6 @@
 package fractal.games.circus.sorin.petre.nica.persistence;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -15,10 +16,12 @@ import java.io.InputStreamReader;
 
 public class JsonSerializer {
 
-    private final Gson gsonService;
+    private final Gson    gsonService;
+    private final Context context;
 
-    public JsonSerializer() {
+    public JsonSerializer(Context context) {
         gsonService = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        this.context = context;
     }
 
     public void serialize(String filePath, Object object) {
@@ -26,7 +29,7 @@ public class JsonSerializer {
             File file = getFile(filePath);
             file.getParentFile().mkdirs();
             Log.i(JsonSerializer.class.getSimpleName(), "Persisting to file: " + file.getAbsolutePath());
-            FileOutputStream outputStream = new FileOutputStream(file.getAbsolutePath());
+            FileOutputStream outputStream = new FileOutputStream(file);
             outputStream.write(gsonService.toJson(object).getBytes());
             outputStream.close();
         } catch (FileNotFoundException e) {
@@ -39,7 +42,7 @@ public class JsonSerializer {
     public <T> T deserialize(String filePath, Class<T> clazz) {
         try {
             File file = getFile(filePath);
-            InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file.getAbsolutePath()));
+            InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file));
             T t = gsonService.fromJson(inputStreamReader, clazz);
             inputStreamReader.close();
             return t;
@@ -49,6 +52,18 @@ public class JsonSerializer {
             throw new RuntimeException(e);
         }
     }
+
+    public <T> T deserializeAsset(String assetPath, Class<T> clazz) {
+        try {
+            InputStreamReader inputStreamReader = new InputStreamReader(context.getAssets().open(assetPath));
+            T t = gsonService.fromJson(inputStreamReader, clazz);
+            inputStreamReader.close();
+            return t;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private File getFile(String filePath) {
         return new File(Environment.getExternalStoragePublicDirectory(

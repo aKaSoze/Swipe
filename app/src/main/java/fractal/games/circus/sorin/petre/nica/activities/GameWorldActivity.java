@@ -21,14 +21,18 @@ import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.persistence.Game;
 import fractal.games.circus.sorin.petre.nica.persistence.GameLoader;
+import fractal.games.circus.sorin.petre.nica.persistence.JsonSerializer;
+import fractal.games.circus.sorin.petre.nica.persistence.StageLoader;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Velocity;
 import fractal.games.circus.sorin.petre.nica.views.GameView;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
 public class GameWorldActivity extends Activity {
 
-    private GameLoader gameLoader;
-    private Game       game;
+    private JsonSerializer jsonSerializer;
+    private StageLoader    stageLoader;
+    private GameLoader     gameLoader;
+    private Game           game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +43,9 @@ public class GameWorldActivity extends Activity {
         MediaStore.context = this;
         MediaStore.assetManager = getAssets();
 
-        gameLoader = new GameLoader();
+        jsonSerializer = new JsonSerializer(this);
+        stageLoader = new StageLoader(jsonSerializer);
+        gameLoader = new GameLoader(jsonSerializer, stageLoader);
 
         final LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -144,6 +150,10 @@ public class GameWorldActivity extends Activity {
         previousStageButton.setText("<");
         navigationMenu.addView(previousStageButton);
 
+        final Button modeButton = new Button(this);
+        modeButton.setText(stageLoader.mode.name());
+        navigationMenu.addView(modeButton);
+
         saveButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 gameView.game.stageLoader.saveCurrentStage(gameView.game.stage);
@@ -223,6 +233,18 @@ public class GameWorldActivity extends Activity {
                         break;
                 }
                 return true;
+            }
+        });
+
+        modeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (stageLoader.mode == StageLoader.Mode.USER) {
+                    stageLoader.mode = StageLoader.Mode.DEV;
+                } else {
+                    stageLoader.mode = StageLoader.Mode.USER;
+                }
+                modeButton.setText(stageLoader.mode.name());
             }
         });
 

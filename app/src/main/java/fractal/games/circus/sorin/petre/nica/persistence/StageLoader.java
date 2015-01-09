@@ -9,11 +9,23 @@ import java.io.File;
  */
 public class StageLoader {
 
-    private static final String STAGE_DEFAULT_PREFIX = "Circus" + File.separator + "Stages" + File.separator + "Stage ";
+    private static final String STAGE_FILE_BASE_NAME = "Stage ";
+
+    public enum Mode {
+        DEV("Circus" + File.separator + "Stages" + File.separator + STAGE_FILE_BASE_NAME), USER("stages" + File.separator + STAGE_FILE_BASE_NAME);
+
+        public final String stageBasePath;
+
+        private Mode(String stageBasePath) {
+            this.stageBasePath = stageBasePath;
+        }
+
+    }
 
     private final JsonSerializer jsonSerializer;
 
     public Long stageIndex = 0L;
+    public Mode mode       = Mode.USER;
 
     public StageLoader(JsonSerializer jsonSerializer) {
         this.jsonSerializer = jsonSerializer;
@@ -21,7 +33,7 @@ public class StageLoader {
 
     public Stage loadCurrentStage() {
         if (stageExists(stageIndex)) {
-            return jsonSerializer.deserialize(evalFilePath(), Stage.class);
+            return mode == Mode.USER ? jsonSerializer.deserializeAsset(evalFilePath(), Stage.class) : jsonSerializer.deserialize(evalFilePath(), Stage.class);
         } else {
             return new Stage();
         }
@@ -32,7 +44,7 @@ public class StageLoader {
     }
 
     private String evalFilePath(Long stageIndex) {
-        return STAGE_DEFAULT_PREFIX + stageIndex;
+        return mode.stageBasePath + stageIndex;
     }
 
     private String evalFilePath() {
@@ -48,7 +60,11 @@ public class StageLoader {
     }
 
     private Boolean stageExists(Long stageIndex) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.MEDIA_MOUNTED), evalFilePath(stageIndex));
-        return file.isFile();
+        if (mode == Mode.DEV) {
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.MEDIA_MOUNTED), evalFilePath(stageIndex));
+            return file.isFile();
+        } else {
+            return true;
+        }
     }
 }

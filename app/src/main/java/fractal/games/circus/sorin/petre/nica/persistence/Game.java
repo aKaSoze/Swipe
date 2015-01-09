@@ -51,7 +51,6 @@ public class Game {
     private Background     backGround;
 
     private Game() {
-        stageLoader = new StageLoader(new JsonSerializer());
         init();
     }
 

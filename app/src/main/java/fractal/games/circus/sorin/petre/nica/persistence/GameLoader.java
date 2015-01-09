@@ -14,14 +14,15 @@ public class GameLoader {
     private final JsonSerializer jsonSerializer;
     private final StageLoader    stageLoader;
 
-    public GameLoader() {
-        jsonSerializer = new JsonSerializer();
-        stageLoader = new StageLoader(jsonSerializer);
+    public GameLoader(JsonSerializer jsonSerializer, StageLoader stageLoader) {
+        this.jsonSerializer = jsonSerializer;
+        this.stageLoader = stageLoader;
     }
 
     public Game loadGame() {
         try {
             Game game = jsonSerializer.deserialize(FILE_PATH, Game.class);
+            game.stageLoader = stageLoader;
             game.onLoad();
             return game;
         } catch (Exception e) {
