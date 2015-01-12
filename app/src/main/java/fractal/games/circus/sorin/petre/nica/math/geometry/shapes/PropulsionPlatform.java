@@ -20,10 +20,6 @@ public class PropulsionPlatform extends Sprite {
         STANDING, STRETCHING, RELEASED
     }
 
-    public interface CollisionHandler {
-        void onCollision();
-    }
-
     public interface ImpactHandler {
         void onImpact(PropulsionPlatform propulsionPlatform);
     }
@@ -34,7 +30,6 @@ public class PropulsionPlatform extends Sprite {
     private Displacement          stretchPoint      = new Displacement();
     private Velocity              springVelocity    = new Velocity(0.0, 0.0);
     private Status                status            = Status.STANDING;
-    public  Set<CollisionHandler> collisionHandlers = new HashSet<PropulsionPlatform.CollisionHandler>();
     public  Set<ImpactHandler>    impactHandlers    = new HashSet<PropulsionPlatform.ImpactHandler>();
 
     private Double maxSpringDisplacement;
@@ -108,9 +103,7 @@ public class PropulsionPlatform extends Sprite {
             obstacle.center.x = center.x;
             obstacle.center.y = center.y + evalHalfHeight() + obstacle.evalHalfHeight();
         }
-        for (CollisionHandler collisionHandler : collisionHandlers) {
-            collisionHandler.onCollision();
-        }
+        super.onCollision(obstacle);
     }
 
     @Override

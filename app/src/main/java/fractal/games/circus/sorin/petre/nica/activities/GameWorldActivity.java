@@ -89,7 +89,7 @@ public class GameWorldActivity extends Activity {
         monkeysFactory.paintingConstructor = new RammedSprite.PaintingConstructor() {
             @Override
             public Sprite construct() {
-                return new OscillatingBillboard(new LayoutProportions(0.1, 0.08, 0.2, 0.22), 500d, new Velocity(0.1, 0d), new Tuple2<Integer, Long>(R.drawable.evil_monkey, 10L), new Tuple2<Integer, Long>(R.drawable.monkey_banana, 10L));
+                return new OscillatingBillboard(new LayoutProportions(0.1, 0.08, 0.2, 0.22), new Velocity(0.1, 0d), new Tuple2<Integer, Long>(R.drawable.evil_monkey, 1000L), new Tuple2<Integer, Long>(R.drawable.monkey_banana, 1000L));
             }
         };
 

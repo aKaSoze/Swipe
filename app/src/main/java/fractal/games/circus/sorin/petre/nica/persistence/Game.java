@@ -13,6 +13,7 @@ import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.AnimatedShape;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Background;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RepeatedSprite;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
@@ -82,10 +83,18 @@ public class Game {
         }
     };
 
-    private Sensor.TipHitHandler sensorHitHandler = new Sensor.TipHitHandler() {
+    private Sensor.TipHitHandler           sensorHitHandler       = new Sensor.TipHitHandler() {
         @Override
         public void onTipHit() {
             loseLife();
+        }
+    };
+    private AnimatedShape.CollisionHandler monkeyCollisionHandler = new AnimatedShape.CollisionHandler() {
+        @Override
+        public void onCollision(AnimatedShape obstacle) {
+            if (obstacle == stage.getHippo()) {
+                loseLife();
+            }
         }
     };
 
@@ -134,6 +143,10 @@ public class Game {
         for (Sensor sensor : stage.getSensors()) {
             sensor.tipHitHandler = sensorHitHandler;
             sensor.obstaclePassedHandler = goThroughSensorHandler;
+        }
+
+        for (OscillatingBillboard oscillatingBillboard : stage.getOscillatingBillboards()) {
+            oscillatingBillboard.collisionHandler = monkeyCollisionHandler;
         }
 
         stageLoader.stageIndex = level.getPoints().longValue();

@@ -18,6 +18,10 @@ public abstract class AnimatedShape extends CenteredDrawable {
         void onCenterChanged(AnimatedShape shape);
     }
 
+    public interface CollisionHandler {
+        void onCollision(AnimatedShape obstacle);
+    }
+
     @Expose
     public Acceleration acceleration;
 
@@ -25,6 +29,8 @@ public abstract class AnimatedShape extends CenteredDrawable {
     public Velocity velocity;
 
     public CenterChangedHandler centerChangedHandler;
+
+    public CollisionHandler collisionHandler;
 
     protected final Set<AnimatedShape> obstacles = new CopyOnWriteArraySet<AnimatedShape>();
 
@@ -54,7 +60,9 @@ public abstract class AnimatedShape extends CenteredDrawable {
     }
 
     public void onCollision(AnimatedShape obstacle) {
-        velocity.neutralize();
+        if (collisionHandler != null) {
+            collisionHandler.onCollision(obstacle);
+        }
     }
 
     public void addObstacle(AnimatedShape obstacle) {

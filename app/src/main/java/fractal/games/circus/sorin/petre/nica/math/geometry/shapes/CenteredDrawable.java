@@ -148,7 +148,7 @@ public abstract class CenteredDrawable extends Drawable {
     }
 
     protected Double evalWidth() {
-        return layoutProportions.widthRatio * (getBounds().right - getBounds().left);
+        return layoutProportions.widthRatio * getBounds().width();
     }
 
     protected Double evalHalfWidth() {

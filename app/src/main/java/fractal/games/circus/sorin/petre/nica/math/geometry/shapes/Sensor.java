@@ -59,14 +59,12 @@ public class Sensor extends Sprite {
             }
 
             if (obstacle.contains(firstCorner)) {
-                moveOutsideBoundariesOfObstacle(firstCorner);
                 if (tipHitHandler != null) {
                     tipHitHandler.onTipHit();
                 }
             }
 
             if (obstacle.contains(secondCorner)) {
-                moveOutsideBoundariesOfObstacle(secondCorner);
                 if (tipHitHandler != null) {
                     tipHitHandler.onTipHit();
                 }

@@ -117,6 +117,10 @@ public class Stage {
         return sensors;
     }
 
+    public Set<OscillatingBillboard> getOscillatingBillboards() {
+        return oscillatingBillboards;
+    }
+
     @Override
     public String toString() {
         return String.valueOf(getAllObjects().size());
