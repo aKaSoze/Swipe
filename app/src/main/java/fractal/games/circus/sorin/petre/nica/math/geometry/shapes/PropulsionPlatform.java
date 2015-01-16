@@ -27,14 +27,12 @@ public class PropulsionPlatform extends Sprite {
     private static final Double ELASTICITY_COEFFICIENT = 0.017;
     private static final Double PROJECTILE_MIN_SPEED   = 0.035;
 
-    private Displacement          stretchPoint      = new Displacement();
-    private Velocity              springVelocity    = new Velocity(0.0, 0.0);
-    private Status                status            = Status.STANDING;
-    public  Set<ImpactHandler>    impactHandlers    = new HashSet<PropulsionPlatform.ImpactHandler>();
+    private Displacement       stretchPoint   = new Displacement();
+    private Velocity           springVelocity = new Velocity(0.0, 0.0);
+    private Status             status         = Status.STANDING;
+    public  Set<ImpactHandler> impactHandlers = new HashSet<PropulsionPlatform.ImpactHandler>();
 
     private Double maxSpringDisplacement;
-    private Long   stretchingTime;
-    private Long   elapsedTime;
     private Bitmap silverRing;
 
     public PropulsionPlatform() {
@@ -54,8 +52,7 @@ public class PropulsionPlatform extends Sprite {
     }
 
     @Override
-    public void updateState(Long elapsedTime) {
-        this.elapsedTime = elapsedTime;
+    public void updateState(Long elapsedTime, Long timeIncrement) {
         if (status == Status.RELEASED) {
             if (stretchPoint.isZero()) {
                 for (ImpactHandler impactHandler : impactHandlers) {
@@ -64,10 +61,7 @@ public class PropulsionPlatform extends Sprite {
                 springVelocity.neutralize();
                 status = Status.STANDING;
             } else {
-                Long elapsedStretchingTime = elapsedTime - stretchingTime;
-                stretchingTime = elapsedTime;
-
-                Displacement displacement = springVelocity.generatedDisplacement(elapsedStretchingTime);
+                Displacement displacement = springVelocity.generatedDisplacement(timeIncrement);
                 if (displacement.magnitude() > stretchPoint.magnitude()) {
                     stretchPoint.neutralize();
                 } else {
@@ -159,7 +153,6 @@ public class PropulsionPlatform extends Sprite {
         switch (motionEvent.getActionMasked()) {
             case MotionEvent.ACTION_UP:
                 status = Status.RELEASED;
-                stretchingTime = elapsedTime;
                 springVelocity.setComponents(-stretchPoint.x * ELASTICITY_COEFFICIENT, -stretchPoint.y * ELASTICITY_COEFFICIENT);
                 break;
             case MotionEvent.ACTION_MOVE:

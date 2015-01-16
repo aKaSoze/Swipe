@@ -89,9 +89,9 @@ public class Stage {
         }
     }
 
-    public void update(Long elapsedTime) {
+    public void update(Long elapsedTime, Long timeIncrement) {
         for (CenteredDrawable movableShape : getAllObjects()) {
-            movableShape.updateState(elapsedTime);
+            movableShape.updateState(elapsedTime, timeIncrement);
         }
     }
 

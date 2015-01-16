@@ -1,7 +1,6 @@
 package fractal.games.circus.sorin.petre.nica.math.geometry.shapes;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.view.MotionEvent;
 
@@ -62,8 +61,8 @@ public class Rectangle extends AnimatedShape {
     }
 
     @Override
-    public void updateState(Long elapsedTime) {
-        super.updateState(elapsedTime);
+    public void updateState(Long elapsedTime, Long timeIncrement) {
+        super.updateState(elapsedTime, timeIncrement);
         if (!velocity.isZero()) {
             AnimatedShape collidedObstacle = checkPossibleOverlap();
             if (collidedObstacle != null) {
@@ -76,7 +75,7 @@ public class Rectangle extends AnimatedShape {
 
     @Override
     public void onCollision(AnimatedShape obstacle) {
-        if (obstacle instanceof Rectangle) {
+        if (collisionHandler == null) {
             if (touchesOnVerticalSide((Rectangle) obstacle)) {
                 velocity.reverseX();
             } else {

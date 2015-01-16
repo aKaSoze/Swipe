@@ -49,8 +49,9 @@ public abstract class AnimatedShape extends CenteredDrawable {
         velocity = new Velocity(0, 0);
     }
 
-    public void updateState(Long elapsedTime) {
-        super.updateState(elapsedTime);
+    @Override
+    public void updateState(Long elapsedTime, Long timeIncrement) {
+        super.updateState(elapsedTime, timeIncrement);
         Displacement generatedDisplacement = velocity.generatedDisplacement(timeIncrement);
         center.add(generatedDisplacement);
         velocity.add(acceleration.generatedVelocity(timeIncrement));

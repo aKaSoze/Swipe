@@ -106,9 +106,10 @@ public class GameView extends AutoUpdatableView {
                 Log.i(logTag, "Game loop started.");
                 while (isOkToRunGameLoop) {
                     long now = System.currentTimeMillis();
-                    elapsedTime += now - lastUpdateTime;
+                    long timeIncrement = now - lastUpdateTime;
+                    elapsedTime += timeIncrement;
                     lastUpdateTime = now;
-                    game.stage.update(elapsedTime);
+                    game.update(elapsedTime, timeIncrement);
                     drawSurface();
                 }
             }

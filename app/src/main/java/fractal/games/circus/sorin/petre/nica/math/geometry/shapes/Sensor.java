@@ -39,8 +39,8 @@ public class Sensor extends Sprite {
     }
 
     @Override
-    public void updateState(Long elapsedTime) {
-        super.updateState(elapsedTime);
+    public void updateState(Long elapsedTime, Long timeIncrement) {
+        super.updateState(elapsedTime, timeIncrement);
 
         Displacement firstCorner = evalFirstCorner();
         Displacement secondCorner = evalSecondCorner();

@@ -29,8 +29,8 @@ public class OscillatingBillboard extends Billboard {
     }
 
     @Override
-    public void updateState(Long elapsedTime) {
-        super.updateState(elapsedTime);
+    public void updateState(Long elapsedTime, Long timeIncrement) {
+        super.updateState(elapsedTime, timeIncrement);
         if ((center.distanceTo(startPosition) >= allowedTranslation && velocity.x > 0) || (center.x <= startPosition.x && velocity.x < 0)) {
             velocity.reverse();
         }

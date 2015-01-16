@@ -7,15 +7,18 @@ import android.graphics.Rect;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.AnimatedShape;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Background;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.CenteredDrawable;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.GameAnimation;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.OscillatingBillboard;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.PropulsionPlatform;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.RepeatedSprite;
+import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.ScreenCoverAnimation;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sensor;
 import fractal.games.circus.sorin.petre.nica.math.geometry.shapes.Sprite;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
@@ -50,6 +53,9 @@ public class Game {
     public  StageLoader    stageLoader;
     private Rect           knownBounds;
     private Background     backGround;
+
+    private Set<GameAnimation> stopTheWorldAnimations = new HashSet<GameAnimation>();
+    private Set<GameAnimation> inGameAnimations       = new HashSet<GameAnimation>();
 
     private Game() {
         init();
@@ -106,9 +112,17 @@ public class Game {
     };
 
     private void loseLife() {
-        stage.getHippo().velocity.neutralize();
-        stage.getHippo().center.makeEqualTo(stage.getHippo().getFirstPosition());
-        lives.decreaseRepeatFactor();
+        ScreenCoverAnimation screenCoverAnimation = new ScreenCoverAnimation(500L);
+        screenCoverAnimation.setBounds(knownBounds);
+        screenCoverAnimation.animationEndedHandler = new GameAnimation.AnimationEndedHandler() {
+            @Override
+            public void onAnimationEnded(GameAnimation animation) {
+                stage.getHippo().velocity.neutralize();
+                stage.getHippo().center.makeEqualTo(stage.getHippo().getFirstPosition());
+                lives.decreaseRepeatFactor();
+            }
+        };
+        stopTheWorldAnimations.add(screenCoverAnimation);
     }
 
     private Boolean isLoseConditionMet() {
@@ -182,6 +196,19 @@ public class Game {
         onLoad();
     }
 
+    public void update(Long elapsedTime, Long timeIncrement) {
+        if (stopTheWorldAnimations.isEmpty()) {
+            stage.update(elapsedTime, timeIncrement);
+            for (GameAnimation gameAnimation : inGameAnimations) {
+                gameAnimation.updateState(elapsedTime, timeIncrement);
+            }
+        } else {
+            for (GameAnimation gameAnimation : stopTheWorldAnimations) {
+                gameAnimation.updateState(elapsedTime, timeIncrement);
+            }
+        }
+    }
+
     private interface NumericRepresentant<T> {
         Double getNumericValue(T t);
     }
@@ -209,6 +236,18 @@ public class Game {
         level.draw(canvas);
         score.draw(canvas);
         inGameTimer.points = (long) CenteredDrawable.instances.size();
+
+        Set<GameAnimation> removes = new HashSet<GameAnimation>();
+        for (GameAnimation gameAnimation : stopTheWorldAnimations) {
+            if (!gameAnimation.getIsComplete()) {
+                gameAnimation.drawTranslation.setComponents(camera.coordinateTranslation.x, camera.coordinateTranslation.y);
+                gameAnimation.draw(canvas);
+            } else {
+                removes.add(gameAnimation);
+            }
+        }
+        stopTheWorldAnimations.removeAll(removes);
+
 //        inGameTimer.draw(canvas);
     }
 

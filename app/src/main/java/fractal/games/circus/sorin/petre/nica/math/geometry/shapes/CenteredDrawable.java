@@ -53,11 +53,8 @@ public abstract class CenteredDrawable extends Drawable {
 
     protected transient final Paint paint;
 
-    private transient Long lastTapTime = 0L;
-
-    protected transient Long lastUpdateTime;
-
-    protected transient Long timeIncrement = 0L;
+    private transient   Long lastTapTime    = 0L;
+    protected transient Long ownElapsedTime = 0L;
 
     public CenteredDrawable(LayoutProportions layoutProportions, Paint paint) {
         super();
@@ -103,11 +100,8 @@ public abstract class CenteredDrawable extends Drawable {
         }
     }
 
-    public void updateState(Long elapsedTime) {
-        if (lastUpdateTime != null) {
-            timeIncrement = elapsedTime - lastUpdateTime;
-        }
-        lastUpdateTime = elapsedTime;
+    public void updateState(Long elapsedTime, Long timeIncrement) {
+        ownElapsedTime += timeIncrement;
     }
 
     @Override

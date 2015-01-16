@@ -99,7 +99,7 @@ public class BitmapDrawable extends CenteredDrawable {
 	}
 
 	@Override
-	public void updateState(Long elapsedTime) {
+	public void updateState(Long elapsedTime, Long timeIncrement) {
 		if (drawState == DrawState.Exploding) {
 			if (explosionStartTime == null) {
 				explosionStartTime = elapsedTime;

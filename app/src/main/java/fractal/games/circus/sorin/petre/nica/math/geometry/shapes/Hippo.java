@@ -19,8 +19,8 @@ public class Hippo extends Sprite {
     }
 
     @Override
-    public void updateState(Long elapsedTime) {
-        super.updateState(elapsedTime);
+    public void updateState(Long elapsedTime, Long timeIncrement) {
+        super.updateState(elapsedTime, timeIncrement);
         if (getBounds() != null) {
             if (crossedLeftSideBoundary()) {
                 moveToLeftSideBoundary();

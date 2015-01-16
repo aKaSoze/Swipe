@@ -106,7 +106,7 @@ public class CoinsGameView extends AutoUpdatableView {
 					continue;
 				}
 			}
-			movableShape.updateState(elapsedTime);
+			movableShape.updateState(elapsedTime, null);
 		}
 
 		drawables.removeAll(deadObjects);
