@@ -113,8 +113,8 @@ public class PropulsionPlatform extends Sprite {
     public void draw(Canvas canvas) {
         Displacement drawStretchPoint = evalDrawLocation(stretchPoint.evaluateTip());
         stretchPoint.applyPoint.makeEqualTo(evalHookPoint());
-        drawVector(stretchPoint, canvas);
         canvas.drawBitmap(silverRing, drawStretchPoint.x.floatValue() - silverRing.getWidth() / 2, drawStretchPoint.y.floatValue() - silverRing.getHeight() / 2, paint);
+        drawVectorWithBitmap(stretchPoint, R.drawable.line, canvas);
         super.draw(canvas);
     }
 

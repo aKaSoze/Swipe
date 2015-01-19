@@ -10,7 +10,6 @@ import android.graphics.Paint.Style;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.google.gson.annotations.Expose;
@@ -19,7 +18,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import fractal.games.circus.R;
 import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
@@ -189,22 +187,33 @@ public abstract class CenteredDrawable extends Drawable {
     }
 
     protected void drawVector(Displacement vector, Canvas canvas) {
-        Bitmap line  = MediaStore.getScaledBitmap(R.drawable.line, vector.magnitude()+1, 50d);
-        Double angle = vector.clockWiseXAxisAngleTo(new Displacement(1, 0));
+        if (vector.magnitude() > 0) {
+            Displacement origin = evalDrawLocation(vector.applyPoint);
+            Displacement tip = evalDrawLocation(vector.additionVector(vector.applyPoint));
+            canvas.drawLine(origin.x.floatValue(), origin.y.floatValue(), tip.x.floatValue(), tip.y.floatValue(), paint);
+        }
+    }
 
-        Log.i("angle", angle.toString());
+    protected void drawVectorWithBitmap(Displacement vector, Integer bitmapId, Canvas canvas) {
+        if (vector.magnitude() > 0) {
+            Double bitmapOriginalHeight = getBounds().height() * 0.05;
+            Bitmap line = MediaStore.getScaledBitmap(bitmapId, vector.magnitude(), bitmapOriginalHeight);
+            Displacement origin = evalDrawLocation(vector.applyPoint);
 
-        Matrix matrix = new Matrix();
-        matrix.postRotate(90);
-        Bitmap rotatedBitmap = Bitmap.createBitmap(line , 0, 0, line.getWidth(), line.getHeight(), matrix, true);
+            Double angle = (360 - vector.clockWiseRadAngleTo(new Displacement(1, 0))) % 360;
+            Matrix matrix = new Matrix();
+            matrix.postRotate(angle.floatValue());
+            Bitmap rotatedBitmap = Bitmap.createBitmap(line, 0, 0, line.getWidth(), line.getHeight(), matrix, true);
 
-        Displacement origin = evalDrawLocation(vector.applyPoint);
-        Displacement tip = evalDrawLocation(vector.additionVector(vector.applyPoint));
+            Double dx = Math.sin(Math.toRadians(angle)) * (bitmapOriginalHeight / 2);
+            Double dy = Math.cos(Math.toRadians(angle)) * (bitmapOriginalHeight / 2);
 
-        canvas.drawBitmap(rotatedBitmap, origin.x.floatValue(), origin.y.floatValue(), paint);
-
-        canvas.drawLine(origin.x.floatValue(), origin.y.floatValue(),
-                tip.x.floatValue(), tip.y.floatValue(), paint);
+            if (angle <= 90) {
+                canvas.drawBitmap(rotatedBitmap, origin.x.floatValue() - dx.floatValue(), origin.y.floatValue() - dy.floatValue(), paint);
+            } else {
+                canvas.drawBitmap(rotatedBitmap, origin.x.floatValue() + dx.floatValue() - rotatedBitmap.getWidth(), origin.y.floatValue() + dy.floatValue(), paint);
+            }
+        }
     }
 
     protected void drawPoint(Displacement displacement, Canvas canvas) {
