@@ -64,7 +64,7 @@ public class Displacement extends Vector2D<Displacement> {
 
 	public Double clockWiseXAxisAngleTo(Displacement other) {
 		Displacement delta = other.subtractionVector(this);
-		return Double.valueOf(Math.atan2(delta.y, delta.x));
+		return Math.atan2(delta.y, delta.x);
 	}
 
 	public Double rotateCounterClockWise(Displacement reference, Float radians) {

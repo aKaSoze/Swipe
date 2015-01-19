@@ -63,8 +63,9 @@ public class Game {
 
     public Game(StageLoader stageLoader) {
         this.stageLoader = stageLoader;
-        level = new Score("Level", new LayoutProportions(0.0, 0.035, 0.3, 0.025));
-        score = new Score("Score", new LayoutProportions(0.0, 0.035, 0.67, 0.025));
+        level = new Score("Level", new LayoutProportions(0.0, 0.028, 0.32, 0.025));
+        score = new Score("Score", new LayoutProportions(0.0, 0.028, 0.57, 0.025));
+        score.points = 100000L;
         lives = new RepeatedSprite(new LayoutProportions(0.07, 0.05, 0.17, 0.98), R.drawable.hippo_wacky);
         init();
         loadCurrentStage();
@@ -112,7 +113,7 @@ public class Game {
     };
 
     private void loseLife() {
-        ScreenCoverAnimation screenCoverAnimation = new ScreenCoverAnimation(500L);
+        ScreenCoverAnimation screenCoverAnimation = new ScreenCoverAnimation(1000L, false);
         screenCoverAnimation.setBounds(knownBounds);
         screenCoverAnimation.animationEndedHandler = new GameAnimation.AnimationEndedHandler() {
             @Override
@@ -120,13 +121,16 @@ public class Game {
                 stage.getHippo().velocity.neutralize();
                 stage.getHippo().center.makeEqualTo(stage.getHippo().getFirstPosition());
                 lives.decreaseRepeatFactor();
+                ScreenCoverAnimation screenCoverAnimation = new ScreenCoverAnimation(1000L, true);
+                screenCoverAnimation.setBounds(knownBounds);
+                stopTheWorldAnimations.add(screenCoverAnimation);
             }
         };
         stopTheWorldAnimations.add(screenCoverAnimation);
     }
 
     private Boolean isLoseConditionMet() {
-        return stage.getHippo().center.y < -20;
+        return stage.getHippo().center.y < -knownBounds.height() / 2.5;
     }
 
     private Boolean isWinConditionMet() {

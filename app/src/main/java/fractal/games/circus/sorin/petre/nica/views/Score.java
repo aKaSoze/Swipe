@@ -33,7 +33,7 @@ public class Score extends Drawable {
 
     public Score(String title, LayoutProportions layoutProportions) {
         paint = new Paint();
-        paint.setColor(Color.rgb(102, 255, 255));
+        paint.setColor(Color.rgb(219, 181, 30));
         paint.setAntiAlias(true);
         paint.setDither(true);
         paint.setTypeface(MediaStore.getTypeFace(FONT));

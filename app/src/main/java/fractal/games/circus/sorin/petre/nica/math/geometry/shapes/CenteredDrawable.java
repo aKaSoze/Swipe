@@ -1,13 +1,16 @@
 package fractal.games.circus.sorin.petre.nica.math.geometry.shapes;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.google.gson.annotations.Expose;
@@ -16,6 +19,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import fractal.games.circus.R;
+import fractal.games.circus.sorin.petre.nica.media.MediaStore;
 import fractal.games.circus.sorin.petre.nica.physics.kinematics.Displacement;
 import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
 
@@ -184,8 +189,19 @@ public abstract class CenteredDrawable extends Drawable {
     }
 
     protected void drawVector(Displacement vector, Canvas canvas) {
+        Bitmap line  = MediaStore.getScaledBitmap(R.drawable.line, vector.magnitude()+1, 50d);
+        Double angle = vector.clockWiseXAxisAngleTo(new Displacement(1, 0));
+
+        Log.i("angle", angle.toString());
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(line , 0, 0, line.getWidth(), line.getHeight(), matrix, true);
+
         Displacement origin = evalDrawLocation(vector.applyPoint);
         Displacement tip = evalDrawLocation(vector.additionVector(vector.applyPoint));
+
+        canvas.drawBitmap(rotatedBitmap, origin.x.floatValue(), origin.y.floatValue(), paint);
 
         canvas.drawLine(origin.x.floatValue(), origin.y.floatValue(),
                 tip.x.floatValue(), tip.y.floatValue(), paint);

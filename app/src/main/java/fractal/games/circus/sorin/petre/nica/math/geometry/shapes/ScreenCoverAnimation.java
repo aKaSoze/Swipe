@@ -11,8 +11,11 @@ import fractal.games.circus.sorin.petre.nica.views.LayoutProportions;
  */
 public class ScreenCoverAnimation extends GameAnimation {
 
-    public ScreenCoverAnimation(Long totalAnimationTimeInMillis) {
+    private final Boolean isRetracting;
+
+    public ScreenCoverAnimation(Long totalAnimationTimeInMillis, Boolean isRetracting) {
         super(new LayoutProportions(0d, 0d, 0.5, 0.5), totalAnimationTimeInMillis);
+        this.isRetracting = isRetracting;
     }
 
     @Override
@@ -22,15 +25,19 @@ public class ScreenCoverAnimation extends GameAnimation {
         float xCenter = getBounds().width() / 2;
         float yCenter = getBounds().height() / 2;
 
-        float left = xCenter - (xCenter * progress.floatValue());
-        float top = yCenter - (yCenter * progress.floatValue());
-        float right = xCenter + (xCenter * progress.floatValue());
-        float bottom = yCenter + (yCenter * progress.floatValue());
-
+        this.paint.setAntiAlias(false);
+        this.paint.setDither(false);
         paint.setColor(Color.BLACK);
-        paint.setAlpha((int) (255 * progress));
-        paint.setStyle(Paint.Style.FILL);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(getBounds().height() * 2 * strokeMultiplier());
+        canvas.drawCircle(xCenter, yCenter, getBounds().height(), paint);
+    }
 
-        canvas.drawRect(left, top, right, bottom, paint);
+    private float strokeMultiplier() {
+        if (isRetracting) {
+            return 1f - progress.floatValue();
+        } else {
+            return progress.floatValue();
+        }
     }
 }

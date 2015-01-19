@@ -91,6 +91,7 @@ public class PropulsionPlatform extends Sprite {
 
     @Override
     public void onCollision(AnimatedShape obstacle) {
+        obstacle.velocity.divideByScalar(2d);
         if (obstacle.velocity.magnitude() < PROJECTILE_MIN_SPEED) {
             obstacle.acceleration.neutralize();
             obstacle.velocity.neutralize();

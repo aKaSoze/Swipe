@@ -159,7 +159,7 @@ public class GameView extends AutoUpdatableView {
         if (isOnEditMode) {
             hud.draw(canvas, camera);
         }
-        drawHelperLines(canvas);
+//        drawHelperLines(canvas);
     }
 
     private void drawHelperLines(Canvas canvas) {
@@ -171,9 +171,6 @@ public class GameView extends AutoUpdatableView {
         canvas.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight(), paint);
 
         paint.setColor(Color.WHITE);
-
-        Displacement deathLine = game.stage.getHippo().evalDrawLocation(new Displacement(0, -20));
-        canvas.drawLine(0, deathLine.y.floatValue(), getWidth(), deathLine.y.floatValue(), paint);
     }
 
 }
